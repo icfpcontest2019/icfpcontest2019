@@ -26,7 +26,7 @@ lazy val checkers = project
 
 lazy val contest = project
   .settings(
-    name := "chain",
+    name := "contest",
     settings,
     libraryDependencies ++= commonDependencies ++ akka
   )
