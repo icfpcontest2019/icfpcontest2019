@@ -1,44 +1,63 @@
-organization := "ICFP Contest 2019"
+ThisBuild / scalaVersion := "2.12.8"
+ThisBuild / organization := "org.icfpc"
+ThisBuild / name := "Libraries for checking tasks of ICFP Contest 2019"
+ThisBuild / version := "1.0.0 -- SNAPSHOT"
 
-name := "Libraries for checking tasks of ICFP Contest 2019"
+val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
+val scalaIO = "com.madgag" %% "scala-io-file" % "0.4.9"
+val email = "org.apache.commons" % "commons-email" % "1.4"
+val commonsIO = "commons-io" % "commons-io" % "2.4"
+val slick = "com.typesafe.slick" %% "slick" % "3.3.0"
+val xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
+val math = "org.apache.commons" % "commons-math3" % "3.6.1"
+val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.14.0"
 
-version := "1.0.0 -- SNAPSHOT"
+libraryDependencies ++= Seq (
+	parserCombinators,
+	scalaIO,
+	email,
+	commonsIO,
+	slick,
+	xml,
+	math,
+	scalaCheck
+)
 
-scalaVersion := "2.12.8"
+// Akka
 
-libraryDependencies += "org.scalatest" % "scalatest_2.12" % "2.2.4" % "test"
+/*
+val sprayV = "1.3.4"
+libraryDependencies += "io.spray" %%  "spray-can"     % sprayV,
+libraryDependencies += "io.spray" %%  "spray-routing" % sprayV,
+libraryDependencies += "io.spray" %%  "spray-testkit" % sprayV  % "test",
+*/
 
-libraryDependencies += "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4"
 
-libraryDependencies += "org.scalacheck" %% "scalacheck" % "1.12.5"
-
-libraryDependencies += "com.madgag" %% "scala-io-file" % "0.4.2"
-
-libraryDependencies += "org.apache.commons" % "commons-email" % "1.4"
-
-libraryDependencies += "org.apache.commons" % "commons-math3" % "3.6.1"
-
-libraryDependencies += "commons-io" % "commons-io" % "2.4"
-
-// mainClass in (Compile, run) := Some("ucl.scenario.geometry.runners.ArtGalleryPainter")
-
-// Server development
-libraryDependencies += "com.typesafe.slick" %% "slick" % "3.1.1"
-
-scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
-
-libraryDependencies ++= {
-  val akkaV = "2.3.9"
-  val sprayV = "1.3.3"
+val akka = {
+  val akkaV = "2.4.19"
   Seq(
-    "io.spray"            %%  "spray-can"     % sprayV,
-    "io.spray"            %%  "spray-routing" % sprayV,
-    "io.spray"            %%  "spray-testkit" % sprayV  % "test",
+    "com.typesafe.akka" %% "akka-http-spray-json" % "10.0.1",
     "com.typesafe.akka"   %%  "akka-actor"    % akkaV,
     "com.typesafe.akka"   %%  "akka-testkit"  % akkaV   % "test",
-    "org.specs2"          %%  "specs2-core"   % "2.3.11" % "test"
   )
 }
+
+libraryDependencies ++= akka
+
+// Tests
+
+val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+
+val specs = "org.specs2" %% "specs2-core" % "4.3.4" % "test"
+
+libraryDependencies ++= Seq( 
+	scalaTest,
+	specs 
+)
+
+// Miscellanea
+
+scalacOptions := Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 Revolver.settings
 
