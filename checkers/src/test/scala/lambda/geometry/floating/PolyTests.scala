@@ -67,44 +67,44 @@ class PointSegmentTests extends FlatSpec with MustMatchers {
   */
 class PointInPolygonTests extends FlatSpec with MustMatchers {
 
-  val p1 = (1, 1)
-  val p2 = (1, 0.5)
-  val p3 = (2, 3)
-  val p4 = (0.5, 0.5)
+  val p1 = FPoint(1, 1)
+  val p2 = FPoint(1, 0.5)
+  val p3 = FPoint(2, 3)
+  val p4 = FPoint(0.5, 0.5)
 
   s"Point ${(0.5, 1)}" should s"be in polygon $convexPoly4" in {
     assert(convexPoly4.containsPoint(FPoint(0.5, 1)))
   }
 
-//  s"Point $p4" should s"be in rectangle$convexPoly3" in {
-//    assert(convexPoly3.containsPoint(p4))
-//  }
-//
-//  s"Point $p1" should s"be in triangle $trianglePoly" in {
-//    assert(trianglePoly.containsPoint(p1))
-//    assert(trianglePoly.containsPoint(origin2D))
-//    assert(trianglePoly.containsPoint((2, 2)))
-//  }
-//
-//  s"Point $p2" should s"be in triangle $trianglePoly" in {
-//    assert(trianglePoly.containsPoint(p2))
-//  }
-//
-//  s"Point $p3" should s"not be in triangle $trianglePoly" in {
-//    assert(!trianglePoly.containsPoint(p3))
-//  }
-//
-//  s"Point $p2" should s"be in rectangle$convexPoly" in {
-//    assert(convexPoly.containsPoint(p2))
-//  }
-//
-//
-//  s"Point ${(1, 0)}" should s"be in rectangle$convexPoly3" in {
-//    assert(convexPoly3.containsPoint((1, 0)))
-//  }
-//
-//  s"Point $p4" should s"not be in rectangle$simpleNonConvexPoly" in {
-//    assert(!simpleNonConvexPoly.containsPoint(p4))
-//  }
+  s"Point $p4" should s"be in rectangle$convexPoly3" in {
+    assert(convexPoly3.containsPoint(p4))
+  }
+
+  s"Point $p1" should s"be in triangle $trianglePoly" in {
+    assert(trianglePoly.containsPoint(p1))
+    assert(trianglePoly.containsPoint(PointUtils.origin2D))
+    assert(trianglePoly.containsPoint(FPoint(2, 2)))
+  }
+
+  s"Point $p2" should s"be in triangle $trianglePoly" in {
+    assert(trianglePoly.containsPoint(p2))
+  }
+
+  s"Point $p3" should s"not be in triangle $trianglePoly" in {
+    assert(!trianglePoly.containsPoint(p3))
+  }
+
+  s"Point $p2" should s"be in rectangle$convexPoly" in {
+    assert(convexPoly.containsPoint(p2))
+  }
+
+
+  s"Point ${(1, 0)}" should s"be in rectangle$convexPoly3" in {
+    assert(convexPoly3.containsPoint(FPoint(1, 0)))
+  }
+
+  s"Point $p4" should s"not be in rectangle$simpleNonConvexPoly" in {
+    assert(!simpleNonConvexPoly.containsPoint(p4))
+  }
 
 }

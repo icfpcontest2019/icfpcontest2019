@@ -14,10 +14,11 @@ To compile the entiry project and run all tests, execute
 sbt test
 ```
 
-### Scala programming and related frameworks
+### Scala programming and related frameworks to be used
 
 * [Scala Programming Language](http://www.scala-lang.org/)
 * [Akka HTTP](https://doc.akka.io/docs/akka-http/current/introduction.html)
+* [Scala.js](http://www.lihaoyi.com/hands-on-scala-js/)
 * [Scala Building Tool (SBT)](http://www.scala-sbt.org/)
 * [ScalaCheck](https://scalacheck.org/)
 * [ScalaTest](http://www.scalatest.org/)

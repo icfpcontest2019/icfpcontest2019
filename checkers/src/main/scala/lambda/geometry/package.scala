@@ -24,6 +24,14 @@ package object geometry {
     rotateSeqNumLoop(s, tmp)
   }
 
+  def getEdges[T](vs: Seq[T]): Seq[(T, T)] =
+    if (vs.size <= 1) Nil
+    else {
+      val n = vs.size
+      (for (i <- 1 until n) yield (vs(i - 1), vs(i))) ++ Seq((vs(n - 1), vs.head))
+    }
+
+
   def rotateSeqNumLoop[T](s: Seq[T], tmp: Int): Seq[T] =
     if (tmp == 0) s else rotateSeqNumLoop(s.tail ++ Seq(s.head), tmp - 1)
 

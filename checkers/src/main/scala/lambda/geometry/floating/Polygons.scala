@@ -1,6 +1,7 @@
 package lambda.geometry.floating
 
-import lambda.geometry.floating
+import lambda.geometry
+import lambda.geometry._
 import lambda.geometry.floating.PointUtils._
 import lambda.geometry.floating.SegmentUtils._
 import org.apache.commons.math3.linear._
@@ -28,14 +29,14 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
 
     // Check the rotations of vertice sequence
     for (i <- 0 to vs.size) {
-      if (seqEpsEq(vertices, lambda.geometry.rotateSeqNum(vs, i))) return true
+      if (seqEpsEq(vertices, rotateSeqNum(vs, i))) return true
     }
 
     false
   }
 
   def edges: Seq[FSegment] =
-    FPolygonUtils.getEdges(vertices).map { case (a, b) => FSegment(a, b) }
+    getEdges(vertices).map { case (a, b) => FSegment(a, b) }
 
   def rotateCWAndShift(phi: Double, newOrigin: FPoint): FPolygon = {
     assert(vertices.size >= 3)
@@ -297,14 +298,6 @@ object FPolygonUtils {
 
     allPos || allNeg
   }
-
-  def getEdges[T](vs: Seq[T]): Seq[(T, T)] =
-    if (vs.size <= 1) Nil
-    else {
-      val n = vs.size
-      (for (i <- 1 until n) yield (vs(i - 1), vs(i))) ++ Seq((vs(n - 1), vs.head))
-    }
-
 
   /**
     * Check if a point is inside of a polygon
