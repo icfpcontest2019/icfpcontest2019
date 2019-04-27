@@ -3,7 +3,6 @@ ThisBuild / organization := "lambda"
 ThisBuild / scalaVersion := "2.12.8"
 ThisBuild / version := "1.0.0 -- SNAPSHOT"
 
-
 /********************************************/
 //           Project structure              //
 /********************************************/
