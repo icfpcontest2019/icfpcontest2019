@@ -38,11 +38,14 @@ lazy val graphics = project
   .settings(
     name := "graphics",
     settings,
-    libraryDependencies ++= commonDependencies
+    libraryDependencies ++= commonDependencies,
+    libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.0.0-M7",
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
   )
   .dependsOn(
     checkers
   )
+  .enablePlugins(ScalaJSPlugin,JSDependenciesPlugin)
 
 /********************************************/
 //               Dependencies               //
@@ -72,6 +75,7 @@ val math = "org.apache.commons" % "commons-math3" % "3.6.1"
 val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.14.0"
 val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 val specs = "org.specs2" %% "specs2-core" % "4.3.4" % "test"
+
 val akka = {
   val akkaV = "2.4.19"
   Seq(
@@ -91,18 +95,12 @@ lazy val commonSettings = Seq (
 	scalacOptions ++= compilerOptions,
 	resolvers ++= Seq(
 	  	"Typesafe repository" at "https://repo.typesafe.com/typesafe/releases/",
-		"Typesafe Snapshots" at "https://repo.typesafe.com/typesafe/snapshots/",
+  		"Typesafe Snapshots" at "https://repo.typesafe.com/typesafe/snapshots/",
+	  	"Maven repository" at "https://mvnrepository.com/artifact/org/scala-js/scalajs-dom",
 		)
 	)
 
 lazy val compilerOptions =
 	Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
-
-/********************************************/
-//               Plugins                    //
-/********************************************/
-
-addSbtPlugin("com.typesafe.play" % "sbt-plugin" % "2.7.2") 
-addSbtPlugin("io.spray" % "sbt-revolver" % "0.9.1")
 
