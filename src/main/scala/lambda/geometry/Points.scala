@@ -151,10 +151,6 @@ object PointUtils {
   def crossProduct(a: Point2D, b: Point2D, c: Point2D): Double =
     (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
 
-  /*
-  Shamelessly taken from
-  http://stackoverflow.com/questions/328107/how-can-you-determine-a-point-is-between-two-other-points-on-a-line-segment
-   */
   def dotProduct(a: Point2D, b: Point2D, c: Point2D) =
     (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y)
 
@@ -168,7 +164,7 @@ object PointUtils {
     * -1 -- right turn
     * 0 -- points are collinear
     */
-  def pointTurn(x: Point2D, y: Point2D, z: Point2D): Turn = {
+  def direction(x: Point2D, y: Point2D, z: Point2D): Turn = {
     val sig = scala.math.signum(crossProduct(x, y, z))
     sig match {
       case 1 => LeftTurn

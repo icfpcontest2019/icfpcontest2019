@@ -13,13 +13,13 @@ class Triangle(val v1: Point2D, val v2: Point2D, val v3: Point2D) extends Polygo
 
   import lambda.geometry.Turn._
 
-  def isDegenerate = pointTurn(v1, v2, v3) == NoTurn
+  def isDegenerate = direction(v1, v2, v3) == NoTurn
 
   /**
     * Set correct direction (interior on the left)
     */
   def canonical =
-    if (pointTurn(v1, v2, v3) != Turn.RightTurn) this
+    if (direction(v1, v2, v3) != Turn.RightTurn) this
     else new Triangle(v1, v3, v2)
 
   // one possible center of a triangle

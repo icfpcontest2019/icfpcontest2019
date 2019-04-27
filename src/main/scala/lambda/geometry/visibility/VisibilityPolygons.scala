@@ -88,11 +88,11 @@ object JoeSimpsonVisibility {
       // Process turns
 
       if (v(i + 1).alpha <~ v(i).alpha &&
-          pointTurn(v(i - 1), v(i), v(i + 1)) == RightTurn) {
+          direction(v(i - 1), v(i), v(i + 1)) == RightTurn) {
         // Process right turn
         scan(v, s, i, None, CounterClockWise)
       } else if (v(i + 1).alpha <~ v(i).alpha &&
-          pointTurn(v(i - 1), v(i), v(i + 1)) == LeftTurn) {
+          direction(v(i - 1), v(i), v(i + 1)) == LeftTurn) {
         retard(v, s, i)
       } else {
         // Otherwise call itself recursively
@@ -135,9 +135,9 @@ object JoeSimpsonVisibility {
       // BUG in the algorithn: suggests i == v.n
       if (i == v.n - 1) {
         s.toSeq
-      } else if (v(i + 1).alpha >=~ vi.alpha && pointTurn(v(i - 1), vi, v(i + 1)) == RightTurn) {
+      } else if (v(i + 1).alpha >=~ vi.alpha && direction(v(i - 1), vi, v(i + 1)) == RightTurn) {
         advance(v, s, i)
-      } else if (v(i + 1).alpha >~ vi.alpha && pointTurn(v(i - 1), vi, v(i + 1)) == LeftTurn) {
+      } else if (v(i + 1).alpha >~ vi.alpha && direction(v(i - 1), vi, v(i + 1)) == LeftTurn) {
         s.pop()
         scan(v, s, i, Some(vi), ClockWise)
       } else {
@@ -150,7 +150,7 @@ object JoeSimpsonVisibility {
       if (v(iprev + 1).alpha =~= sj.alpha &&
           // [FIXED bug, thanks to debugging (was just >)]
           v(iprev + 2).alpha >~ v(iprev + 1).alpha &&
-          pointTurn(v(iprev), v(iprev + 1), v(iprev + 2)) == RightTurn) {
+          direction(v(iprev), v(iprev + 1), v(iprev + 2)) == RightTurn) {
 
         s.push(v(iprev + 1))
         advance(v, s, iprev + 1)
@@ -328,7 +328,7 @@ object VisibilityUtil {
 
         // An angle is always between 0 and Pi
         val angle = math.min(rawAngle, PI2 - rawAngle)
-        val sigma = pointTurn(origin2D, viprev, vi)
+        val sigma = direction(origin2D, viprev, vi)
         val alpha_vi = buffer(i - 1).alpha + sigma * angle
 
         assert(checkPeriod(phi, alpha_vi, PI2),
