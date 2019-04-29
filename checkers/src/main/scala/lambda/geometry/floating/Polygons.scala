@@ -1,6 +1,5 @@
 package lambda.geometry.floating
 
-import lambda.geometry
 import lambda.geometry._
 import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
@@ -153,8 +152,8 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
     */
   def removeAligned: FPolygon = {
     val triplesV: Seq[(FPoint, FPoint, FPoint)] = getTriples(vertices)
-    val fs = triplesV.filterNot{ case (a, b, c) => crossProduct(c - a, b - a) == 0.0 }
-    FPolygon(fs.map(_._1))
+    val fs = triplesV.filter{ case (a, b, c) => crossProduct(c - a, b - a) == 0.0 }.map(_._2)
+    FPolygon(vertices.filterNot(v => fs.contains(v)))
   }
 
   def contains(other: FPolygon): Boolean = {

@@ -32,13 +32,19 @@ class IPolygonTests extends FlatSpec with Matchers {
     it should "be within its bounding box" in {
       val ((xl, yl), (xr, yr)) = room.boundingBox
 
-      assert(xl >=0 && yl >= 0 && xl < xr && yl < yr)
+      assert(xl >= 0 && yl >= 0 && xl < xr && yl < yr)
 
       assert(room.vertices.forall { case IPoint(x, y) =>
         xl <= x && x <= xr &&
           yl <= y && y <= yr
       })
 
+
+      room.printInAscii
+      println()
+
     }
+
+
   }
 }

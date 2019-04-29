@@ -2,7 +2,7 @@ package lambda.geometry.integer
 
 import lambda.geometry
 import lambda.geometry.floating.{FPolygon, FPolygonUtils}
-import lambda.geometry.{getEdges, getTriples}
+import lambda.geometry.{GeometryException, getEdges, getTriples}
 import lambda.geometry.integer.IPointUtils.direction
 
 /**
@@ -58,7 +58,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     */
   def removeAligned: IPolygon = {
     val triplesV = getTriples(vertices)
-    val fs = triplesV.filterNot{ case (a, b, c) => IPointUtils.crossProduct(c - a, b - a) == 0 }
+    val fs = triplesV.filterNot { case (a, b, c) => IPointUtils.crossProduct(c - a, b - a) == 0 }
     IPolygon(fs.map(_._1))
   }
 
@@ -95,7 +95,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
   def getMinXY = {
     val minx = vertices.minBy { case IPoint(x, y) => x }.x
-    val miny = vertices.minBy {case IPoint(x, y) => y}.y
+    val miny = vertices.minBy { case IPoint(x, y) => y }.y
     IPoint(minx, miny)
   }
 
@@ -104,7 +104,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     */
   def shiftToOrigin = {
     val mp = getMinXY
-    IPolygon(vertices.map{v => v - mp})
+    IPolygon(vertices.map { v => v - mp })
   }
 
 
@@ -119,12 +119,53 @@ case class IPolygon(vertices: Seq[IPoint]) {
     }
   }
 
+  /**
+    *
+    * Convert a polygon to matrix
+    *
+    * @return
+    */
+  def toMatrix: (Array[Array[Int]], Int, Int) = {
+    val ((xl, yl), (xr, yr)) = boundingBox
+    if (xl < 0 || yl < 0)
+      throw GeometryException("Polygon with negative lower coordinates", this)
+    if (xr <= 0 || yr <= 0)
+      throw GeometryException("Polygon with non-positive upper coordinates", this)
 
-  /*
-  TODO:
+    val matrix = Array.fill(xr) {
+      Array.fill(yr) {
+        1
+      }
+    }
 
-  * Check if left-sided
+    for {i <- 0 until xr
+         j <- 0 until yr
+         if containsSquare(IPoint(i, j))} {
+      matrix(i)(j) = 0
+    }
 
-   */
+    (matrix, xr, yr)
+  }
+
+  def printInAscii = {
+    val (matrix, xsize, ysize) = toMatrix
+    for (i <- 0 until xsize + 2) print("X")
+    println()
+    for (j1 <- 1 to ysize) {
+      val j = ysize - j1
+      print("X")
+      for (i <- 0 until xsize) {
+        val b = matrix(i)(j)
+        print(if (b > 0) "X" else " ")
+
+      }
+      print("X")
+      println()
+    }
+    for (i <- 0 until xsize + 2) print("X")
+    println()
+
+  }
+
 
 }
