@@ -1,7 +1,7 @@
 package lambda.geometry.floating.examples
 
 import lambda.geometry.floating.FPolygonUtils._
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating._
 import lambda.geometry.floating.triangles.Triangle
 

@@ -1,6 +1,6 @@
 package lambda.geometry.floating
 
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.floating.FPointUtils._
 
 /**
   * @author Ilya Sergey
@@ -51,7 +51,7 @@ case class Ray2D(orig: FPoint, phi: Double)
 
 object SegmentUtils {
 
-  import PointUtils._
+  import FPointUtils._
 
   implicit def _segment2Pair(s: FSegment): (FPoint, FPoint) = s.toPair
   implicit def _pair2Segment(ab: (FPoint, FPoint)): FSegment = FSegment(ab._1, ab._2)
@@ -64,9 +64,9 @@ object SegmentUtils {
     // p is one of the segment's ends
     if (s.a =~= p || s.b =~= p) return true
 
-    if (crossProduct(s.a, s.b, p) != 0) return false
+    if (crossProduct(p - s.a, s.b - s.a) != 0) return false
 
-    val dotprod = dotProduct(s.a, s.b, p)
+    val dotprod = dotProduct(p - s.a, s.b - s.a)
     if (dotprod < 0) return false
 
     dotprod <= squaredLengthBA(s.a, s.b)
@@ -101,10 +101,10 @@ object SegmentUtils {
   def intersectProper(s1: FSegment, s2: FSegment) = {
     val (p1, p2) = s1.toPair
     val (p3, p4) = s2.toPair
-    val d1 = crossProduct(p3, p4, p1)
-    val d2 = crossProduct(p3, p4, p2)
-    val d3 = crossProduct(p1, p2, p3)
-    val d4 = crossProduct(p1, p2, p4)
+    val d1 = direction(p3, p4, p1)
+    val d2 = direction(p3, p4, p2)
+    val d3 = direction(p1, p2, p3)
+    val d4 = direction(p1, p2, p4)
     d1 * d2 < 0 && d3 * d4 < 0
   }
 

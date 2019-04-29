@@ -1,7 +1,7 @@
 package lambda.geometry.floating.visibility
 
 import lambda.geometry._
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
 import lambda.geometry.floating.{Direction, FPoint, FPolygon, PointPolar, Ray2D, FSegment, _}
 
@@ -16,7 +16,7 @@ object JoeSimpsonVisibility {
 
   import VisibilityUtil._
   import ScanDir._
-  import lambda.geometry.floating.Turn._
+  import Turn._
 
 
   /**

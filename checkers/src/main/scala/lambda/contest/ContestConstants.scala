@@ -7,7 +7,10 @@ object ContestConstants {
 
   import TaskDataTypes._
 
-  // Booster symbols
+  /* *************************************** */
+  //             Booster symbols
+  /* *************************************** */
+
   val BATTERIES_BOOSTER = 'B'
   val COFFEE_BOOSTER = 'F'
   val DRILL_BOOSTER = 'I'
@@ -15,13 +18,47 @@ object ContestConstants {
   val CALL_FRIEND_BOOSTER = 'W'
   val CALL_POSITION = 'C'
 
-  def codeToBooster(c: Char): Booster = c match {
-    case BATTERIES_BOOSTER => Batteries
-    case COFFEE_BOOSTER => Coffee
-    case DRILL_BOOSTER => Drill
-    case PORTAL_BOOSTER => Portal
-    case CALL_FRIEND_BOOSTER => CallFriend
+  import Booster._
+
+  def codeToBooster(c: Char): Booster.Value = c match {
+    case BATTERIES_BOOSTER => BatteriesBooster
+    case COFFEE_BOOSTER => CoffeeBooster
+    case DRILL_BOOSTER => DrillBooster
+    case PORTAL_BOOSTER => PortalBooster
+    case CALL_FRIEND_BOOSTER => CallFriendBooster
     case CALL_POSITION => CallPoint
   }
+
+  /* *************************************** */
+  //            Solution symbols
+  /* *************************************** */
+
+  abstract class Move(char: Char)
+
+  // Movements
+  case object Up extends Move('U')
+
+  case object Down extends Move('D')
+
+  case object Left extends Move('L')
+
+  case object Right extends Move('R')
+
+  case object Snooze extends Move('Z')
+
+  case object TurnLeft extends Move('Q')
+
+  case object TurnRight extends Move('E')
+
+  // Boosters
+  case class Batteries(dx: Int, dy: Int) extends Move('B')
+
+  case object Coffee extends Move('F')
+
+  case object Drill extends Move('I')
+
+  case object Portal extends Move('P')
+
+  case object CallFriend extends Move('W')
 
 }

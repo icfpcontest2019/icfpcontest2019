@@ -7,15 +7,14 @@ import lambda.geometry.integer.{IPoint, IPolygon}
   */
 object TaskDataTypes {
 
-  abstract class Booster
-  case object Batteries extends Booster
-  case object Coffee extends Booster
-  case object Drill extends Booster
-  case object Portal extends Booster
-  case object CallFriend extends Booster
-  case object CallPoint extends Booster
+  object Booster extends Enumeration {
+    type Booster = Value
 
+    val BatteriesBooster, CoffeeBooster, DrillBooster,
+    PortalBooster, CallFriendBooster, CallPoint = Value
 
-  case class ContestTask(room: IPolygon, obstacles: Seq[IPolygon], boosters: Seq[(Booster, IPoint)])
+  }
+
+  case class ContestTask(room: IPolygon, obstacles: Seq[IPolygon], boosters: Seq[(Booster.Value, IPoint)])
 
 }

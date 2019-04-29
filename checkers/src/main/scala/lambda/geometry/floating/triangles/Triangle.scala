@@ -1,8 +1,9 @@
 package lambda.geometry.floating.triangles
 
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.Turn
+import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
-import lambda.geometry.floating.{FPoint, FPolygon, FSegment, Turn}
+import lambda.geometry.floating.{FPoint, FPolygon, FSegment}
 
 /**
   * @author Ilya Sergey
@@ -10,7 +11,7 @@ import lambda.geometry.floating.{FPoint, FPolygon, FSegment, Turn}
 
 class Triangle(val v1: FPoint, val v2: FPoint, val v3: FPoint) extends FPolygon(Seq(v1, v2, v3)) {
 
-  import lambda.geometry.floating.Turn._
+  import lambda.geometry.Turn._
 
   def isDegenerate = direction(v1, v2, v3) == NoTurn
 

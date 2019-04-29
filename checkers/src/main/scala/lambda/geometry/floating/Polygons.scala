@@ -2,7 +2,7 @@ package lambda.geometry.floating
 
 import lambda.geometry
 import lambda.geometry._
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
 import org.apache.commons.math3.linear._
 
@@ -158,7 +158,7 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
         Seq((n - 2, n - 1, 0), (n - 1, 0, 1))
     val triplesV = triplesInd.map { case (i, i1, i2) => (vertices(i), vertices(i1), vertices(i2)) }
 
-    val fs = triplesV.filter { case (a, b, c) => crossProduct(a, b, c) =!= 0.0 }
+    val fs = triplesV.filter { case (a, b, c) => crossProduct(c- a, b - a) =!= 0.0 }
     FPolygon(fs.map(_._2))
   }
 
@@ -283,7 +283,7 @@ object FPolygonUtils {
 
     if (vs.size <= 2) return true
 
-    def pos(f: Double) = f > 0
+    def pos(f: Double) = f < 0
 
     val n = vs.size
     val triplesInd =
@@ -291,10 +291,10 @@ object FPolygonUtils {
         Seq((n - 2, n - 1, 0), (n - 1, 0, 1))
 
     val triplesV = triplesInd.map { case (i, i1, i2) => (vs(i), vs(i1), vs(i2)) }
-    val zps = triplesV.map { case (a, b, c) => crossProduct(a, b, c) }
+    val zps = triplesV.map { case (a, b, c) => crossProduct(c - a, b - a) }
 
-    val allPos = zps.forall(pos)
-    val allNeg = zps.forall(x => !pos(x))
+    val allNeg = zps.forall(pos)
+    val allPos = zps.forall(x => !pos(x))
 
     allPos || allNeg
   }

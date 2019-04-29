@@ -7,6 +7,7 @@ package lambda.geometry.floating
   */
 
 import lambda.geometry._
+import lambda.geometry.integer.IPoint
 
 trait MetricPoint[T] {
   def distanceTo(other: T) : Double
@@ -60,7 +61,7 @@ case class FPoint(x: Double, y: Double) extends EpsEq[FPoint] with MetricPoint[F
   }
 
   override def distanceTo(other: FPoint): Double =
-    math.sqrt(PointUtils.squaredLengthBA(this, other))
+    math.sqrt(FPointUtils.squaredLengthBA(this, other))
 
   // Returns whether we can reach the other point by a straight line, without
   // intersecting any of the obstacle polygons.
@@ -103,34 +104,16 @@ case class PointPolar(rad: Double, phi: Double) extends EpsEq[PointPolar] {
   def =~=(q: PointPolar) = (rad =~= q.rad) && (phi =~= q.phi)
 }
 
-/**
-  * Turns
-  */
-object Turn extends Enumeration {
-  type Turn = Value
-  val RightTurn, LeftTurn, NoTurn = Value
 
-  implicit def _turn2Int(t: Turn): Int = t match {
-    case RightTurn => -1
-    case LeftTurn => 1
-    case NoTurn => 0
-  }
 
-  implicit def _turn2Bool(t: Turn): Boolean = t match {
-    case RightTurn => true
-    case LeftTurn => false
-    case NoTurn => throw GeometryException("Cannot convert NoTurn to Boolean", None)
-  }
-
-}
-
-import lambda.geometry.floating.Turn._
 
 
 /**
   * Utility methods for points
   */
-object PointUtils {
+object FPointUtils {
+
+  import Turn._
 
   val origin2D = FPoint(0, 0)
 
@@ -148,11 +131,11 @@ object PointUtils {
 
   def roundPoint(p: FPoint) = FPoint(roundToClosestInt(p.x), roundToClosestInt(p.y))
 
-  def crossProduct(a: FPoint, b: FPoint, c: FPoint): Double =
-    (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)
+  def crossProduct(p1: FPoint, p2: FPoint): Double =
+    p1.x * p2.y - p2.x * p1.y
 
-  def dotProduct(a: FPoint, b: FPoint, c: FPoint) =
-    (c.x - a.x) * (b.x - a.x) + (c.y - a.y) * (b.y - a.y)
+  def dotProduct(p1: FPoint, p2: FPoint): Double =
+    p1.x * p2.x + p1.y * p2.y
 
   def squaredLengthBA(a: FPoint, b: FPoint) =
     (b.x - a.x) * (b.x - a.x) + (b.y - a.y) * (b.y - a.y)
@@ -165,10 +148,10 @@ object PointUtils {
     * 0 -- points are collinear
     */
   def direction(x: FPoint, y: FPoint, z: FPoint): Turn = {
-    val sig = scala.math.signum(crossProduct(x, y, z))
+    val sig = scala.math.signum(crossProduct(z - x, y - x))
     sig match {
-      case 1 => LeftTurn
-      case -1 => RightTurn
+      case 1 => RightTurn
+      case -1 => LeftTurn
       case 0 => NoTurn
     }
   }

@@ -10,12 +10,11 @@ import lambda.geometry.integer.IPoint
   */
 object ContestTaskParser extends GeometryParsers {
 
-
-  def boosterParser: Parser[Booster] =
+  def boosterParser: Parser[Booster.Value] =
     ((BATTERIES_BOOSTER: Parser[Char]) | COFFEE_BOOSTER | DRILL_BOOSTER |
       PORTAL_BOOSTER | CALL_FRIEND_BOOSTER | CALL_POSITION) ^^ codeToBooster
 
-  def boostersParser: Parser[Seq[(Booster, IPoint)]] =
+  def boostersParser: Parser[Seq[(Booster.Value, IPoint)]] =
     repsep(boosterParser ~! intPoint ^^ { case b ~ p => (b, p) }, semicolon)
 
   /**

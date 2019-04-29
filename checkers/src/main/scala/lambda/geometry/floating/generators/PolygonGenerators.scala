@@ -1,7 +1,7 @@
 package lambda.geometry.floating.generators
 
 import lambda.geometry._
-import lambda.geometry.floating.PointUtils._
+import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
 import lambda.geometry.floating._
 import lambda.geometry.floating.generators.PolygonCombinatorUtils._

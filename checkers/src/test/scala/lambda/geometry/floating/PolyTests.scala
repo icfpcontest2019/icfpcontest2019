@@ -82,7 +82,7 @@ class PointInPolygonTests extends FlatSpec with MustMatchers {
 
   s"Point $p1" should s"be in triangle $trianglePoly" in {
     assert(trianglePoly.containsPoint(p1))
-    assert(trianglePoly.containsPoint(PointUtils.origin2D))
+    assert(trianglePoly.containsPoint(FPointUtils.origin2D))
     assert(trianglePoly.containsPoint(FPoint(2, 2)))
   }
 
