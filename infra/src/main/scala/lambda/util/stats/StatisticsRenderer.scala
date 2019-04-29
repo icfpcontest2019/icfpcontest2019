@@ -1,8 +1,8 @@
 package lambda.util.stats
 
-import lambda.misc.rendering.BasicGeometryParsers
+import lambda.geometry.GeometryParsers
 import lambda.util.project.{BadSetupException, ScenarioInstance}
-import lambda.util.{BasicUtils, SubmissionType}
+import lambda.util.{ScenarioUtils, SubmissionType}
 
 import scala.io.Source
 import scala.xml.Elem
@@ -16,7 +16,7 @@ abstract class StatisticsRenderer extends StatisticsUtils[String] {
   val SInstance : ScenarioInstance
   val SType : SubmissionType
 
-  object ScoreParser extends BasicGeometryParsers {
+  object ScoreParser extends GeometryParsers {
       def line: Parser[(Int, Double)] = (wholeNumber <~ ":") ~ floatingPointNumber ^^ {
         case pNum ~ score => (pNum.toInt, score.toDouble)
       }
@@ -83,7 +83,7 @@ abstract class StatisticsRenderer extends StatisticsUtils[String] {
     * Results for all teams
     */
   private def computeAllTeamResults(sDir: String): AllTeamsResults = {
-    val teams = BasicUtils.getTeams(sDir)
+    val teams = ScenarioUtils.getTeams(sDir)
     val keys = SInstance.getProblemMap(sDir).keys
     (for {
       team <- teams

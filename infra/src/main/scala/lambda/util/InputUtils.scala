@@ -48,11 +48,11 @@ object InputUtils {
     val tname = lines.head
     val tpass = lines(1)
 
-    if (!BasicUtils.teamFolderExists(sDirPath, tname)) {
+    if (!ScenarioUtils.teamFolderExists(sDirPath, tname)) {
       return (false, NO_SUCH_TEAM_MSG(tname), None)
     }
 
-    val pwr = BasicUtils.getTeamPassword(sDirPath, tname)
+    val pwr = ScenarioUtils.getTeamPassword(sDirPath, tname)
     if (pwr.isEmpty) {
       return (false, NO_PW_FOR_TEAM_MSG(tname), None)
     }

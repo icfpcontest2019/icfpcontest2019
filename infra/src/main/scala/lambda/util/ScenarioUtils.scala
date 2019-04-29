@@ -17,7 +17,7 @@ import scala.util.Try
 /**
   * @author Ilya Sergey
   */
-object BasicUtils {
+object ScenarioUtils {
   private val DEFAULT_CONFIG_FILE = Seq(System.getProperty("user.dir"), "resources", configFile).mkString(File.separator)
   private val random = new SecureRandom()
 

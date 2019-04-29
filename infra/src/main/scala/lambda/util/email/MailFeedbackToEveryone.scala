@@ -1,7 +1,7 @@
 package lambda.util.email
 
 import EmailUtils.Mail
-import lambda.util.BasicUtils
+import lambda.util.ScenarioUtils
 
 /**
   * @author Ilya Sergey
@@ -37,10 +37,10 @@ object MailFeedbackToEveryone {
   }
 
   def getTeamsEmailsAndfeedback(sRoot: String): Seq[(String, String, Seq[String])] = {
-    val ts = BasicUtils.getTeams(sRoot)
+    val ts = ScenarioUtils.getTeams(sRoot)
     val res = for (tname <- ts) yield {
-      val feedback = BasicUtils.getTeamFeedback(sRoot, tname).getOrElse("<No feedback>")
-      val emails = BasicUtils.getTeamEmails(sRoot, tname).sorted
+      val feedback = ScenarioUtils.getTeamFeedback(sRoot, tname).getOrElse("<No feedback>")
+      val emails = ScenarioUtils.getTeamEmails(sRoot, tname).sorted
       (tname, feedback, emails)
     }
     res

@@ -12,7 +12,7 @@ lazy val global = project
   .settings(settings)
   .aggregate(
     checkers,
-    contest,
+    infra,
     graphics
   )
 
@@ -24,9 +24,9 @@ lazy val checkers = project
   )
 
 
-lazy val contest = project
+lazy val infra= project
   .settings(
-    name := "contest",
+    name := "infra",
     settings,
     libraryDependencies ++= commonDependencies ++ akka
   )

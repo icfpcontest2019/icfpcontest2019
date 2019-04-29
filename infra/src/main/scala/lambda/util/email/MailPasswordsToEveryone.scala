@@ -1,7 +1,7 @@
 package lambda.util.email
 
 import EmailUtils.Mail
-import lambda.util.BasicUtils
+import lambda.util.ScenarioUtils
 
 /**
   * @author Ilya Sergey
@@ -41,10 +41,10 @@ object MailPasswordsToEveryone {
   }
 
   def getTeamsPassEmails(sRoot: String): Seq[(String, String, Seq[String])] = {
-    val ts = BasicUtils.getTeams(sRoot)
+    val ts = ScenarioUtils.getTeams(sRoot)
     val res = for (tname <- ts) yield {
-      val pass = BasicUtils.getTeamPassword(sRoot, tname).get
-      val emails = BasicUtils.getTeamEmails(sRoot, tname).sorted
+      val pass = ScenarioUtils.getTeamPassword(sRoot, tname).get
+      val emails = ScenarioUtils.getTeamEmails(sRoot, tname).sorted
       (tname, pass, emails)
     }
     res

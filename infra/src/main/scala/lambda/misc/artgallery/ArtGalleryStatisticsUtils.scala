@@ -1,7 +1,7 @@
 package lambda.misc.artgallery
 
 import lambda.misc.artgallery.ArtGalleryInstance._
-import lambda.util.BasicUtils
+import lambda.util.ScenarioUtils
 import lambda.util.project.BadSetupException
 
 import scala.io.Source
@@ -52,7 +52,7 @@ object CheckStatisticsUtils  {
   type AllTeamsCheckResults = Map[String, (String, PerPolCheck)]
 
   private def computeAllTeamCheckResults(sDir: String): AllTeamsCheckResults = {
-    val teams = BasicUtils.getTeams(sDir)
+    val teams = ScenarioUtils.getTeams(sDir)
     val pmap: Seq[Int] = computeCheckPolygonInfos(sDir)
     val opts = (for {
       team <- teams
@@ -155,7 +155,7 @@ object GuardsStatisticsUtils {
   type AllTeamsResults = Map[String, Option[(String, PerPolGuards)]]
 
   private def computeAllTeamGuardsResults(sDir: String): AllTeamsResults = {
-    val teams = BasicUtils.getTeams(sDir)
+    val teams = ScenarioUtils.getTeams(sDir)
     val pmap = computeGuardPolygonInfos(sDir)
     (for {
       team <- teams
@@ -294,7 +294,7 @@ object GuardsStatisticsUtils {
     */
   def rankTeams(sDir: String, allTeamsResults: AllTeamsResults): Map[String, Int] = {
     val polToTeamRanking = rankForPolygons(sDir, allTeamsResults)
-    val teams = BasicUtils.getTeams(sDir)
+    val teams = ScenarioUtils.getTeams(sDir)
 
     val teamsToRanks: Seq[(String, Int, Int)] = (for {
       p <- polToTeamRanking.keys

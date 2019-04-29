@@ -14,7 +14,7 @@ import scala.io.Source
   * @author Ilya Sergey
   */
 object ArtGalleryInstance extends ScenarioInstance {
-  import lambda.util.BasicUtils._
+  import lambda.util.ScenarioUtils._
   import lambda.util.project.ProjectConstants._
 
   /* Structure of a Scenario instance

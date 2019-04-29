@@ -34,7 +34,7 @@ object ArtGalleryPainter {
 
     val input = Source.fromFile(filename).mkString("")
 
-    val res = PolygonParser(input)
+    val res = ArtGalleryParser(input)
 
     if (!res.successful) {
       println("Parsing the polygon failed. Check examples in ./src/test/resources/.")
