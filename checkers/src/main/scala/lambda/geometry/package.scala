@@ -31,6 +31,22 @@ package object geometry {
       (for (i <- 1 until n) yield (vs(i - 1), vs(i))) ++ Seq((vs(n - 1), vs.head))
     }
 
+  def getTriples[T](s: Seq[T]): Seq[(T, T, T)] = {
+    if (s.size < 3) return Nil
+
+    def walk(l: List[T]): List[(T, T, T)] = l match {
+      case x :: y :: Nil => {
+        val (a, b) = (s.head, s.tail.head)
+        List((x, y, a), (y, a, b))
+      }
+      case x :: y :: z :: t =>
+        (x, y, z) :: walk(y :: z :: t)
+      case _ => Nil
+    }
+
+    walk(s.toList)
+  }
+
 
   def rotateSeqNumLoop[T](s: Seq[T], tmp: Int): Seq[T] =
     if (tmp == 0) s else rotateSeqNumLoop(s.tail ++ Seq(s.head), tmp - 1)
@@ -42,7 +58,7 @@ package object geometry {
     rotateSeqNum(s, rot)
   }
 
-  def randomElement[T](s: Seq[T]) : T = {
+  def randomElement[T](s: Seq[T]): T = {
     assert(s.nonEmpty)
     randomRotation(s).head
   }

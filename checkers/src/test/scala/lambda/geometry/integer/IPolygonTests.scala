@@ -8,18 +8,37 @@ class IPolygonTests extends FlatSpec with Matchers {
   /**
     * Testing that all defailt polygons are valid
     */
-  for (i <- roomPolygons.indices) {
-    val room = roomPolygons(i)
-    s"A watchman room number ${i + 1}" should "pass the well-formedness check" in {
-      // Basic validity
-      room.isWellFormed
-
-      // TODO: Test the is on the left
-    }
-
-    it should "be rectilinear" in room.isRectilinear
-
+  for (i <- roomsAndPositions.indices) {
+    val (room, pos) = roomsAndPositions(i)
+    val testName = s"A watchman room number ${i + 1}"
+    testRoomAndPosition(room, pos, testName)
   }
 
 
+  protected def testRoomAndPosition(room: IPolygon, pos: IPoint, testName: String): Unit = {
+    testName should "pass the well-formedness check" in {
+      // Basic validity
+      assert(room.isWellFormed)
+    }
+
+    it should "be rectilinear" in {
+      assert(room.isRectilinear)
+    }
+
+    it should "contains the proposed positions" in {
+      assert(room.containsSquare(pos))
+    }
+
+    it should "be within its bounding box" in {
+      val ((xl, yl), (xr, yr)) = room.boundingBox
+
+      assert(xl >=0 && yl >= 0 && xl < xr && yl < yr)
+
+      assert(room.vertices.forall { case IPoint(x, y) =>
+        xl <= x && x <= xr &&
+          yl <= y && y <= yr
+      })
+
+    }
+  }
 }

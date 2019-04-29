@@ -152,14 +152,9 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
     * Remove aligned vertices from a polygon boundary and return a new polygon
     */
   def removeAligned: FPolygon = {
-    val n = vertices.size
-    val triplesInd =
-      (for (k <- 0 to n - 3) yield (k, k + 1, k + 2)) ++
-        Seq((n - 2, n - 1, 0), (n - 1, 0, 1))
-    val triplesV = triplesInd.map { case (i, i1, i2) => (vertices(i), vertices(i1), vertices(i2)) }
-
-    val fs = triplesV.filter { case (a, b, c) => crossProduct(c- a, b - a) =!= 0.0 }
-    FPolygon(fs.map(_._2))
+    val triplesV: Seq[(FPoint, FPoint, FPoint)] = getTriples(vertices)
+    val fs = triplesV.filterNot{ case (a, b, c) => crossProduct(c - a, b - a) == 0.0 }
+    FPolygon(fs.map(_._1))
   }
 
   def contains(other: FPolygon): Boolean = {

@@ -29,8 +29,8 @@ object IPointUtils {
     * -1 -- left turn
     * 0 -- points are collinear
     */
-  def direction(p0: IPoint, p1: IPoint, p2: IPoint): Turn = {
-    val sig = scala.math.signum(crossProduct(p2 - p0, p1 - p0))
+  def direction(pi: IPoint, pj: IPoint, pk: IPoint): Turn = {
+    val sig = scala.math.signum(crossProduct(pk - pi, pj - pi))
     sig match {
       case 1 => RightTurn
       case -1 => LeftTurn

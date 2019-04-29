@@ -15,5 +15,7 @@ case class IPoint(x: Int, y: Int) {
 
   def /(d: Int) = IPoint(x / d, y / d)
 
+  def toPair: (Int, Int) = (x, y)
+
   def toFPoint : FPoint = FPoint(x, y)
 }

@@ -57,7 +57,7 @@ case class Attached(base: CompositePolygon, e: FSegment, attached: FPolygon) ext
     val i = vs.indexWhere(_ =~= aPoint)
     assert(i >= 0, s"Node $aPoint is not in polygon $base.")
     val newVs = vs.take(i + 1) ++ trimOverlappingEnds(attached.vertices, aPoint, bPoint) ++ vs.drop(i + 1)
-    FPolygon(newVs)
+    FPolygon(newVs).removeAligned
   }
 
   def trimOverlappingEnds(vs: Seq[FPoint], aPoint: FPoint, bPoint: FPoint): Seq[FPoint] = {
