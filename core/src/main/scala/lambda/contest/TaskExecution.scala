@@ -66,9 +66,11 @@ class TaskExecution(private val room: Array[Array[Cell]],
 
   // TODO: An execution round
   private def round(canLeaseBoosters: Boolean): Unit = {
-    // TODO:
+    // TODO: Implement me
 
 
+    // TODO: Provide a callback (taking the updated room,
+    //  the old and the new watchmen positions) for rendering
     time = time + 1
   }
 
