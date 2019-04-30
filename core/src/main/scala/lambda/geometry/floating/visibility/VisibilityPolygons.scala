@@ -12,6 +12,41 @@ import scala.collection.mutable.{Stack => MStack}
   *
   * @author Ilya Sergey
   */
+
+
+class MStack[T] {
+
+  private var stack : List[T] = Nil
+
+  def push(e : T): MStack[T] = {
+    stack = e :: stack
+    this
+  }
+
+  def pushAll(s: Seq[T]): MStack[T] = {
+    s.foreach(e => this.push(e))
+    this
+  }
+
+  def top : T = stack match {
+    case h :: _ => h
+    case _ => throw new NoSuchElementException
+  }
+
+  def pop(): Unit = stack match {
+    case _ :: t => stack = t
+    case _ =>
+  }
+
+  def tail : Seq[T] = stack match {
+    case _ :: t => t
+    case _ => throw new NoSuchElementException
+  }
+
+  def toSeq: Seq[T] = stack.toSeq
+
+}
+
 object JoeSimpsonVisibility {
 
   import VisibilityUtil._
@@ -178,7 +213,7 @@ object JoeSimpsonVisibility {
     Without the following check the test [BUG 12-01-16] faithfully fails,
     as scan indeed might be the last operation before returning the result.
      */
-    if (i + 1 == v.n) return s
+    if (i + 1 == v.n) return s.toSeq
     if (ccw == CounterClockWise &&
         // [BUG 254 fixes, thanks to debugging (was just > instead of >~ in the first clause)]
         // This actually easy to reproduce with VisibilityPolygonsSpecification

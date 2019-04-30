@@ -1,29 +1,34 @@
+
 ThisBuild / name := "icfpcontest-2019"
 ThisBuild / organization := "lambda"
 ThisBuild / scalaVersion := "2.12.8"
-ThisBuild / version := "1.0.0 -- SNAPSHOT"
+ThisBuild / version := "1.0.0"
 
 /********************************************/
 //           Project structure              //
 /********************************************/
 
-lazy val global = project
+lazy val contest = project
   .in(file("."))
   .aggregate(
-    checkers,
+    core,
     infra,
     graphics
   )
   .settings(settings)
+  .dependsOn(core, infra)
 
-lazy val checkers = project
-  .in(file("checkers"))
+lazy val core = project
+  .in(file("core"))
   .settings(
-    name := "checkers",
+    name := "core",
     settings,
-    libraryDependencies ++= commonDependencies ++ akka
+    libraryDependencies ++= commonDependencies
   )
   .enablePlugins(ScalaJSPlugin)
+  .configs(IntegrationTest)
+  .settings(Defaults.itSettings: _*)
+  .settings(inConfig(IntegrationTest)(ScalaJSPlugin.testConfigSettings): _*)
 
 lazy val infra= project
   .in(file("infra"))
@@ -33,7 +38,7 @@ lazy val infra= project
     libraryDependencies ++= commonDependencies ++ akka
   )
   .dependsOn(
-    checkers
+    core
   )
 
 lazy val graphics = project
@@ -46,7 +51,7 @@ lazy val graphics = project
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
   )
   .dependsOn(
-    checkers
+    core
   )
   .enablePlugins(ScalaJSPlugin)
 
@@ -65,19 +70,21 @@ lazy val commonDependencies = Seq (
 	math,
 	scalaCheck,
 	scalaTest,
-	specs 
+	specs,
+  scopt
 )
 
-val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
-val scalaIO = "com.madgag" %% "scala-io-file" % "0.4.9"
-val email = "org.apache.commons" % "commons-email" % "1.4"
-val commonsIO = "commons-io" % "commons-io" % "2.4"
-val slick = "com.typesafe.slick" %% "slick" % "3.3.0"
-val xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
-val math = "org.apache.commons" % "commons-math3" % "3.6.1"
-val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.14.0"
-val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
-val specs = "org.specs2" %% "specs2-core" % "4.3.4" % "test"
+lazy val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
+lazy val scalaIO = "com.madgag" %% "scala-io-file" % "0.4.9"
+lazy val email = "org.apache.commons" % "commons-email" % "1.4"
+lazy val commonsIO = "commons-io" % "commons-io" % "2.4"
+lazy val slick = "com.typesafe.slick" %% "slick" % "3.3.0"
+lazy val xml = "org.scala-lang.modules" %% "scala-xml" % "1.1.1"
+lazy val math = "org.apache.commons" % "commons-math3" % "3.6.1"
+lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.14.0"
+lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+lazy val specs = "org.specs2" %% "specs2-core" % "4.3.4" % "test"
+lazy val scopt =  "com.github.scopt" %% "scopt" % "3.7.0"
 
 val akka = {
   val akkaV = "2.4.19"
@@ -107,3 +114,18 @@ lazy val compilerOptions =
 	Seq("-unchecked", "-deprecation", "-encoding", "utf8")
 
 
+/********************************************/
+//               Assembly                   //
+/********************************************/
+
+
+mainClass in assembly := Some("lambda.runners.Main")
+
+test in assembly := {}
+
+assemblyJarName in assembly := "icfcontest2019.jar"
+
+assemblyMergeStrategy in assembly := {
+  case PathList("META-INF", xs @ _*) => MergeStrategy.discard
+  case x => MergeStrategy.first
+}

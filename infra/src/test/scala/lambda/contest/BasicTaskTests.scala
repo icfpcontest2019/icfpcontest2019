@@ -12,7 +12,7 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class BasicTaskTests extends FlatSpec with Matchers {
 
-  val problemsPath: String = "./checkers/src/test/resources/simple/"
+  val problemsPath: String = "./infra/src/test/resources/simple/"
 
   val room1 = "room1"
   val room2 = "room2"
