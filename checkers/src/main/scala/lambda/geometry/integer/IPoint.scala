@@ -18,4 +18,10 @@ case class IPoint(x: Int, y: Int) {
   def toPair: (Int, Int) = (x, y)
 
   def toFPoint : FPoint = FPoint(x, y)
+
+  // Rotate CCW by pi/2
+  def rotateLeft: IPoint = IPoint(-y, x)
+
+  // Rotate CW by pi/2
+  def rotateRight: IPoint = IPoint(y, -x)
 }

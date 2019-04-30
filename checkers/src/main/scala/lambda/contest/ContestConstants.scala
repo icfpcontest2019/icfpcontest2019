@@ -5,8 +5,6 @@ package lambda.contest
   */
 object ContestConstants {
 
-  import TaskDataTypes._
-
   /* *************************************** */
   //             Booster symbols
   /* *************************************** */
@@ -60,5 +58,20 @@ object ContestConstants {
   case object Portal extends Move('P')
 
   case object CallFriend extends Move('W')
+
+  /* *************************************** */
+  //            Booster constants            //
+  /* *************************************** */
+
+  val COFFEE_TIME = 50
+  val DRILL_TIME = 20
+
+
+  /* *************************************** */
+  //            Default torch range          //
+  /* *************************************** */
+
+  def DEFAULT_TORCH = List((1, 1), (1, 0), (1, -1))
+
 
 }

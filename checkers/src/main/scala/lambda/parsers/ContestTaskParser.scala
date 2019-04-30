@@ -1,6 +1,6 @@
 package lambda.parsers
 
-import lambda.contest.TaskDataTypes._
+import lambda.contest.{Booster, ContestTask}
 import lambda.contest.ContestConstants._
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.IPoint

@@ -67,8 +67,4 @@ package object geometry {
     ((i2 - i1 + 1) * math.random).toInt + i1
   }
 
-  case class GeometryException(loc: String, data: Any) extends Exception {
-    override def getMessage = s"Location: $loc\nMessage:\n${data.toString}"
-  }
-
 }
