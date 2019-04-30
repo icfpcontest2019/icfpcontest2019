@@ -15,6 +15,9 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
   import lambda.geometry.Turn._
 
+
+  override def toString = vertices.mkString(", ")
+
   def edges: Seq[ISegment] =
     getEdges(vertices).map { case (a, b) => ISegment(a, b) }
 

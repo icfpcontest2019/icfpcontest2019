@@ -24,7 +24,6 @@ object TaskExecution {
       routeMap.put(i + 1, routes(i))
     }
 
-
     val state = new TaskExecution(room, xmax, ymax, routeMap)
 
     // Create initial watchman

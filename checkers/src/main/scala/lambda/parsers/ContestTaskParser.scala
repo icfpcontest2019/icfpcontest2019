@@ -24,9 +24,9 @@ object ContestTaskParser extends GeometryParsers {
     * - boosters (optional)
     */
   def taskParser: Parser[ContestTask] =
-    ipoly ~ opt(semicolon ~> repsep(ipoly, semicolon)) ~ opt(semicolon ~> boostersParser) ^^ {
-      case room ~ obstacles ~ boosters =>
-        ContestTask(room, obstacles.getOrElse(Nil), boosters.getOrElse(Nil))
+    ipoly ~ semicolon ~ intPoint ~ opt(semicolon ~> repsep(ipoly, semicolon)) ~ opt(semicolon ~> boostersParser) ^^ {
+      case room ~ _ ~ initPos ~ obstacles ~ boosters =>
+        ContestTask(room, initPos, obstacles.getOrElse(Nil), boosters.getOrElse(Nil))
     }
 
   def apply(s: String) = parseAll(taskParser, s)

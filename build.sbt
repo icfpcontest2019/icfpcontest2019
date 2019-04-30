@@ -7,6 +7,8 @@ ThisBuild / version := "1.0.0 -- SNAPSHOT"
 //           Project structure              //
 /********************************************/
 
+enablePlugins(ScalaJSPlugin,JSDependenciesPlugin)
+
 lazy val global = project
   .in(file("."))
   .settings(settings)
@@ -17,6 +19,7 @@ lazy val global = project
   )
 
 lazy val checkers = project
+  .in(file("checkers"))
   .settings(
     name := "checkers",
     settings,
@@ -25,6 +28,7 @@ lazy val checkers = project
 
 
 lazy val infra= project
+  .in(file("infra"))
   .settings(
     name := "infra",
     settings,
@@ -35,6 +39,7 @@ lazy val infra= project
   )
 
 lazy val graphics = project
+  .in(file("graphics"))
   .settings(
     name := "graphics",
     settings,

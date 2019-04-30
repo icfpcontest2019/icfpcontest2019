@@ -14,8 +14,8 @@ import lambda.geometry.integer.{IPoint, IPolygon}
 /* ********************************************** */
 
 case class ContestTask(room: IPolygon,
-                       obstacles: Seq[IPolygon],
                        initPos: IPoint,
+                       obstacles: Seq[IPolygon],
                        boosters: Seq[(Booster.Value, IPoint)])
 
 
@@ -188,7 +188,7 @@ class DrillBooster extends ActiveBooster(DRILL_TIME) {
 class Watchman {
 
   // The torch can grow
-  private val torch: MSet[(Int, Int)] = MSet(DEFAULT_TORCH)
+  private val torch: MSet[(Int, Int)] = MSet(DEFAULT_TORCH : _*)
 
   // Torch rotations
   def rotateTorchLeft(): Unit = {
