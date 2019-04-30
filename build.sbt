@@ -7,16 +7,14 @@ ThisBuild / version := "1.0.0 -- SNAPSHOT"
 //           Project structure              //
 /********************************************/
 
-enablePlugins(ScalaJSPlugin,JSDependenciesPlugin)
-
 lazy val global = project
   .in(file("."))
-  .settings(settings)
   .aggregate(
     checkers,
     infra,
     graphics
   )
+  .settings(settings)
 
 lazy val checkers = project
   .in(file("checkers"))
@@ -25,7 +23,7 @@ lazy val checkers = project
     settings,
     libraryDependencies ++= commonDependencies ++ akka
   )
-
+  .enablePlugins(ScalaJSPlugin)
 
 lazy val infra= project
   .in(file("infra"))
@@ -50,7 +48,7 @@ lazy val graphics = project
   .dependsOn(
     checkers
   )
-  .enablePlugins(ScalaJSPlugin,JSDependenciesPlugin)
+  .enablePlugins(ScalaJSPlugin)
 
 /********************************************/
 //               Dependencies               //
