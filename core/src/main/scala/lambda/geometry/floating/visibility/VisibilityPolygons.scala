@@ -5,14 +5,11 @@ import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
 import lambda.geometry.floating.{Direction, FPoint, FPolygon, PointPolar, Ray2D, FSegment, _}
 
-import scala.collection.mutable.{Stack => MStack}
-
 /**
   * Algorithms for computing point-visibility polygons
   *
   * @author Ilya Sergey
   */
-
 
 class MStack[T] {
 

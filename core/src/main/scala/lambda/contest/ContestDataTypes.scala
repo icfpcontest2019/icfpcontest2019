@@ -27,21 +27,9 @@ object Booster extends Enumeration {
   type Booster = Value
 
   val BatteriesBooster, CoffeeBooster, DrillBooster,
-  PortalBooster, CallFriendBooster, CallPoint = Value
+  TeleportBooster, CallWatchmanBooster, CallPoint = Value
 
 }
-
-
-/**
-  * Three states describing the status of a portal
-  */
-abstract class PortalStatus
-
-case object NoPortal extends PortalStatus
-
-case object NonLinkedPortal extends PortalStatus
-
-case class LinkedPortal(x: Int, y: Int) extends PortalStatus
 
 /**
   * Representation of a room's cell
@@ -49,15 +37,15 @@ case class LinkedPortal(x: Int, y: Int) extends PortalStatus
   * @param hasSpace         true when not part of the wall
   * @param illuminated      true when illluminated by a watchman
   * @param boosterToCollect contains (at most one) optional booster to collect
-  * @param portal           contains coordinates
-  * @param callPoint        tru if has a call point to summon another watchman
+  * @param callPoint        true if has a call point to summon another watchman
+  * @param teleport         true if has a teleport installed
   */
 
 class Cell(private var hasSpace: Boolean = false,
            private var illuminated: Boolean = false,
            private var boosterToCollect: Option[Booster.Value] = None,
-           private var portal: PortalStatus = NoPortal,
-           private var callPoint: Boolean = false) {
+           private var callPoint: Boolean = false,
+           private var teleport: Boolean = false) {
 
   def clearSpace(): Unit = {
     hasSpace = true
@@ -73,32 +61,39 @@ class Cell(private var hasSpace: Boolean = false,
     act
   }
 
-  def shedLight(): Unit = doIfHasSpace {
-    illuminated = true
-  }
-
   def isIlluminated: Boolean = illuminated
 
   def hasCallPoint: Boolean = callPoint
 
+  def vacant: Boolean =
+    !(teleport || callPoint) && boosterToCollect.isEmpty
+
+  /* ****************************************** */
+  //               Room set-up actions          //
+  /* ****************************************** */
+
   // Used when populating the room
   def setBooster(b: Booster.Value) = {
-    if (hasSpace && !callPoint) {
-      boosterToCollect match {
-        case None =>
-          boosterToCollect = Some(b)
-        case Some(_) =>
-      }
-    }
+    if (hasSpace && vacant) {
+      boosterToCollect = Some(b)
+      true
+    } else false
   }
 
   // Used when populating the room
-  def setCallPoint() = doIfHasSpace {
-    if (hasSpace && boosterToCollect.isEmpty) {
+  def setCallPoint(): Boolean =
+    if (hasSpace && vacant) {
       callPoint = true
-    }
-  }
+      true
+    } else false
 
+  /* ****************************************** */
+  //               In-game actions               //
+  /* ****************************************** */
+
+  def shedLight(): Unit = doIfHasSpace {
+    illuminated = true
+  }
 
   /**
     * As a side effect removes booster from the cell
@@ -112,43 +107,10 @@ class Cell(private var hasSpace: Boolean = false,
     }
   }
 
-  def installNewPortal(): Unit = doIfHasSpace {
-    portal match {
-      case NoPortal =>
-        portal = NonLinkedPortal
-      case NonLinkedPortal =>
-        throw ContestException(NON_LINKED_PORTAL_ALREADY_INSTALLED)
-      case LinkedPortal(_, _) =>
-        throw ContestException(FUNCTIONING_PORTAL_ALREADY_INSTALLED)
-    }
-  }
-
-  /**
-    * Install a new (second) portal and link it to the first one.
-    */
-  def installAndLinkNewPortal(firstX: Int, firstY: Int): Unit = doIfHasSpace {
-    portal match {
-      case NoPortal =>
-        portal = LinkedPortal(firstX, firstY)
-      case NonLinkedPortal =>
-        throw ContestException(NON_LINKED_PORTAL_ALREADY_INSTALLED)
-      case LinkedPortal(_, _) =>
-        throw ContestException(FUNCTIONING_PORTAL_ALREADY_INSTALLED)
-    }
-  }
-
-  /**
-    * Link already installed (first) portal to another (second) portal.
-    */
-  def linkAlreadyInstalledPortal(secondX: Int, secondY: Int): Unit = doIfHasSpace {
-    portal match {
-      case NoPortal =>
-        throw ContestException(NO_EXPECTING_PORTAL)
-      case NonLinkedPortal =>
-        portal = LinkedPortal(secondX, secondY)
-      case LinkedPortal(_, _) =>
-        throw ContestException(FUNCTIONING_PORTAL_ALREADY_INSTALLED)
-    }
+  def installNewTeleport(): Unit = doIfHasSpace {
+    if (teleport) throw ContestException(TELEPORT_INSTALLED)
+    if (callPoint) throw ContestException(CALL_POINT_INSTALLED)
+    teleport = true
   }
 
 }
@@ -188,7 +150,7 @@ class DrillBooster extends ActiveBooster(DRILL_TIME) {
 class Watchman {
 
   // The torch can grow
-  private val torch: MSet[(Int, Int)] = MSet(DEFAULT_TORCH : _*)
+  private val torch: MSet[(Int, Int)] = MSet(DEFAULT_TORCH: _*)
 
   // Torch rotations
   def rotateTorchLeft(): Unit = {

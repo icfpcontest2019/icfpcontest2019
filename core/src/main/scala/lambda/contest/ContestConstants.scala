@@ -22,8 +22,8 @@ object ContestConstants {
     case BATTERIES_BOOSTER => BatteriesBooster
     case COFFEE_BOOSTER => CoffeeBooster
     case DRILL_BOOSTER => DrillBooster
-    case PORTAL_BOOSTER => PortalBooster
-    case CALL_FRIEND_BOOSTER => CallFriendBooster
+    case PORTAL_BOOSTER => TeleportBooster
+    case CALL_FRIEND_BOOSTER => CallWatchmanBooster
     case CALL_POSITION => CallPoint
   }
 
@@ -55,7 +55,7 @@ object ContestConstants {
 
   case object Drill extends Move('I')
 
-  case object Portal extends Move('P')
+  case class Teleport(x: Int, y: Int) extends Move('P')
 
   case object CallFriend extends Move('W')
 
