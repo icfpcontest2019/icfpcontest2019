@@ -3,7 +3,7 @@ package lambda.contest
 import java.io.File
 
 import lambda.ContestTestUtils._
-import lambda.parsers.ContestTaskParser
+import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
 

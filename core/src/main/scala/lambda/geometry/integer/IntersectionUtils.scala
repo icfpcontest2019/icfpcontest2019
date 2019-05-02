@@ -2,6 +2,8 @@ package lambda.geometry.integer
 
 import lambda.geometry.floating.{Direction, FPoint, FSegment}
 
+import scala.math.{ceil, floor, max, min}
+
 /**
   * @author Ilya Sergey
   */
@@ -11,29 +13,64 @@ object IntersectionUtils {
     * @param a left-bottom of the starting cell of the segment
     * @param b left-bottom of the ending cell of the segment
     * @return a list of square cells
+    *
+    *
+    * Notice that this function allows for a "diagonal penetration":
+    *
+    * X | b
+    * ------
+    * a | Y
+    *
+    * If X and Y are obstacles, a will still "see" b, since neither X
+    * not Y are considered to be intersected.
+    *
     */
-  def cellsIntersectedBySegment(a: IPoint, b: IPoint): List[IPoint] = {
-
+  def cellsIntersectedByViewSegment(a: IPoint, b: IPoint): List[IPoint] = {
     // Take the centers points and connect by a segment
     val shift = Direction(0.5, 0.5)
     val seg = FSegment(a.toFPoint + shift, b.toFPoint + shift)
-
-
-    /* So, let us solve this in the following steps:
-
-        1. Identify all cells "adjacent" to the segment
-        2. Check which of them are intersected properly
-        3. Check which of them are solid (i.e, parts of the walls)
-
- */
-
-    val adjacent = adjacentCells(seg)
-    val affected = adjacent.filter(segmentIntersectsCell(seg, _))
-    affected
+    cellsCrossedBySegment(seg)
   }
 
-  def adjacentCells(s: FSegment): List[IPoint] = {
-    Nil
+
+  /**
+    * An auxiliary function that works with general segments
+    */
+  def cellsCrossedBySegment(s: FSegment): List[IPoint] = {
+    val (a, b) = s.toPair
+    val res =
+      if (a.x == b.x) {
+        // Vertical. vector
+        val x = floor(a.x).toInt // Same as b.x
+        for (y <- ceil(min(a.y, b.y)).toInt to floor(max(a.y, b.y)).toInt)
+          yield IPoint(x, y)
+      } else if (a.y == b.y) {
+        // Horizontal vector
+        val y = floor(a.y).toInt // Same as b.y
+        for (x <- ceil(min(a.x, b.x)).toInt to floor(max(a.x, b.x)).toInt)
+          yield IPoint(x, y)
+      } else {
+        // Segment directional vector
+        val (p0, p1) = if (a.x < b.x) (a, b) else (b, a)
+        val FPoint(rx, ry) = p1 - p0
+        // A slope
+        for {
+          x <- floor(p0.x).toInt to ceil(p1.x).toInt
+          t1 = (x - p0.x) / rx
+          t2 = (x + 1 - p0.x) / rx
+          yy1 = p0.y + ry * t1
+          yy2 = p0.y + ry * t2
+          y1 = floor(min(yy1, yy2)).toInt
+          y2 = ceil(max(yy1, yy2)).toInt
+          y <- y1 to y2
+          ty = (y - p0.y) / ry
+        } yield IPoint(x, y)
+      }
+    val ia = IPoint(floor(a.x).toInt, floor(a.y).toInt)
+    val ib = IPoint(floor(b.x).toInt, floor(b.y).toInt)
+    val overApprox = (ia :: ib :: res.toList).distinct
+    val almost = overApprox.filter(segmentIntersectsCell(s, _))
+    almost.sorted
   }
 
   // Assuming that none of the ends of the segment is within the cell
@@ -48,7 +85,7 @@ object IntersectionUtils {
             i = e.intersection(s)
             if i.isDefined
             Some(z) = i} yield z).distinct
-    intersections.size % 2 == 0
+    intersections.nonEmpty && intersections.size % 2 == 0
   }
 
   private def pointWithinCell(p: FPoint, cell: IPoint): Boolean = {

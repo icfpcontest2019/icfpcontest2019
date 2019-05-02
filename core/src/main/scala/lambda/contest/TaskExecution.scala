@@ -61,12 +61,18 @@ class TaskExecution(private val room: Array[Array[Cell]],
   // TODO: A single execution step from a given cell
 
   private def step(wNum: Int, canLeaseBoosters: Boolean): Unit = {
+    /*
+    1. Update illumination
+    2. Move/act
+    3. Update boosters
+    4. Update illumination
+     */
 
   }
 
-  // TODO: An execution round
+
   private def round(canLeaseBoosters: Boolean): Unit = {
-    // TODO: Implement me
+    // TODO: An execution round for all active watchmen
 
 
     // TODO: Provide a callback (taking the updated room,

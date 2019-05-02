@@ -23,7 +23,7 @@ class DiscreteVisibilityTests extends FlatSpec with Matchers {
   val cell2 = IPoint(0, 1)
 
 
-  s"The problem simple intersection checker" should "work correctly" in {
+  s"The discrete segment/cell checker" should "work correctly" in {
     assert(segmentIntersectsCell(seg1, cell))
   }
 

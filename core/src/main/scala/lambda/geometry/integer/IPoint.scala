@@ -26,4 +26,6 @@ case class IPoint(x: Int, y: Int) {
   def rotateRight: IPoint = IPoint(y, -x)
 
   override def toString = s"($x,$y)"
+
 }
+

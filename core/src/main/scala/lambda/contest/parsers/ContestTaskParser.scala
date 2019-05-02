@@ -1,4 +1,4 @@
-package lambda.parsers
+package lambda.contest.parsers
 
 import lambda.contest.{Booster, ContestTask}
 import lambda.contest.ContestConstants._
