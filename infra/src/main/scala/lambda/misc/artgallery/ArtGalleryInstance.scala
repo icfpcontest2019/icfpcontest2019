@@ -5,7 +5,7 @@ import java.io.{File, FileFilter, IOException}
 import lambda.geometry.floating.{FPoint, FPolygon}
 import lambda.util.FileUtil._
 import lambda.util.project.{BadSetupException, ScenarioInstance}
-import lambda.util.{FileUtil, ScenarioMessage, SubmissionType}
+import lambda.util.{ScenarioMessage, SubmissionType}
 import org.apache.commons.io
 
 import scala.io.Source
