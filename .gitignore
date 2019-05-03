@@ -27,7 +27,8 @@ project/plugins/project/
 *.out
 *.rel
 .idea/
-project/
+project/target
+project/project
 
 ._Makefile
 ._*
