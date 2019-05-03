@@ -3,7 +3,7 @@ package lambda.contest
 /**
   * @author Ilya Sergey
   */
-object ErrorMessages {
+object ContestErrorMessages {
 
   val MALFORMED_TASK = "Malformed task description."
   val MALFORMED_ROOM = "The room polygon is ill-formed (e.g., it has self-intersections)."
@@ -23,5 +23,9 @@ object ErrorMessages {
   val CANNOT_COLLECT_BOOSTER = "Cannot collect booster from the non-free cell."
   val CALL_POINT_INSTALLED = "This cell already has a call point installed."
   val TELEPORT_INSTALLED = "This cell already has a teleport installed."
+
+  val WATCHMAN_NOT_FOUND = "Watchman not found."
+  val BAD_ACTION = "Bad route action taken; interrupting validation."
+
 
 }

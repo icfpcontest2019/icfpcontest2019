@@ -1,7 +1,7 @@
 package lambda.contest.checkers
 
 import lambda.contest.ContestConstants._
-import lambda.contest.ErrorMessages._
+import lambda.contest.ContestErrorMessages._
 import lambda.contest.checkers.ContestCheckingUtils.checkTaskWellFormed
 import lambda.contest.parsers.ContestTaskParser
 import lambda.contest.{Booster, Cell, ContestConstants, ContestException, ContestTask}
@@ -70,7 +70,7 @@ object TaskCreationUtils {
     (matrix, xr, yr)
   }
 
-  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, initPos: IPoint): Unit = {
+  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, positions: List[IPoint]): Unit = {
     val wallChar = '#'
     val watchmanChar = 'W'
 
@@ -87,9 +87,11 @@ object TaskCreationUtils {
           print(TELEPORT_LETTER)
         } else if (c.peekBooster.isDefined) {
           print(Booster.toChar(c.peekBooster.get))
-        } else if (i == initPos.x && j == initPos.y) {
+        } else if (positions.contains(IPoint(i, j))) {
           assert(c.canStep)
           print(watchmanChar)
+        } else if (c.isIlluminated) {
+          print('.')
         } else if (c.canStep) {
           print(' ')
         } else {

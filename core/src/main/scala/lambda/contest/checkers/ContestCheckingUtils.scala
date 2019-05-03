@@ -1,6 +1,6 @@
 package lambda.contest.checkers
 
-import lambda.contest.ErrorMessages._
+import lambda.contest.ContestErrorMessages._
 import lambda.contest.{Booster, ContestException, ContestTask}
 import lambda.geometry.integer.{IPoint, IPolygon}
 

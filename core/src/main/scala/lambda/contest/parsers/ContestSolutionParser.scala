@@ -11,7 +11,7 @@ object ContestSolutionParser extends GeometryParsers {
 
   // TODO: Implement me
 
-  def moveParser: Parser[Move] =
+  def moveParser: Parser[Action] =
     (// Moves
 
       UP_LETTER ^^^ MoveUp
@@ -32,9 +32,9 @@ object ContestSolutionParser extends GeometryParsers {
   ((BATTERIES_LETTER: Parser[Char]) | COFFEE_LETTER | DRILL_LETTER |
     TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POINT_LETTER) ^^ codeToBooster
 
-  def moves: Parser[List[Move]] = rep(moveParser)
+  def moves: Parser[List[Action]] = rep(moveParser)
 
-  def solutionParser: Parser[List[List[Move]]] = rep1sep(moves, sepToken)
+  def solutionParser: Parser[List[List[Action]]] = rep1sep(moves, sepToken)
 
   def apply(s: String) = parseAll(solutionParser, s)
 

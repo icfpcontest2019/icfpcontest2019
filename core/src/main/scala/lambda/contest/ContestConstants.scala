@@ -55,34 +55,47 @@ object ContestConstants {
   //            Solution symbols
   /* *************************************** */
 
-  abstract class Move(char: Char)
+  sealed abstract class Action(char: Char) {
+    def isMove: Boolean = false
+  }
 
 
   // Movements
-  case object MoveUp extends Move(UP_LETTER)
+  case object MoveUp extends Action(UP_LETTER) {
+    override def isMove = true
+  }
 
-  case object MoveDown extends Move(DOWN_LETTER)
+  case object MoveDown extends Action(DOWN_LETTER) {
+    override def isMove = true
+  }
 
-  case object MoveLeft extends Move(LEFT_LETTER)
+  case object MoveLeft extends Action(LEFT_LETTER) {
+    override def isMove = true
+  }
 
-  case object MoveRight extends Move(RIGHT_LETTER)
+  case object MoveRight extends Action(RIGHT_LETTER) {
+    override def isMove = true
+  }
 
-  case object TurnLeft extends Move(TURN_LEFT_LETTER)
+  // Rotations and skip
 
-  case object TurnRight extends Move(TURN_RIGHT_LETTER)
+  case object TurnLeft extends Action(TURN_LEFT_LETTER)
 
-  case object Snooze extends Move(SNOOZE_LETTER)
+  case object TurnRight extends Action(TURN_RIGHT_LETTER)
 
-  // Boosters
-  case class UseBatteries(dx: Int, dy: Int) extends Move(BATTERIES_LETTER)
+  case object Snooze extends Action(SNOOZE_LETTER)
 
-  case object UseCoffee extends Move(COFFEE_LETTER)
+  // Using boosters
 
-  case object UseDrill extends Move(DRILL_LETTER)
+  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER)
 
-  case class UseTeleport(x: Int, y: Int) extends Move(TELEPORT_LETTER)
+  case object UseCoffee extends Action(COFFEE_LETTER)
 
-  case object UseCallFriend extends Move(CALL_FRIEND_LETTER)
+  case object UseDrill extends Action(DRILL_LETTER)
+
+  case class UseTeleport(x: Int, y: Int) extends Action(TELEPORT_LETTER)
+
+  case object UseCallFriend extends Action(CALL_FRIEND_LETTER)
 
   /* *************************************** */
   //            Booster constants            //

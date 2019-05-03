@@ -1,7 +1,7 @@
 package lambda.contest
 
 import lambda.contest.ContestConstants._
-import lambda.contest.ErrorMessages._
+import lambda.contest.ContestErrorMessages._
 import lambda.geometry.integer.{IPoint, IPolygon}
 
 /**
@@ -169,21 +169,27 @@ class Watchman {
   /**
     * Return the cells that are lit by the torch (including the )
     */
-  def getTorchRange(pos: IPoint) = {
+  def getTorchRange(pos: IPoint): List[IPoint] = {
     val torchCells = torch.toList.map { case (x, y) => IPoint(pos.x + x, pos.y + y) }
     pos :: torchCells
   }
 
-  /* ********************************************** */
+  /* ---------------------------------------------- */
   //            Working with active boosters        //
-  /* ********************************************** */
+  /* ---------------------------------------------- */
 
   // The boosters that will expire
   private var activeBoosters: MSet[ActiveBooster] = MSet()
 
   // Return active boosters
-  def getActiveBoosters: List[Booster.Value] =
+  private def getActiveBoosters: List[Booster.Value] =
     activeBoosters.toList.map(_.toBoosterTag).distinct
+
+
+  def isUnderCoffe: Boolean = getActiveBoosters.contains(Booster.CoffeeBooster)
+
+  def isDrillGuy: Boolean = getActiveBoosters.contains(Booster.DrillBooster)
+
 
   // Removes expired boosters
   def decrementActiveBoosters(): Unit = {

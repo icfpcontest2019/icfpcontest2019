@@ -6,7 +6,7 @@ package lambda
   * @author Ilya Sergey
   */
 
-class MStack[T] {
+class MStack[T] extends Seq[T] {
 
   private var stack : List[T] = Nil
 
@@ -37,11 +37,16 @@ class MStack[T] {
     case _ => None
   }
 
-  def tail : Seq[T] = stack match {
+  override def tail : Seq[T] = stack match {
     case _ :: t => t
     case _ => throw new NoSuchElementException
   }
 
-  def toSeq: Seq[T] = stack.toSeq
+  override def toSeq: Seq[T] = stack.toSeq
 
+  override def length = stack.length
+
+  override def apply(idx: Int) = stack(idx)
+
+  override def iterator = stack.iterator
 }
