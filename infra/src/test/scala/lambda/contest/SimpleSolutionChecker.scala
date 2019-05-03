@@ -36,7 +36,8 @@ class SimpleSolutionChecker extends FlatSpec with Matchers {
 
   checkTaskFile(room1)
 
-  // Uncomment me and check output
-  //checkTaskFile(room2)
+  // Uncomment me and check output!
+
+  //  checkTaskFile(room2)
 
 }
