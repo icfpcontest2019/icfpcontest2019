@@ -13,9 +13,9 @@ class SimpleSolutionChecker extends FlatSpec with Matchers {
 
   import SimpleRooms._
 
-
   def checkTaskFile(fileName: String) {
     s"The solution evaluator" should "work on room1" in {
+
       val taskText = FileUtil.readFromFile(getRoomPath(fileName)).mkString
       val task = stringToContestTask(taskText)
       val (matrix, mx, my) = contestTaskToMatrix(task)
@@ -34,7 +34,5 @@ class SimpleSolutionChecker extends FlatSpec with Matchers {
   }
 
   checkTaskFile(room1)
-
-
 
 }
