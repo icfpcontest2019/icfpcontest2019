@@ -20,7 +20,7 @@ case class ContestTask(room: IPolygon,
 
 
 /* ********************************************** */
-//          Room cell and its properties          //
+//                    Boosters                    //
 /* ********************************************** */
 
 object Booster extends Enumeration {
@@ -39,6 +39,10 @@ object Booster extends Enumeration {
   }
 
 }
+
+/* ********************************************** */
+//          Room cell and its properties          //
+/* ********************************************** */
 
 /**
   * Representation of a room's cell
@@ -131,35 +135,11 @@ class Cell(private var hasSpace: Boolean = false,
 }
 
 
-/* ********************************************** */
-//            Watchman and its properties         //
-/* ********************************************** */
-
 import scala.collection.mutable.{Set => MSet}
 
-abstract class ActiveBooster(private var timeLeft: Int) {
-  def decrementTimeLeft(): Unit = {
-    timeLeft = timeLeft - 1
-  }
-
-  def +=(other: ActiveBooster): Unit = {
-    if (other.toBoosterTag == this.toBoosterTag) {
-      timeLeft = timeLeft + other.timeLeft
-    }
-  }
-
-  def getRemainingTime: Int = timeLeft
-
-  def toBoosterTag: Booster.Value
-}
-
-class CoffeeBooster extends ActiveBooster(COFFEE_TIME) {
-  def toBoosterTag = Booster.CoffeeBooster
-}
-
-class DrillBooster extends ActiveBooster(DRILL_TIME) {
-  def toBoosterTag = Booster.DrillBooster
-}
+/* ********************************************** */
+//            Watchmen and their properties       //
+/* ********************************************** */
 
 
 class Watchman {
@@ -231,24 +211,32 @@ class Watchman {
     }
   }
 
-  /* ********************************************** */
-  //              Working with portals              //
-  /* ********************************************** */
-
-  // A pending installed portal awaiting to install a pair for
-  private var pendingPortal: Option[IPoint] = None
-
-  def installOrLinkPortal(cell: IPoint) = pendingPortal match {
-    // Install a new portal without a pair
-    case None =>
-      pendingPortal = Some(cell)
-      None
-    // Installing a paired portal: return coordinates of an old one
-    case Some(old) =>
-      pendingPortal = None
-      Some(old)
-  }
-
 }
 
+/* ********************************************** */
+//            Boosters applied to watchmen        //
+/* ********************************************** */
 
+abstract class ActiveBooster(private var timeLeft: Int) {
+  def decrementTimeLeft(): Unit = {
+    timeLeft = timeLeft - 1
+  }
+
+  def +=(other: ActiveBooster): Unit = {
+    if (other.toBoosterTag == this.toBoosterTag) {
+      timeLeft = timeLeft + other.timeLeft
+    }
+  }
+
+  def getRemainingTime: Int = timeLeft
+
+  def toBoosterTag: Booster.Value
+}
+
+class CoffeeBooster extends ActiveBooster(COFFEE_TIME) {
+  def toBoosterTag = Booster.CoffeeBooster
+}
+
+class DrillBooster extends ActiveBooster(DRILL_TIME) {
+  def toBoosterTag = Booster.DrillBooster
+}

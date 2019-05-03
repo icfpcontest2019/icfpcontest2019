@@ -73,7 +73,16 @@ class TaskExecution(private val room: Array[Array[Cell]],
 // Companion object for creating an execution instance
 object TaskExecution {
 
-  def createState(room: Array[Array[Cell]],
+  /**
+    *
+    * @param matrix - room matrix
+    * @param xmax - X-boundary
+    * @param ymax - Y-boundary
+    * @param initPos - initial position of a watchman
+    * @param routes - a list of routes
+    * @return
+    */
+  def createState(matrix: TaskMatrix,
                   xmax: Int, ymax: Int,
                   initPos: IPoint,
                   routes: List[List[Move]]) : TaskExecution = {
@@ -83,11 +92,11 @@ object TaskExecution {
       routeMap.put(i + 1, routes(i))
     }
 
-    val state = new TaskExecution(room, xmax, ymax, routeMap)
+    val state = new TaskExecution(matrix, xmax, ymax, routeMap)
 
     // Create initial watchman
     val initWatchman = new Watchman()
-    state.watchmen.update(1, initWatchman)
+    state.watchmen.update(1, initWatchman) //
     state.watchmenPositions.update(1, initPos)
     state.activeWatchmen = 1
 
