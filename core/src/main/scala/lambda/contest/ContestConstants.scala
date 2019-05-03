@@ -9,22 +9,46 @@ object ContestConstants {
   //             Booster symbols
   /* *************************************** */
 
-  val BATTERIES_BOOSTER = 'B'
-  val COFFEE_BOOSTER = 'F'
-  val DRILL_BOOSTER = 'I'
-  val PORTAL_BOOSTER = 'P'
-  val CALL_FRIEND_BOOSTER = 'W'
-  val CALL_POSITION = 'C'
+  val UP_LETTER = 'W'
+  val DOWN_LETTER = 'S'
+  val LEFT_LETTER = 'A'
+  val RIGHT_LETTER = 'D'
+  val SNOOZE_LETTER = 'Z'
+  val TURN_LEFT_LETTER = 'Q'
+  val TURN_RIGHT_LETTER = 'E'
+
+  val BATTERIES_LETTER = 'B'
+  val COFFEE_LETTER = 'F'
+  val DRILL_LETTER = 'I'
+  val TELEPORT_LETTER = 'T'
+  val CALL_FRIEND_LETTER = 'C'
+  val CALL_POSITION_LETTER = 'X'
+
+  lazy val CONTEST_LETTERS = List(
+    BATTERIES_LETTER,
+    COFFEE_LETTER,
+    DRILL_LETTER,
+    TELEPORT_LETTER,
+    CALL_FRIEND_LETTER,
+    CALL_POSITION_LETTER,
+    UP_LETTER,
+    DOWN_LETTER,
+    LEFT_LETTER,
+    RIGHT_LETTER,
+    SNOOZE_LETTER,
+    TURN_LEFT_LETTER,
+    TURN_RIGHT_LETTER,
+  )
 
   import Booster._
 
   def codeToBooster(c: Char): Booster.Value = c match {
-    case BATTERIES_BOOSTER => BatteriesBooster
-    case COFFEE_BOOSTER => CoffeeBooster
-    case DRILL_BOOSTER => DrillBooster
-    case PORTAL_BOOSTER => TeleportBooster
-    case CALL_FRIEND_BOOSTER => CallWatchmanBooster
-    case CALL_POSITION => CallPoint
+    case BATTERIES_LETTER => BatteriesBooster
+    case COFFEE_LETTER => CoffeeBooster
+    case DRILL_LETTER => DrillBooster
+    case TELEPORT_LETTER => TeleportBooster
+    case CALL_FRIEND_LETTER => CallWatchmanBooster
+    case CALL_POSITION_LETTER => CallPoint
   }
 
   /* *************************************** */
@@ -33,31 +57,32 @@ object ContestConstants {
 
   abstract class Move(char: Char)
 
+
   // Movements
-  case object Up extends Move('U')
+  case object MoveUp extends Move(UP_LETTER)
 
-  case object Down extends Move('D')
+  case object MoveDown extends Move(DOWN_LETTER)
 
-  case object Left extends Move('L')
+  case object MoveLeft extends Move(LEFT_LETTER)
 
-  case object Right extends Move('R')
+  case object MoveRight extends Move(RIGHT_LETTER)
 
-  case object Snooze extends Move('Z')
+  case object TurnLeft extends Move(TURN_LEFT_LETTER)
 
-  case object TurnLeft extends Move('Q')
+  case object TurnRight extends Move(TURN_RIGHT_LETTER)
 
-  case object TurnRight extends Move('E')
+  case object Snooze extends Move(SNOOZE_LETTER)
 
   // Boosters
-  case class Batteries(dx: Int, dy: Int) extends Move('B')
+  case class UseBatteries(dx: Int, dy: Int) extends Move(BATTERIES_LETTER)
 
-  case object Coffee extends Move('F')
+  case object UseCoffee extends Move(COFFEE_LETTER)
 
-  case object Drill extends Move('I')
+  case object UseDrill extends Move(DRILL_LETTER)
 
-  case class Teleport(x: Int, y: Int) extends Move('P')
+  case class UseTeleport(x: Int, y: Int) extends Move(TELEPORT_LETTER)
 
-  case object CallFriend extends Move('W')
+  case object UseCallFriend extends Move(CALL_FRIEND_LETTER)
 
   /* *************************************** */
   //            Booster constants            //

@@ -77,7 +77,7 @@ class SegmentsIntersectionTests extends FlatSpec with MustMatchers {
 class SegmentRayIntersectionTests extends FlatSpec with MustMatchers {
 
   def checkIntersectRay(s: FSegment, ray: Ray2D, myres: Option[FPoint] = None, exp: Boolean = true): Unit = {
-    s"Segments $s" should (if (exp) "" else "not " + s"intersect the ray $ray") in {
+    s"Segments $s" should (if (exp) "" else "not ") + s"intersect the ray $ray" in {
       val res = intersectSegmentWithRay(s, ray)
       assert(res.isDefined == exp, s"The result of intersection of $s and $ray shoudl be $exp")
 

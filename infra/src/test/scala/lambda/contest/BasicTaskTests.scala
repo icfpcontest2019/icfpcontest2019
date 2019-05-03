@@ -2,7 +2,7 @@ package lambda.contest
 
 import java.io.File
 
-import lambda.ContestTestUtils._
+import lambda.contest.checkers.ContestCheckingUtils._
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
@@ -33,12 +33,7 @@ class BasicTaskTests extends FlatSpec with Matchers {
       val result = ContestTaskParser(fileContents)
       assert(!result.isEmpty)
 
-      val ContestTask(room, pos, _, _) = result.get
-
-      assert(room.isWellFormed)
-      assert(room.isRectilinear)
-      assert(room.containsSquare(pos))
-      roomWithinBoundingBox(room)
+      checkTaskWellFormed(result.get)
     }
   }
 

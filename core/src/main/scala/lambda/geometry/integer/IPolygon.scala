@@ -81,7 +81,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     * The s square is given with it bottom-left corner
     *
     */
-  def containsSquare(sq: IPoint) = {
+  def containsCell(sq: IPoint) = {
     val (sx, sy) = sq.toPair
     val verticalEdgesRight = verticalEdges.filter { case ISegment(a, _) => a.x > sx }
 
@@ -111,15 +111,20 @@ case class IPolygon(vertices: Seq[IPoint]) {
   }
 
 
-  def boundingBox = {
+  /**
+    * Returns a bounding box of a room
+    */
+  def boundingBox: ((Int, Int), (Int, Int)) = {
     val bottomLeft = vertices.head.toPair
     val topRight = vertices.head.toPair
 
-    vertices.foldLeft((bottomLeft, topRight)) {
+    val ((xL, yL), (xR, yR)) = vertices.foldLeft((bottomLeft, topRight)) {
       case (((xl, yl), (xr, yr)), IPoint(x, y)) =>
         ((math.min(xl, x), math.min(yl, y)),
           (math.max(xr, x), math.max(yr, y)))
     }
+
+    ((xL, yL), (xR, yR))
   }
 
   /**
@@ -143,7 +148,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
     for {i <- 0 until xr
          j <- 0 until yr
-         if containsSquare(IPoint(i, j))} {
+         if containsCell(IPoint(i, j))} {
       matrix(i)(j) = 0
     }
 
@@ -167,7 +172,23 @@ case class IPolygon(vertices: Seq[IPoint]) {
     }
     for (i <- 0 until xsize + 2) print("X")
     println()
+  }
 
+  /**
+    * Assuming this and other polygons are rectilinear
+    *
+    * @param other another rectilinear polygon
+    */
+  def containsPolygonProperly(other: IPolygon): Boolean = {
+    if (other.vertices.size < 4) return false
+
+    val intersects = this.intersectPolygon(other)
+    if (intersects) return false
+
+    val v = other.vertices.head
+
+    // Should contain a square from another polygon
+    this.containsCell(v)
   }
 
 

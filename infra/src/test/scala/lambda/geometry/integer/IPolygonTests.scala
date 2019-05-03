@@ -1,6 +1,6 @@
 package lambda.geometry.integer
 
-import lambda.ContestTestUtils
+import lambda.contest.checkers.ContestCheckingUtils
 import lambda.geometry.integer.examples.WatchmanExamples._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -27,14 +27,11 @@ class IPolygonTests extends FlatSpec with Matchers {
     }
 
     it should "contains the proposed positions" in {
-      assert(room.containsSquare(pos))
+      assert(room.containsCell(pos))
     }
 
     it should "be within its bounding box" in {
-      ContestTestUtils.roomWithinBoundingBox(room)
-      //      println(s"$room; $pos")
-      //      room.printInAscii
-      //      println()
+      ContestCheckingUtils.roomWithinPositiveBoundingBox(room)
     }
 
   }

@@ -1,6 +1,7 @@
-package lambda.contest
+package lambda.contest.checkers
 
 import lambda.contest.ContestConstants.Move
+import lambda.contest.{Booster, Cell, Watchman}
 import lambda.geometry.integer.IPoint
 
 import scala.collection.mutable.{Map => MMap, Set => MSet}
@@ -40,6 +41,8 @@ object TaskExecution {
 
 /**
   * A task execution instance
+  *
+  * @
   */
 class TaskExecution(private val room: Array[Array[Cell]],
                     val xmax: Int, val ymax: Int,

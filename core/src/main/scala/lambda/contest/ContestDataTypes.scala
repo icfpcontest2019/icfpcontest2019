@@ -15,8 +15,8 @@ import lambda.geometry.integer.{IPoint, IPolygon}
 
 case class ContestTask(room: IPolygon,
                        initPos: IPoint,
-                       obstacles: Seq[IPolygon],
-                       boosters: Seq[(Booster.Value, IPoint)])
+                       obstacles: List[IPolygon],
+                       boosters: List[(Booster.Value, IPoint)])
 
 
 /* ********************************************** */
@@ -47,12 +47,6 @@ class Cell(private var hasSpace: Boolean = false,
            private var callPoint: Boolean = false,
            private var teleport: Boolean = false) {
 
-  def clearSpace(): Unit = {
-    hasSpace = true
-  }
-
-  def canStep: Boolean = hasSpace
-
   /**
     * Avoiding checks with laziness
     */
@@ -61,18 +55,37 @@ class Cell(private var hasSpace: Boolean = false,
     act
   }
 
+  /* ------------------------------------------- */
+  //               Properties                    //
+  /* ------------------------------------------- */
+
+  def canStep: Boolean = hasSpace
+
   def isIlluminated: Boolean = illuminated
 
   def hasCallPoint: Boolean = callPoint
 
+  def hasTeleport: Boolean = teleport
+
+  def peekBooster: Option[Booster.Value] = boosterToCollect
+
   def vacant: Boolean =
     !(teleport || callPoint) && boosterToCollect.isEmpty
 
-  /* ****************************************** */
-  //               Room set-up actions          //
-  /* ****************************************** */
+  /* ------------------------------------------- */
+  //               Set-up actions                //
+  /* ------------------------------------------- */
 
-  // Used when populating the room
+  def clearSpace(): Unit = {
+    hasSpace = true
+  }
+
+  def setCallPoint(): Boolean =
+    if (hasSpace && vacant) {
+      callPoint = true
+      true
+    } else false
+
   def setBooster(b: Booster.Value) = {
     if (hasSpace && vacant) {
       boosterToCollect = Some(b)
@@ -80,16 +93,9 @@ class Cell(private var hasSpace: Boolean = false,
     } else false
   }
 
-  // Used when populating the room
-  def setCallPoint(): Boolean =
-    if (hasSpace && vacant) {
-      callPoint = true
-      true
-    } else false
-
-  /* ****************************************** */
+  /* ------------------------------------------- */
   //               In-game actions               //
-  /* ****************************************** */
+  /* ------------------------------------------- */
 
   def shedLight(): Unit = doIfHasSpace {
     illuminated = true
