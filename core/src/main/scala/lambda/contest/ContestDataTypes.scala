@@ -186,11 +186,11 @@ class Watchman {
     activeBoosters.toList.map(_.toBoosterTag).distinct
 
   // Removes expired boosters
-  def decrementBoosters(): Unit = {
+  def decrementActiveBoosters(): Unit = {
     val boosters = activeBoosters.toList
     activeBoosters.clear()
     boosters.foreach(_.decrementTimeLeft())
-    boosters.filter(_.getRemainingTime <= 0).foreach(
+    boosters.filter(_.getRemainingTime > 0).foreach(
       b => activeBoosters.add(b))
   }
 

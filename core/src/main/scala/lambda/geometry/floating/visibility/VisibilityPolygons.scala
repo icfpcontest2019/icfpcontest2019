@@ -1,48 +1,17 @@
 package lambda.geometry.floating.visibility
 
+import lambda.MStack
 import lambda.geometry._
 import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
-import lambda.geometry.floating.{Direction, FPoint, FPolygon, PointPolar, Ray2D, FSegment, _}
+import lambda.geometry.floating.{Direction, FPoint, FPolygon, FSegment, PointPolar, Ray2D, _}
+
 
 /**
   * Algorithms for computing point-visibility polygons
   *
   * @author Ilya Sergey
   */
-
-class MStack[T] {
-
-  private var stack : List[T] = Nil
-
-  def push(e : T): MStack[T] = {
-    stack = e :: stack
-    this
-  }
-
-  def pushAll(s: Seq[T]): MStack[T] = {
-    s.foreach(e => this.push(e))
-    this
-  }
-
-  def top : T = stack match {
-    case h :: _ => h
-    case _ => throw new NoSuchElementException
-  }
-
-  def pop(): Unit = stack match {
-    case _ :: t => stack = t
-    case _ =>
-  }
-
-  def tail : Seq[T] = stack match {
-    case _ :: t => t
-    case _ => throw new NoSuchElementException
-  }
-
-  def toSeq: Seq[T] = stack.toSeq
-
-}
 
 object JoeSimpsonVisibility {
 
@@ -131,7 +100,7 @@ object JoeSimpsonVisibility {
       }
     } else {
       val v0 = v(0)
-      if (s.top.alpha < PI2) {
+      if (s.top.get.alpha < PI2) {
         val ray = Ray2D(origin2D, v0.phi)
         val isect = intersectSegmentWithRay(FSegment(v(iprev), v(iprev + 1)), ray)
         assert(isect.isDefined, s"Intersection undefined")
@@ -146,10 +115,10 @@ object JoeSimpsonVisibility {
     * aka POP
     */
   def retard(v: VsRep, sold: MStack[VertDispl], iprev: Int): Seq[VertDispl] = {
-    val (sj1, sstail) = (sold.top, sold.tail)
+    val (sj1, sstail) = (sold.top.get, sold.tail)
     // pop elements from the stack according to the condition
     val (s, sjnext) = locateSj(v(iprev), v(iprev + 1), sj1, sstail)
-    val sj = s.top
+    val sj = s.top.get
 
     if (sj.alpha < v(iprev + 1).alpha) {
 
@@ -214,9 +183,9 @@ object JoeSimpsonVisibility {
     if (ccw == CounterClockWise &&
         // [BUG 254 fixes, thanks to debugging (was just > instead of >~ in the first clause)]
         // This actually easy to reproduce with VisibilityPolygonsSpecification
-        v(i + 1).alpha >~ s.top.alpha &&
-        s.top.alpha >=~ v(i).alpha) {
-      intersectWithWindow(v(i), v(i + 1), s.top, windowEnd) match {
+        v(i + 1).alpha >~ s.top.get.alpha &&
+        s.top.get.alpha >=~ v(i).alpha) {
+      intersectWithWindow(v(i), v(i + 1), s.top.get, windowEnd) match {
         // [BUG 25-01-16] -- The following additional check in the case of Some
         // if is totally counterintuitive, but if it's not there
         // the whole computation is screved, as advance proceeds on the wrong premises
@@ -227,9 +196,9 @@ object JoeSimpsonVisibility {
           scan(v, s, i, windowEnd, ccw)
       }
     } else if (ccw == ClockWise &&
-        v(i + 1).alpha <=~ s.top.alpha &&
-        s.top.alpha < v(i).alpha) {
-      if (intersectWithWindow(v(i), v(i + 1), s.top, windowEnd).isDefined) {
+        v(i + 1).alpha <=~ s.top.get.alpha &&
+        s.top.get.alpha < v(i).alpha) {
+      if (intersectWithWindow(v(i), v(i + 1), s.top.get, windowEnd).isDefined) {
         retard(v, s, i)
       } else {
         scan(v, s, i, windowEnd, ccw)

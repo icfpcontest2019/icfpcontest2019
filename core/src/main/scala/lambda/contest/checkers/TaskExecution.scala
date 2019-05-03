@@ -1,5 +1,6 @@
 package lambda.contest.checkers
 
+import lambda.MStack
 import lambda.contest.ContestConstants.Move
 import lambda.contest.{Booster, Cell, Watchman}
 import lambda.geometry.integer.IPoint
@@ -18,7 +19,7 @@ import scala.collection.mutable.{Map => MMap, Set => MSet}
   */
 class TaskExecution(private val room: Array[Array[Cell]],
                     val xmax: Int, val ymax: Int,
-                    private val routes: MMap[Int, List[Move]]) {
+                    private val routes: Map[Int, MStack[Move]]) {
 
   private var time: Int = 0
 
@@ -87,10 +88,9 @@ object TaskExecution {
                   initPos: IPoint,
                   routes: List[List[Move]]) : TaskExecution = {
 
-    val routeMap: MMap[Int, List[Move]] = MMap.empty
-    for (i <- routes.indices) {
-      routeMap.put(i + 1, routes(i))
-    }
+    val is = routes.indices.toList.map(_ + 1)
+    val entries = is.zip(routes).map { case (i, r) => i -> new MStack(r) }
+    val routeMap = Map(entries: _*)
 
     val state = new TaskExecution(matrix, xmax, ymax, routeMap)
 
