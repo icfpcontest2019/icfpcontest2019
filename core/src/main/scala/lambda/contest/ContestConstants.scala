@@ -22,7 +22,7 @@ object ContestConstants {
   val DRILL_LETTER = 'I'
   val TELEPORT_LETTER = 'T'
   val CALL_FRIEND_LETTER = 'C'
-  val CALL_POSITION_LETTER = 'X'
+  val CALL_POINT_LETTER = 'X'
 
   lazy val CONTEST_LETTERS = List(
     BATTERIES_LETTER,
@@ -30,7 +30,7 @@ object ContestConstants {
     DRILL_LETTER,
     TELEPORT_LETTER,
     CALL_FRIEND_LETTER,
-    CALL_POSITION_LETTER,
+    CALL_POINT_LETTER,
     UP_LETTER,
     DOWN_LETTER,
     LEFT_LETTER,
@@ -48,7 +48,7 @@ object ContestConstants {
     case DRILL_LETTER => DrillBooster
     case TELEPORT_LETTER => TeleportBooster
     case CALL_FRIEND_LETTER => CallWatchmanBooster
-    case CALL_POSITION_LETTER => CallPoint
+    case CALL_POINT_LETTER => CallPoint
   }
 
   /* *************************************** */

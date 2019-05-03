@@ -29,6 +29,15 @@ object Booster extends Enumeration {
   val BatteriesBooster, CoffeeBooster, DrillBooster,
   TeleportBooster, CallWatchmanBooster, CallPoint = Value
 
+  def toChar(b: Value): Char = b match {
+    case BatteriesBooster => BATTERIES_LETTER
+    case CoffeeBooster => COFFEE_LETTER
+    case DrillBooster => DRILL_LETTER
+    case TeleportBooster => TELEPORT_LETTER
+    case CallWatchmanBooster => CALL_FRIEND_LETTER
+    case CallPoint => CALL_POINT_LETTER
+  }
+
 }
 
 /**

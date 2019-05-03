@@ -30,7 +30,7 @@ object ContestSolutionParser extends GeometryParsers {
       | CALL_FRIEND_LETTER ^^^ UseCallFriend)
 
   ((BATTERIES_LETTER: Parser[Char]) | COFFEE_LETTER | DRILL_LETTER |
-    TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POSITION_LETTER) ^^ codeToBooster
+    TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POINT_LETTER) ^^ codeToBooster
 
   def moves: Parser[List[Move]] = rep(moveParser)
 

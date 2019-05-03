@@ -3,6 +3,7 @@ package lambda.contest
 import java.io.File
 
 import lambda.contest.checkers.ContestCheckingUtils._
+import lambda.contest.checkers.TaskCreationUtils._
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
@@ -33,7 +34,12 @@ class BasicTaskTests extends FlatSpec with Matchers {
       val result = ContestTaskParser(fileContents)
       assert(!result.isEmpty)
 
-      checkTaskWellFormed(result.get)
+      val task = result.get
+      checkTaskWellFormed(task)
+
+      val (matrix, x, y) = contestTaskToMatrix(task)
+      printContestMatrixInAscii(matrix, x, y, task.initPos)
+      println()
     }
   }
 

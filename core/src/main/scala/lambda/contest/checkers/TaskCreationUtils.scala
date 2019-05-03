@@ -1,9 +1,10 @@
 package lambda.contest.checkers
 
+import lambda.contest.ContestConstants._
 import lambda.contest.ErrorMessages._
 import lambda.contest.checkers.ContestCheckingUtils.checkTaskWellFormed
 import lambda.contest.parsers.ContestTaskParser
-import lambda.contest.{Booster, Cell, ContestException, ContestTask}
+import lambda.contest.{Booster, Cell, ContestConstants, ContestException, ContestTask}
 import lambda.geometry.integer.IPoint
 
 /**
@@ -69,8 +70,9 @@ object TaskCreationUtils {
     (matrix, xr, yr)
   }
 
-  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int): Unit = {
+  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, initPos: IPoint): Unit = {
     val wallChar = '#'
+    val watchmanChar = 'W'
 
     for (i <- 0 until xsize + 2) print(wallChar)
     println()
@@ -78,14 +80,21 @@ object TaskCreationUtils {
       val j = ysize - j1
       print("#")
       for (i <- 0 until xsize) {
-        val b = matrix(i)(j)
-        if (b.peekBooster.isDefined) {
-
+        val c = matrix(i)(j)
+        if (c.hasCallPoint) {
+          print(CALL_POINT_LETTER)
+        } else if (c.hasTeleport) {
+          print(TELEPORT_LETTER)
+        } else if (c.peekBooster.isDefined) {
+          print(Booster.toChar(c.peekBooster.get))
+        } else if (i == initPos.x && j == initPos.y) {
+          assert(c.canStep)
+          print(watchmanChar)
+        } else if (c.canStep) {
+          print(' ')
+        } else {
+          print(wallChar)
         }
-
-
-
-        print(if (b.canStep) " " else "#")
 
       }
       print(wallChar)

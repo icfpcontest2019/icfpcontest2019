@@ -12,7 +12,7 @@ object ContestTaskParser extends GeometryParsers {
 
   def boosterParser: Parser[Booster.Value] =
     ((BATTERIES_LETTER: Parser[Char]) | COFFEE_LETTER | DRILL_LETTER |
-      TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POSITION_LETTER) ^^ codeToBooster
+      TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POINT_LETTER) ^^ codeToBooster
 
   def boosterPositionParser: Parser[List[(Booster.Value, IPoint)]] =
     repsep(boosterParser ~! intPoint ^^ { case b ~ p => (b, p) }, semicolon)
