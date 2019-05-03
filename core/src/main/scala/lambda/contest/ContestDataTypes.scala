@@ -142,10 +142,8 @@ import scala.collection.mutable.{Set => MSet}
 /* ********************************************** */
 
 
-class Watchman {
-
-  // The torch can grow
-  private val torch: MSet[(Int, Int)] = MSet(DEFAULT_TORCH: _*)
+class Watchman(private val torch: MSet[(Int, Int)] =
+               MSet(DEFAULT_CONTEST_TORCH: _*)) {
 
   // Torch rotations
   def rotateTorchLeft(): Unit = {

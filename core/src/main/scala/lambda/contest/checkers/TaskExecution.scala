@@ -265,6 +265,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   def printState() = {
     val positions = watchmenPositions.values.toList
     TaskCreationUtils.printContestMatrixInAscii(matrix, xmax, ymax, positions)
+    println()
   }
 
 
@@ -286,7 +287,8 @@ object TaskExecution {
   def createState(matrix: TaskMatrix,
                   xmax: Int, ymax: Int,
                   initPos: IPoint,
-                  routeList: List[List[Action]]): TaskExecution = {
+                  routeList: List[List[Action]],
+                  torchShape: TorchShape = DEFAULT_CONTEST_TORCH): TaskExecution = {
 
     val entries = routeList.zipWithIndex.map { case (r, i) => i -> new MStack(r) }
     val routes = Map(entries: _*)
@@ -294,7 +296,7 @@ object TaskExecution {
     val state = new TaskExecution(matrix, xmax, ymax, routes)
 
     // Create initial watchman
-    val initWatchman = new Watchman()
+    val initWatchman = new Watchman(MSet(torchShape: _*))
     val firstGuyIndex = 0
     state.watchmen.update(firstGuyIndex, initWatchman)
     state.watchmenPositions.update(firstGuyIndex, initPos)

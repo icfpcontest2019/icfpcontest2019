@@ -1,7 +1,7 @@
 package lambda.contest
 
 import lambda.contest.checkers.TaskCreationUtils._
-import lambda.contest.checkers.TaskExecution
+import lambda.contest.checkers.{TaskExecution, TorchShape}
 import lambda.contest.parsers.ContestSolutionParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
@@ -13,8 +13,9 @@ class SimpleSolutionChecker extends FlatSpec with Matchers {
 
   import SimpleRooms._
 
-  def checkTaskFile(fileName: String) {
-    s"The solution evaluator" should "work on room1" in {
+  def checkTaskFile(fileName: String,
+                    torchShape: TorchShape = ContestConstants.DEFAULT_CONTEST_TORCH) {
+    s"The solution evaluator" should s"work on $fileName" in {
 
       val taskText = FileUtil.readFromFile(getRoomPath(fileName)).mkString
       val task = stringToContestTask(taskText)
@@ -34,5 +35,8 @@ class SimpleSolutionChecker extends FlatSpec with Matchers {
   }
 
   checkTaskFile(room1)
+
+  // Uncomment me and check output
+  //checkTaskFile(room2)
 
 }

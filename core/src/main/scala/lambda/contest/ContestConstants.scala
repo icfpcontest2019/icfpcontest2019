@@ -109,7 +109,8 @@ object ContestConstants {
   //            Default torch range          //
   /* *************************************** */
 
-  def DEFAULT_TORCH = List((1, 1), (1, 0), (1, -1))
+  def DEFAULT_CONTEST_TORCH = List((1, 1), (1, 0), (1, -1))
+  def SQUARE_TORCH = List((1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1))
 
 
 }
