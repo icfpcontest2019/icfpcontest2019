@@ -28,6 +28,7 @@ object ContestErrorMessages {
   val BAD_ACTION = "Bad route action taken; interrupting validation."
   val BAD_BOOSTER = "No such booster exists; interrupting validation."
   val NO_BOOSTER = "No such booster available; interrupting validation."
+  val BAD_TELEPORT_LOCATION = "Cannot teleport to this location."
 
 
 }

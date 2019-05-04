@@ -26,7 +26,8 @@ object ContestSolutionParser extends GeometryParsers {
       | BATTERIES_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseBatteries(x, y) }
       | COFFEE_LETTER ^^^ UseCoffee
       | DRILL_LETTER ^^^ UseDrill
-      | TELEPORT_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseTeleport(x, y) }
+      | INTSTALL_TELEPORT_LETTER ^^^ InstallTeleport
+      | DO_TELEPORT_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => DoTeleport(x, y) }
       | CALL_FRIEND_LETTER ^^^ UseCallFriend)
 
   def moves: Parser[List[Action]] = rep(moveParser)

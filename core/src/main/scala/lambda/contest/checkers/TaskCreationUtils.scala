@@ -95,7 +95,7 @@ object TaskCreationUtils {
         } else if (c.hasCallPoint) {
           print(CALL_POINT_LETTER)
         } else if (c.hasTeleport) {
-          print(TELEPORT_LETTER)
+          print(INTSTALL_TELEPORT_LETTER)
         } else if (c.peekBooster.isDefined) {
           print(Booster.toChar(c.peekBooster.get))
         } else if (c.isIlluminated) {

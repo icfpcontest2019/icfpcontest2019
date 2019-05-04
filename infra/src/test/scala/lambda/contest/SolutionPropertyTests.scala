@@ -48,9 +48,16 @@ class SolutionPropertyTests extends FlatSpec with Matchers
   /*          Positive tests of the checker              */
   /*-----------------------------------------------------*/
 
-  def checkSolutionProperty(taskFile: String, solutionFile: String) {
+  // Room 0
+  s"An evaluator for task $room0" should "work well:" in {}
+  checkSolutionProperty(room0, "with-coffee")
+  checkSolutionProperty(room0, "with-drill")
+  checkSolutionProperty(room0, "with-drill2")
+  checkSolutionProperty(room0, "with-teleport")
 
-    s"The evaluator for task $taskFile" should s"satisfy property $solutionFile" in {
+
+  def checkSolutionProperty(taskFile: String, solutionFile: String) {
+    it should s"satisfy property $solutionFile for task $taskFile" in {
       val testName = s"Test: $taskFile-$solutionFile"
       val (_, state) = createContestState(taskFile)(taskFile, solutionFile)
       val solutionPath = getSolutionPath(taskFile, solutionFile + solutionSuffix)
@@ -59,23 +66,19 @@ class SolutionPropertyTests extends FlatSpec with Matchers
     }
   }
 
-  checkSolutionProperty(room0, "with-coffee")
-  checkSolutionProperty(room0, "with-drill")
-  checkSolutionProperty(room0, "with-drill2")
-
-
   /*-----------------------------------------------------*/
   /*          Negative tests of the checker              */
   /*-----------------------------------------------------*/
 
+  s"An evaluator for task $room0" should "break when it must" in {}
+  checkBadSolution(room0, "with-drill-too-far", (9, 4))
+
   def checkBadSolution(taskFile: String, solutionFile: String, whereBreaks: (Int, Int)) {
-    s"The evaluator for task $taskFile" should s"break with exception for solution $solutionFile" in {
+    it should s"break with exception for solution $solutionFile for task $taskFile" in {
       val (_, state) = createContestState(taskFile)(taskFile, solutionFile)
       val testName = s"Test: $taskFile-$solutionFile"
       testShouldBreak(state, whereBreaks, testName)
     }
   }
-
-  checkBadSolution(room0, "with-drill-too-far", (9, 4))
 
 }

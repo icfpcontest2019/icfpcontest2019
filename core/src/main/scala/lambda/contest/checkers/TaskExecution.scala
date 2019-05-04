@@ -150,13 +150,14 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
 
-  // Use specifi booster by a watchman at a given position
+  // Use specific booster by a watchman at a given position
   private def useBooster(booster: UseBooster, wNum: Int, wPosOld: IPoint): IPoint = {
     val w = watchmen(wNum)
     booster match {
       case UseCoffee =>
         w.addActiveBooster(new ActiveCoffeeBooster)
         wPosOld
+
       case UseBatteries(dx, dy) =>
         // TODO: Implement me
         wPosOld
@@ -165,8 +166,14 @@ class TaskExecution(private val matrix: TaskMatrix,
         w.addActiveBooster(new ActiveDrillBooster)
         wPosOld
 
-      case UseTeleport(x, y) =>
-        // TODO: Implement me
+      case InstallTeleport =>
+        val cell = getCell(wPosOld)
+        try {
+          cell.installNewTeleport()
+        } catch {
+          case ContestException(msg, _) =>
+            throw ContestException(msg, wPosOld)
+        }
         wPosOld
 
       case UseCallFriend =>
@@ -186,7 +193,7 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseBatteries(dx, dy) => Booster.BatteriesBooster
       case UseCoffee => Booster.CoffeeBooster
       case UseDrill => Booster.DrillBooster
-      case UseTeleport(x, y) => Booster.TeleportBooster
+      case InstallTeleport => Booster.TeleportBooster
       case UseCallFriend => Booster.CallWatchmanBooster
       case _ => throw ContestException(BAD_BOOSTER, wPosOld)
     }
@@ -205,6 +212,20 @@ class TaskExecution(private val matrix: TaskMatrix,
     useBooster(act.asInstanceOf[UseBooster], wNum, wPosOld)
   }
 
+
+  def doTeleport(watchNum: Int, wPosNew: IPoint): IPoint = {
+    if (canStepToPosition(wPosNew)) {
+      val cell = getCell(wPosNew)
+      if (!cell.hasTeleport) {
+        throw ContestException(BAD_TELEPORT_LOCATION, wPosNew)
+      }
+      watchmenPositions(watchNum) = wPosNew
+      wPosNew
+    } else {
+      throw ContestException(BAD_TELEPORT_LOCATION, wPosNew)
+    }
+
+  }
 
   /**
     * Performs the action, returns new position if moved.
@@ -236,8 +257,10 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseBatteries(_, _) => tryUseBooster(act, watchNum, wPosOld)
       case UseCoffee => tryUseBooster(act, watchNum, wPosOld)
       case UseDrill => tryUseBooster(act, watchNum, wPosOld)
-      case UseTeleport(_, _) => tryUseBooster(act, watchNum, wPosOld)
+      case InstallTeleport => tryUseBooster(act, watchNum, wPosOld)
       case UseCallFriend => tryUseBooster(act, watchNum, wPosOld)
+
+      case DoTeleport(x, y) => doTeleport(watchNum, IPoint(x, y))
 
     }
 
@@ -356,6 +379,13 @@ class TaskExecution(private val matrix: TaskMatrix,
       val boosters = availableBoosters.toList.sorted.map { case (k, v) => s"  $k: $v" }
       buffer.append(s"Available boosters:\n${boosters.mkString("\n")}\n")
     }
+
+    // Watchmen positions
+    val wPoss = for (k <- watchmenPositions.keys.toList.sorted) yield s"  W$k: ${
+      val IPoint(x, y) = watchmenPositions(k)
+      s"($x, $y)"
+    }"
+    buffer.append(s"Watchmen positions:\n${wPoss.mkString("\n")}\n")
 
     // Boosters per watchman
     if (watchmen.values.exists(w => w.isDrillGuy || w.isUnderCoffe)) {

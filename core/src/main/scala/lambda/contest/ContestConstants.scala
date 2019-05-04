@@ -20,7 +20,8 @@ object ContestConstants {
   val BATTERIES_LETTER = 'B'
   val COFFEE_LETTER = 'F'
   val DRILL_LETTER = 'I'
-  val TELEPORT_LETTER = 'T'
+  val INTSTALL_TELEPORT_LETTER = 'T'
+  val DO_TELEPORT_LETTER = 'P'
   val CALL_FRIEND_LETTER = 'C'
   val CALL_POINT_LETTER = 'X'
 
@@ -28,7 +29,8 @@ object ContestConstants {
     BATTERIES_LETTER,
     COFFEE_LETTER,
     DRILL_LETTER,
-    TELEPORT_LETTER,
+    INTSTALL_TELEPORT_LETTER,
+    DO_TELEPORT_LETTER,
     CALL_FRIEND_LETTER,
     CALL_POINT_LETTER,
     UP_LETTER,
@@ -46,7 +48,7 @@ object ContestConstants {
     case BATTERIES_LETTER => BatteriesBooster
     case COFFEE_LETTER => CoffeeBooster
     case DRILL_LETTER => DrillBooster
-    case TELEPORT_LETTER => TeleportBooster
+    case INTSTALL_TELEPORT_LETTER => TeleportBooster
     case CALL_FRIEND_LETTER => CallWatchmanBooster
     case CALL_POINT_LETTER => CallPoint
   }
@@ -90,8 +92,11 @@ object ContestConstants {
   case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster
   case object UseCoffee extends Action(COFFEE_LETTER) with UseBooster
   case object UseDrill extends Action(DRILL_LETTER) with UseBooster
-  case class UseTeleport(x: Int, y: Int) extends Action(TELEPORT_LETTER) with UseBooster
+  case object InstallTeleport extends Action(INTSTALL_TELEPORT_LETTER) with UseBooster
   case object UseCallFriend extends Action(CALL_FRIEND_LETTER) with UseBooster
+
+  // Teleporting
+  case class DoTeleport(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER)
 
   /* *************************************** */
   //            Booster constants            //

@@ -33,7 +33,7 @@ object Booster extends Enumeration {
     case BatteriesBooster => BATTERIES_LETTER
     case CoffeeBooster => COFFEE_LETTER
     case DrillBooster => DRILL_LETTER
-    case TeleportBooster => TELEPORT_LETTER
+    case TeleportBooster => INTSTALL_TELEPORT_LETTER
     case CallWatchmanBooster => CALL_FRIEND_LETTER
     case CallPoint => CALL_POINT_LETTER
   }

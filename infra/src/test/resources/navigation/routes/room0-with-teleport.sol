@@ -1,11 +1,11 @@
 ############
 #X         #
-#     #    #
-#C         #
-#    ##    #
-#T...##... #
-#.......W. #
-#....##... #
+#   ..#... #
+#C ....... #
+# ...##... #
+#..TW##    #
+#....##    #
+#..  ##    #
 #.F  ##    #
 #.B        #
 #..        #
@@ -13,7 +13,6 @@
 Available boosters:
   BatteriesBooster: 1
   CoffeeBooster: 1
+  DrillBooster: 1
 Watchmen positions:
-  W0: (7, 4)
-Active boosters:
-  W0: (DrillBooster : 13)
+  W0: (3, 5)
