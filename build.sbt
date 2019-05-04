@@ -35,8 +35,10 @@ lazy val infra= project
   .settings(
     name := "infra",
     settings,
-    libraryDependencies ++= commonDependencies ++ akka
-  )
+    libraryDependencies ++= commonDependencies ++ akka,
+    libraryDependencies += "com.outr" %% "hasher" % "1.2.1",
+    libraryDependencies += "io.spray" %%  "spray-json" % "1.3.5",
+)
   .dependsOn(
     core
   )

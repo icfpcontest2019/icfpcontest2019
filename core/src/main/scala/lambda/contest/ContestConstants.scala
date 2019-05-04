@@ -44,6 +44,8 @@ object ContestConstants {
 
   import Booster._
 
+  val Boosters = List(BatteriesBooster, CoffeeBooster, DrillBooster, TeleportBooster, CallWatchmanBooster, CallPoint)
+
   def codeToBooster(c: Char): Booster.Value = c match {
     case BATTERIES_LETTER => BatteriesBooster
     case COFFEE_LETTER => CoffeeBooster
