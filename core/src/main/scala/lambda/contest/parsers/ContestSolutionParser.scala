@@ -29,9 +29,6 @@ object ContestSolutionParser extends GeometryParsers {
       | TELEPORT_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseTeleport(x, y) }
       | CALL_FRIEND_LETTER ^^^ UseCallFriend)
 
-  ((BATTERIES_LETTER: Parser[Char]) | COFFEE_LETTER | DRILL_LETTER |
-    TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POINT_LETTER) ^^ codeToBooster
-
   def moves: Parser[List[Action]] = rep(moveParser)
 
   def solutionParser: Parser[List[List[Action]]] = rep1sep(moves, sepToken)

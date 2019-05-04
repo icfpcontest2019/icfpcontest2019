@@ -1,11 +1,11 @@
-package lambda.contest
+package lambda.contest.examples
 
 import java.io.File
 
 /**
   * @author Ilya Sergey
   */
-object SimpleRooms {
+trait SimpleRooms {
 
   val problemsPath: String = "./infra/src/test/resources/simple/"
   val solutionsPath: String = "./infra/src/test/resources/simple/solutions/"
@@ -20,13 +20,14 @@ object SimpleRooms {
   val room8 = "room8"
   val room9 = "room9"
   val room10 = "room10"
+  val room11 = "room11-1"
 
-  def getRoomPath(fileName: String) = {
+  def getTaskPath(fileName: String) = {
     s"$problemsPath/$fileName".replace("/", File.separator)
   }
 
-  def getSolutionPath(fileName: String) = {
-    s"$solutionsPath/$fileName".replace("/", File.separator)
+  def getSolutionPath(fileName: String*) = {
+    s"$solutionsPath/${fileName.head}".replace("/", File.separator)
   }
 
 }

@@ -1,43 +1,31 @@
 package lambda.contest
 
-import lambda.contest.checkers.TaskCreationUtils._
-import lambda.contest.checkers.{TaskExecution, TorchShape}
-import lambda.contest.parsers.ContestSolutionParser
-import lambda.util.FileUtil
+import lambda.contest.checkers.TorchShape
+import lambda.contest.examples.SimpleRooms
 import org.scalatest.{FlatSpec, Matchers}
 
 /**
   * @author Ilya Sergey
   */
-class SimpleSolutionChecker extends FlatSpec with Matchers {
+class SimpleSolutionChecker extends FlatSpec with Matchers
+  with SimpleRooms with SolutionCheckerUtils {
 
-  import SimpleRooms._
-
-  def checkTaskFile(fileName: String,
+  def checkTaskFile(taskFile: String, solutionFile: String,
                     torchShape: TorchShape = ContestConstants.DEFAULT_CONTEST_TORCH) {
-    s"The solution evaluator" should s"work on $fileName" in {
-
-      val taskText = FileUtil.readFromFile(getRoomPath(fileName)).mkString
-      val task = stringToContestTask(taskText)
-      val (matrix, mx, my) = contestTaskToMatrix(task)
-
-      val solutionText = FileUtil.readFromFile(getSolutionPath(fileName)).mkString
-      val solution = ContestSolutionParser(solutionText).get
-
-      val state = TaskExecution.createState(matrix, mx, my, task.initPos, solution)
-
+    s"The solution evaluator" should s"work on $taskFile" in {
+      val (solution, state) = createContestState(taskFile)(solutionFile)
       assertResult(Some(solution.head.length)) {
         val res = state.evalSolution(Nil)
-        state.printState()
+        println(state.toStringBuffer)
         res
       }
     }
   }
 
-  checkTaskFile(room1)
+  checkTaskFile(room1, room1)
 
   // Uncomment me and check output!
 
-  //  checkTaskFile(room2)
+  //  checkTaskFile(room2, room2)
 
 }

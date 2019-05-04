@@ -1,7 +1,7 @@
 package lambda.contest.parsers
 
-import lambda.contest.{Booster, ContestTask}
 import lambda.contest.ContestConstants._
+import lambda.contest.{Booster, ContestTask}
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.IPoint
 
@@ -10,12 +10,19 @@ import lambda.geometry.integer.IPoint
   */
 object ContestTaskParser extends GeometryParsers {
 
-  def boosterParser: Parser[Booster.Value] =
-    ((BATTERIES_LETTER: Parser[Char]) | COFFEE_LETTER | DRILL_LETTER |
-      TELEPORT_LETTER | CALL_FRIEND_LETTER | CALL_POINT_LETTER) ^^ codeToBooster
+  def boosterParser(c: Char): Parser[(Booster.Value, IPoint)] =
+    s"$c" ~ intPoint ^^ { case b ~ p => (codeToBooster(b.charAt(0)), p) }
 
-  def boosterPositionParser: Parser[List[(Booster.Value, IPoint)]] =
-    repsep(boosterParser ~! intPoint ^^ { case b ~ p => (b, p) }, semicolon)
+  def variousBoosters: Parser[(Booster.Value, IPoint)] =
+    boosterParser(DRILL_LETTER) |
+      boosterParser(TELEPORT_LETTER) |
+      boosterParser(BATTERIES_LETTER) |
+      boosterParser(COFFEE_LETTER) |
+      boosterParser(CALL_FRIEND_LETTER) |
+      boosterParser(CALL_POINT_LETTER)
+
+  def boosterPositions: Parser[List[(Booster.Value, IPoint)]] =
+    repsep(variousBoosters, semicolon)
 
   /**
     * Parse complete task
@@ -23,15 +30,16 @@ object ContestTaskParser extends GeometryParsers {
     * - obstacles (optional)
     * - boosters (optional)
     */
-  def taskParser: Parser[ContestTask] =
-    (ipoly ~ semicolon // Room
-      ~ intPoint // Initial position
-      ~ opt(semicolon ~> repsep(ipoly, semicolon)) // Obstacles
-      ~ opt(semicolon ~> boosterPositionParser) // Booster position
+  def taskParser: Parser[ContestTask] = {
+    (ipoly ~ // Room
+      sepToken ~ intPoint ~ // Initial position
+      sepToken ~ repsep(ipoly, semicolon) ~ // Obstacles
+      sepToken ~ boosterPositions // Boosters and their locations
       ^^ {
-      case room ~ _ ~ initPos ~ obstacles ~ boosters =>
-        ContestTask(room, initPos, obstacles.getOrElse(Nil), boosters.getOrElse(Nil))
+      case room ~ _ ~ initPos ~ _ ~ obstacles ~ _ ~ boosters =>
+        ContestTask(room, initPos, obstacles, boosters)
     })
+  }
 
   def apply(s: String): ContestTaskParser.ParseResult[ContestTask] = parseAll(taskParser, s)
 

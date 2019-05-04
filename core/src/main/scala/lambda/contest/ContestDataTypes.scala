@@ -183,6 +183,9 @@ class Watchman(private val torch: MSet[(Int, Int)] =
   private def getActiveBoosters: List[Booster.Value] =
     activeBoosters.toList.map(_.toBoosterTag).distinct
 
+  // Return active boosters with remaining time
+  def getActiveBoostersWithTime: List[(Booster.Value, Int)] =
+    activeBoosters.toList.map(b => (b.toBoosterTag, b.getRemainingTime)).distinct
 
   def isUnderCoffe: Boolean = getActiveBoosters.contains(Booster.CoffeeBooster)
 
@@ -221,7 +224,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
 //            Boosters applied to watchmen        //
 /* ********************************************** */
 
-abstract class ActiveBooster(private var timeLeft: Int) {
+abstract sealed class ActiveBooster(private var timeLeft: Int) {
   def decrementTimeLeft(): Unit = {
     timeLeft = timeLeft - 1
   }
@@ -237,10 +240,10 @@ abstract class ActiveBooster(private var timeLeft: Int) {
   def toBoosterTag: Booster.Value
 }
 
-class CoffeeBooster extends ActiveBooster(COFFEE_TIME) {
+class ActiveCoffeeBooster extends ActiveBooster(COFFEE_TIME) {
   def toBoosterTag = Booster.CoffeeBooster
 }
 
-class DrillBooster extends ActiveBooster(DRILL_TIME) {
+class ActiveDrillBooster extends ActiveBooster(DRILL_TIME) {
   def toBoosterTag = Booster.DrillBooster
 }

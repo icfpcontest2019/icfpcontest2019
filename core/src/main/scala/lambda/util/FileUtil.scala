@@ -29,6 +29,13 @@ object FileUtil {
     res
   }
 
+  def readFromFileWithNewLines(fpath: String) : String = {
+    val bufferedSource = Source.fromFile(fpath)
+    val res = bufferedSource.getLines.toList.mkString("\n")
+    bufferedSource.close
+    res
+  }
+
 
 
 }

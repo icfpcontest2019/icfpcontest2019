@@ -1,9 +1,8 @@
 package lambda.contest
 
-import java.io.File
-
 import lambda.contest.checkers.ContestCheckingUtils._
 import lambda.contest.checkers.TaskCreationUtils._
+import lambda.contest.examples.SimpleRooms
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
@@ -11,13 +10,11 @@ import org.scalatest.{FlatSpec, Matchers}
 /**
   * @author Ilya Sergey
   */
-class BasicTaskTests extends FlatSpec with Matchers {
-
-  import SimpleRooms._
+class BasicTaskTests extends FlatSpec with Matchers with SimpleRooms {
 
   def checkTaskFile(fileName: String) {
     s"The problem from file $fileName" should "satisfy all validity checks" in {
-      val path = getRoomPath(fileName)
+      val path = getTaskPath(fileName)
       val fileContents = FileUtil.readFromFile(path).mkString
       val result = ContestTaskParser(fileContents)
       assert(!result.isEmpty)
@@ -26,8 +23,9 @@ class BasicTaskTests extends FlatSpec with Matchers {
       checkTaskWellFormed(task)
 
       val (matrix, x, y) = contestTaskToMatrix(task)
-      printContestMatrixInAscii(matrix, x, y, List(task.initPos))
-      println()
+      assert(true)
+      // printContestMatrixInAscii(matrix, x, y, List(task.initPos))
+      // println()
     }
   }
 

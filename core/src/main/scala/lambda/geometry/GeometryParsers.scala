@@ -24,7 +24,7 @@ trait GeometryParsers extends JavaTokenParsers {
   }
 
   /**
-    * Parse 2D point with integerpoint coordinates
+    * Parse 2D point with integer point coordinates
     */
   def intPoint: Parser[IPoint] = "(" ~ wholeNumber ~ ("," ~> wholeNumber) ~ ")" ^^ {
     case _ ~ x ~ y ~ _ => IPoint(x.toInt, y.toInt)

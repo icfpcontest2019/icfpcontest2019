@@ -59,6 +59,8 @@ object ContestConstants {
     def isMove: Boolean = false
   }
 
+  sealed trait UseBooster
+
 
   // Movements
   case object MoveUp extends Action(UP_LETTER) {
@@ -80,22 +82,16 @@ object ContestConstants {
   // Rotations and skip
 
   case object TurnLeft extends Action(TURN_LEFT_LETTER)
-
   case object TurnRight extends Action(TURN_RIGHT_LETTER)
-
   case object Snooze extends Action(SNOOZE_LETTER)
 
   // Using boosters
 
-  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER)
-
-  case object UseCoffee extends Action(COFFEE_LETTER)
-
-  case object UseDrill extends Action(DRILL_LETTER)
-
-  case class UseTeleport(x: Int, y: Int) extends Action(TELEPORT_LETTER)
-
-  case object UseCallFriend extends Action(CALL_FRIEND_LETTER)
+  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster
+  case object UseCoffee extends Action(COFFEE_LETTER) with UseBooster
+  case object UseDrill extends Action(DRILL_LETTER) with UseBooster
+  case class UseTeleport(x: Int, y: Int) extends Action(TELEPORT_LETTER) with UseBooster
+  case object UseCallFriend extends Action(CALL_FRIEND_LETTER) with UseBooster
 
   /* *************************************** */
   //            Booster constants            //
@@ -103,7 +99,6 @@ object ContestConstants {
 
   val COFFEE_TIME = 50
   val DRILL_TIME = 20
-
 
   /* *************************************** */
   //            Default torch range          //

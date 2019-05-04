@@ -19,7 +19,7 @@ object TaskCreationUtils {
     */
   def stringToContestTask(s: String): ContestTask = {
     val result = ContestTaskParser(s)
-    if (result.isEmpty) throw ContestException(MALFORMED_TASK)
+    if (result.isEmpty) throw ContestException(s"$MALFORMED_TASK : ${result.toString}")
     result.get
   }
 
@@ -70,26 +70,34 @@ object TaskCreationUtils {
     (matrix, xr, yr)
   }
 
-  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, positions: List[IPoint]): Unit = {
+  def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, positions: List[IPoint]): StringBuilder = {
     val wallChar = '#'
     val watchmanChar = 'W'
+    val buffer = new StringBuilder
+
+    def println(): Unit = {
+      buffer.append("\n")
+    }
+    def print(s: Char): Unit = {
+      buffer.append(s)
+    }
 
     for (i <- 0 until xsize + 2) print(wallChar)
     println()
     for (j1 <- 1 to ysize) {
       val j = ysize - j1
-      print("#")
+      print(wallChar)
       for (i <- 0 until xsize) {
         val c = matrix(i)(j)
-        if (c.hasCallPoint) {
+        if (positions.contains(IPoint(i, j))) {
+          assert(c.canStep)
+          print(watchmanChar)
+        } else if (c.hasCallPoint) {
           print(CALL_POINT_LETTER)
         } else if (c.hasTeleport) {
           print(TELEPORT_LETTER)
         } else if (c.peekBooster.isDefined) {
           print(Booster.toChar(c.peekBooster.get))
-        } else if (positions.contains(IPoint(i, j))) {
-          assert(c.canStep)
-          print(watchmanChar)
         } else if (c.isIlluminated) {
           print('.')
         } else if (c.canStep) {
@@ -104,6 +112,7 @@ object TaskCreationUtils {
     }
     for (i <- 0 until xsize + 2) print(wallChar)
     println()
+    buffer
 
   }
 

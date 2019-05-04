@@ -3,10 +3,11 @@ package lambda.contest.checkers
 import lambda.MStack
 import lambda.contest.ContestConstants._
 import lambda.contest.ContestErrorMessages._
-import lambda.contest.{Booster, Cell, ContestConstants, ContestException, Watchman}
+import lambda.contest.{ActiveCoffeeBooster, ActiveDrillBooster, Booster, Cell, ContestConstants, ContestException, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils._
 
+import scala.collection.mutable
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 /**
@@ -44,8 +45,8 @@ class TaskExecution(private val matrix: TaskMatrix,
     matrix(x)(y)
   }
 
-  private def assertCondition(cond: => Boolean): Unit = {
-    if (!cond) throw ContestException(BAD_ACTION)
+  private def assertCondition(cond: => Boolean, pos: IPoint): Unit = {
+    if (!cond) throw ContestException(BAD_ACTION, pos)
   }
 
 
@@ -92,27 +93,118 @@ class TaskExecution(private val matrix: TaskMatrix,
     }
   }
 
+  private def mkNewPosition(wPosOld: IPoint, act: Action): IPoint = {
+    val (x, y) = wPosOld.toPair
+    act match {
+      case MoveUp => IPoint(x, y + 1)
+      case MoveDown => IPoint(x, y - 1)
+      case MoveLeft => IPoint(x - 1, y)
+      case MoveRight => IPoint(x + 1, y)
+      case _ => throw ContestException(BAD_ACTION, wPosOld)
+    }
+  }
+
   /**
     * Having a drill, can change the walls within the bounding box
     */
   private def moveWithDrill(watchNum: Int, wPosOld: IPoint, act: Action): IPoint = {
-    val (x, y) = wPosOld.toPair
-
     def moveToNewPosWithDrill(wPosNew: IPoint) = {
-      assertCondition(positionWithinBoundingBox(wPosNew))
+      assertCondition(positionWithinBoundingBox(wPosNew), wPosOld)
       getCell(wPosNew).clearSpace()
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     }
 
+    val wPosNew = mkNewPosition(wPosOld, act)
     act match {
-      case MoveUp => moveToNewPosWithDrill(IPoint(x, y + 1))
-      case MoveDown => moveToNewPosWithDrill(IPoint(x, y - 1))
-      case MoveLeft => moveToNewPosWithDrill(IPoint(x - 1, y))
-      case MoveRight => moveToNewPosWithDrill(IPoint(x + 1, y))
-      case _ => throw ContestException(BAD_ACTION)
+      case MoveUp | MoveDown | MoveLeft | MoveRight =>
+        moveToNewPosWithDrill(wPosNew)
+      case _ => throw ContestException(BAD_ACTION, wPosOld)
     }
   }
+
+
+  /**
+    * Having a coffee one can make an optional second step
+    */
+  private def secondStepWithCoffee(watchNum: Int, wPosOld: IPoint, act: Action): IPoint = {
+    val wPosNew = mkNewPosition(wPosOld, act)
+
+    // Move with the drill
+    if (watchmen(watchNum).isDrillGuy && positionWithinBoundingBox(wPosNew)) {
+      return moveWithDrill(watchNum, wPosOld, act)
+    }
+
+    def moveToNewPosWithCoffee(wPosOld: IPoint, wPosNew: IPoint) = {
+      if (canStepToPosition(wPosNew)) {
+        watchmenPositions(watchNum) = wPosNew
+        wPosNew
+      } else wPosOld
+    }
+
+    act match {
+      case MoveUp | MoveDown | MoveLeft | MoveRight =>
+        moveToNewPosWithCoffee(wPosOld, wPosNew)
+      case _ => throw ContestException(BAD_ACTION, wPosOld)
+    }
+  }
+
+
+  // Use specifi booster by a watchman at a given position
+  private def useBooster(booster: UseBooster, wNum: Int, wPosOld: IPoint): IPoint = {
+    val w = watchmen(wNum)
+    booster match {
+      case UseCoffee =>
+        w.addActiveBooster(new ActiveCoffeeBooster)
+        wPosOld
+      case UseBatteries(dx, dy) =>
+        // TODO: Implement me
+        wPosOld
+
+      case UseDrill =>
+        w.addActiveBooster(new ActiveDrillBooster)
+        wPosOld
+
+      case UseTeleport(x, y) =>
+        // TODO: Implement me
+        wPosOld
+
+      case UseCallFriend =>
+        // TODO: Implement me
+        wPosOld
+    }
+  }
+
+
+  // Use booster if it's available
+  private def tryUseBooster(act: Action, wNum: Int, wPosOld: IPoint): IPoint = {
+    if (!act.isInstanceOf[UseBooster]) {
+      throw ContestException(BAD_BOOSTER, wPosOld)
+    }
+
+    val booster: Booster.Value = act match {
+      case UseBatteries(dx, dy) => Booster.BatteriesBooster
+      case UseCoffee => Booster.CoffeeBooster
+      case UseDrill => Booster.DrillBooster
+      case UseTeleport(x, y) => Booster.TeleportBooster
+      case UseCallFriend => Booster.CallWatchmanBooster
+      case _ => throw ContestException(BAD_BOOSTER, wPosOld)
+    }
+
+    if (!availableBoosters.isDefinedAt(booster) ||
+      availableBoosters(booster) <= 0) {
+      throw ContestException(NO_BOOSTER, wPosOld)
+    }
+
+    val quantity = availableBoosters(booster)
+    if (quantity == 1) {
+      availableBoosters.remove(booster)
+    } else {
+      availableBoosters(booster) = quantity - 1
+    }
+    useBooster(act.asInstanceOf[UseBooster], wNum, wPosOld)
+  }
+
 
   /**
     * Performs the action, returns new position if moved.
@@ -125,51 +217,35 @@ class TaskExecution(private val matrix: TaskMatrix,
     }
 
     def moveToNewPos(wPosNew: IPoint) = {
-      assertCondition(canStepToPosition(wPosNew))
+      assertCondition(canStepToPosition(wPosNew), wPosOld)
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     }
 
-    val (x, y) = wPosOld.toPair
     act match {
-      case MoveUp => moveToNewPos(IPoint(x, y + 1))
-      case MoveDown => moveToNewPos(IPoint(x, y - 1))
-      case MoveLeft => moveToNewPos(IPoint(x - 1, y))
-      case MoveRight => moveToNewPos(IPoint(x + 1, y))
+      case MoveUp => moveToNewPos(mkNewPosition(wPosOld, act))
+      case MoveDown => moveToNewPos(mkNewPosition(wPosOld, act))
+      case MoveLeft => moveToNewPos(mkNewPosition(wPosOld, act))
+      case MoveRight => moveToNewPos(mkNewPosition(wPosOld, act))
 
       case TurnLeft => w.rotateTorchLeft(); wPosOld
       case TurnRight => w.rotateTorchRight(); wPosOld
 
-      case Snooze => wPosOld
+      case Snooze => wPosOld // Do nothing
 
-      case UseBatteries(dx, dy) =>
-        // TODO: Implement me!
-        wPosOld
-
-      case UseCoffee =>
-        // TODO: Implement me!
-        wPosOld
-
-      case UseDrill =>
-        // TODO: Implement me!
-        wPosOld
-
-      case UseTeleport(x, y) =>
-        // TODO: Implement me!
-        wPosOld
-
-      case UseCallFriend =>
-        // TODO: Implement me!
-        wPosOld
+      case UseBatteries(_, _) => tryUseBooster(act, watchNum, wPosOld)
+      case UseCoffee => tryUseBooster(act, watchNum, wPosOld)
+      case UseDrill => tryUseBooster(act, watchNum, wPosOld)
+      case UseTeleport(_, _) => tryUseBooster(act, watchNum, wPosOld)
+      case UseCallFriend => tryUseBooster(act, watchNum, wPosOld)
 
     }
 
   }
 
   /* --------------------------------------------------- */
-  /*           Stepping via the routs                    */
+  /*           Stepping via the routes                   */
   /* --------------------------------------------------- */
-
 
   // TODO: Handle the cases when boosters are bought and leased
   // TODO: A single execution step from a given cell
@@ -185,24 +261,24 @@ class TaskExecution(private val matrix: TaskMatrix,
     // Step 1: Update illumination at w's position
     castLight(w, wPosOld)
 
-    // Step 2: Collect boosters
+    // Step 1': Collect boosters
     collectBooster(wPosOld)
 
-    // Step 3: Move/Act, removing the current action
+    // Step 2: Move/Act, removing the current action
     val act = route.pop().getOrElse(Snooze)
     var wPosNew = doAct(watchNum, w, wPosOld, act)
 
-    // Step 3': Repeat the last movement if w is under coffee fumes
+    // Step 2': Repeat the last movement if w is under coffee fumes
     if (act.isMove && w.isUnderCoffe) {
       castLight(w, wPosNew)
-      // TODO: Make another step
-      // TODO: Implement me!
+      collectBooster(wPosNew)
+      wPosNew = secondStepWithCoffee(watchNum, wPosNew, act)
     }
 
-    // Step 4: Decrement boosters
+    // Step 3: Decrement boosters
     w.decrementActiveBoosters()
 
-    // Step 5: Update illumination again
+    // Step 4: Update illumination again
     castLight(w, wPosNew)
 
   }
@@ -236,6 +312,10 @@ class TaskExecution(private val matrix: TaskMatrix,
       None
   }
 
+  /* --------------------------------------------------- */
+  /*              Evaluation utilities                   */
+  /* --------------------------------------------------- */
+
   private def moreStepsToDo(): Boolean = {
     watchmen.keys.exists { wNum =>
       val route = routes.getOrElse(wNum, Nil)
@@ -262,10 +342,40 @@ class TaskExecution(private val matrix: TaskMatrix,
     true
   }
 
-  def printState() = {
+
+  /* --------------------------------------------------- */
+  /*           Utilities for testing the checker         */
+  /* --------------------------------------------------- */
+
+
+  def toStringBuffer: mutable.StringBuilder = {
     val positions = watchmenPositions.values.toList
-    TaskCreationUtils.printContestMatrixInAscii(matrix, xmax, ymax, positions)
-    println()
+    val buffer = TaskCreationUtils.printContestMatrixInAscii(matrix, xmax, ymax, positions)
+    // Add boosters
+    if (availableBoosters.nonEmpty) {
+      val boosters = availableBoosters.toList.sorted.map { case (k, v) => s"  $k: $v" }
+      buffer.append(s"Available boosters:\n${boosters.mkString("\n")}\n")
+    }
+
+    // Boosters per watchman
+    if (watchmen.values.exists(w => w.isDrillGuy || w.isUnderCoffe)) {
+      val ws = watchmen.toList.map { case (i, w) =>
+        val activeBoosters = w.getActiveBoostersWithTime.sorted.map { case (k, v) => s"($k : $v)" }
+        s"  W$i: ${activeBoosters.mkString(" ")}"
+      }
+      buffer.append(s"Active boosters:\n${ws.mkString("\n")}\n")
+    }
+    buffer
+  }
+
+  def getWatchmanPosition(wNum: Int): Option[IPoint] = {
+    watchmenPositions.get(wNum)
+  }
+
+  def isLit(x: Int, y: Int): Boolean = {
+    val p = IPoint(x, y)
+    if (!positionWithinBoundingBox(p)) return false
+    matrix(x)(y).isIlluminated
   }
 
 
