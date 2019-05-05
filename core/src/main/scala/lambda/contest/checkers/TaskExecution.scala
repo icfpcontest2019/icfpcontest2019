@@ -177,8 +177,16 @@ class TaskExecution(private val matrix: TaskMatrix,
         wPosOld
 
       case UseCallFriend =>
-        // TODO: Implement me
-        wPosOld
+        val cell = getCell(wPosOld)
+        if (cell.hasCallPoint) {
+          val newWatchman = new Watchman()
+          val newWNum = watchmen.keys.max + 1
+          watchmen.update(newWNum, newWatchman)
+          watchmenPositions.update(newWNum, wPosOld)
+          wPosOld
+        } else {
+          throw ContestException(CANNOT_CALL_FRIEND, wPosOld)
+        }
     }
   }
 
@@ -377,7 +385,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     // Add boosters
     if (availableBoosters.nonEmpty) {
       val boosters = availableBoosters.toList.sorted.map { case (k, v) => s"  $k: $v" }
-      buffer.append(s"Available boosters:\n${boosters.mkString("\n")}\n")
+      buffer.append(s"Available boosters:\n${boosters.sorted.mkString("\n")}\n")
     }
 
     // Watchmen positions
@@ -385,15 +393,15 @@ class TaskExecution(private val matrix: TaskMatrix,
       val IPoint(x, y) = watchmenPositions(k)
       s"($x, $y)"
     }"
-    buffer.append(s"Watchmen positions:\n${wPoss.mkString("\n")}\n")
+    buffer.append(s"Watchmen positions:\n${wPoss.sorted.mkString("\n")}\n")
 
     // Boosters per watchman
     if (watchmen.values.exists(w => w.isDrillGuy || w.isUnderCoffe)) {
       val ws = watchmen.toList.map { case (i, w) =>
         val activeBoosters = w.getActiveBoostersWithTime.sorted.map { case (k, v) => s"($k : $v)" }
-        s"  W$i: ${activeBoosters.mkString(" ")}"
+        s"  W$i: " + activeBoosters.sorted.mkString(" ")
       }
-      buffer.append(s"Active boosters:\n${ws.mkString("\n")}\n")
+      buffer.append(s"Active boosters:\n${ws.sorted.mkString("\n")}\n")
     }
     buffer
   }

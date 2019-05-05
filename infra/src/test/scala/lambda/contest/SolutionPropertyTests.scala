@@ -54,6 +54,7 @@ class SolutionPropertyTests extends FlatSpec with Matchers
   checkSolutionProperty(room0, "with-drill")
   checkSolutionProperty(room0, "with-drill2")
   checkSolutionProperty(room0, "with-teleport")
+  checkSolutionProperty(room0, "with-friend")
 
 
   def checkSolutionProperty(taskFile: String, solutionFile: String) {
@@ -72,6 +73,7 @@ class SolutionPropertyTests extends FlatSpec with Matchers
 
   s"An evaluator for task $room0" should "break when it must" in {}
   checkBadSolution(room0, "with-drill-too-far", (9, 4))
+  checkBadSolution(room0, "with-friend-nope", (0, 9))
 
   def checkBadSolution(taskFile: String, solutionFile: String, whereBreaks: (Int, Int)) {
     it should s"break with exception for solution $solutionFile for task $taskFile" in {
