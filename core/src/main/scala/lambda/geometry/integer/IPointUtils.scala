@@ -37,5 +37,19 @@ object IPointUtils {
       case 0 => NoTurn
     }
   }
+  
+  def squareTouchesOtherSquares(sq: IPolygon, other: List[IPolygon]) : Boolean = {
+    if (other.contains(sq)) return false
+    
+    val esReverted = sq.edges.map {case ISegment(a, b) => ISegment(b, a)}
+    for {
+      os <- other
+      e2 <- os.edges
+      e1 <- esReverted
+    } {
+      if (e1 == e2) return true
+    }
+    false
+  }
 }
 

@@ -30,6 +30,7 @@ object ContestErrorMessages {
   val NO_BOOSTER = "No such booster available; interrupting validation."
   val BAD_TELEPORT_LOCATION = "Cannot teleport to this location."
   val CANNOT_CALL_FRIEND = "Cannot perform this operation in this location."
+  val BAD_BATTERY_POSITION = "Cannot attach battery at this position."
 
 
 }

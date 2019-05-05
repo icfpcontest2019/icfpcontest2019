@@ -2,7 +2,8 @@ package lambda.contest
 
 import lambda.contest.ContestConstants._
 import lambda.contest.ContestErrorMessages._
-import lambda.geometry.integer.{IPoint, IPolygon}
+import lambda.geometry.integer.IPointUtils._
+import lambda.geometry.integer.{IPoint, IPointUtils, IPolygon}
 
 /**
   * @author Ilya Sergey
@@ -216,6 +217,19 @@ class Watchman(private val torch: MSet[(Int, Int)] =
         activeBoosters.add(b)
       }
     }
+  }
+
+  /* ---------------------------------------------- */
+  //            Adding a new battery                //
+  /* ---------------------------------------------- */
+  
+  def addBattery(dx: Int, dy: Int) = {
+    val squares = getTorchRange(IPoint(0, 0)).map(_.toSquare)
+    val newSquare = IPoint(dx, dy).toSquare
+    if (!squareTouchesOtherSquares(newSquare, squares)) {
+      throw ContestException(BAD_BATTERY_POSITION)
+    }
+    torch.add((dx, dy))
   }
 
 }

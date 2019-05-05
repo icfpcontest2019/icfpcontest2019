@@ -45,8 +45,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
 
-  private def checkWatchman[T](watchNum: Int, routes: Map[Int, T]): Boolean = {
-    routes.isDefinedAt(watchNum) &&
+  private def checkWatchman[T](watchNum: Int): Boolean = {
       watchmenPositions.isDefinedAt(watchNum) &&
       watchmen.isDefinedAt(watchNum)
   }
@@ -154,7 +153,7 @@ class TaskExecution(private val matrix: TaskMatrix,
         wPosOld
 
       case UseBatteries(dx, dy) =>
-        // TODO: Implement me
+        w.addBattery(dx, dy)
         wPosOld
 
       case UseDrill =>
@@ -277,12 +276,12 @@ class TaskExecution(private val matrix: TaskMatrix,
   // TODO: A single execution step from a given cell
 
   private def step(watchNum: Int): Unit = {
-    if (!checkWatchman(watchNum, routes))
+    if (!checkWatchman(watchNum))
       throw ContestException(WATCHMAN_NOT_FOUND)
 
     val wPosOld@IPoint(x, y) = watchmenPositions(watchNum)
     val w = watchmen(watchNum)
-    val route = routes(watchNum)
+    val route = routes.getOrElse(watchNum, new MStack())
 
     // Step 1: Update illumination at w's position
     castLight(w, wPosOld)
