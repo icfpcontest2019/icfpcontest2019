@@ -11,14 +11,9 @@ import scala.collection.mutable
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 /**
-  * Global state for validating solutions.
-  *
-  * @author Ilya Sergey
-  */
-
-/**
   * A task execution instance
   *
+  * @author Ilya Sergey
   */
 class TaskExecution(private val matrix: TaskMatrix,
                     val xmax: Int, val ymax: Int,
