@@ -56,6 +56,7 @@ class SolutionPropertyTests extends FlatSpec with Matchers
   checkSolutionProperty(room0, "with-teleport")
   checkSolutionProperty(room0, "with-friend")
   checkSolutionProperty(room0, "with-batteries")
+  checkSolutionProperty(room0, "with-friend-batteries")
 
 
   def checkSolutionProperty(taskFile: String, solutionFile: String) {
