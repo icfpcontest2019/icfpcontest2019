@@ -1,5 +1,6 @@
-package lambda.geometry.floating.generators
+package lambda.geometry.floating.generators.maps
 
+import lambda.geometry.floating.generators.PolygonGeneratorInstance
 import lambda.geometry.floating.{FPoint, FPolygon}
 import org.scalacheck.Gen
 

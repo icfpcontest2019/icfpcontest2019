@@ -1,10 +1,12 @@
-package lambda.misc.rendering
+package lambda.misc.rendering.old
 
 import java.awt.{Color, Graphics}
 
 import lambda.geometry.floating.RenderUtils.DrawingPanel
-import lambda.geometry.floating.generators.{MapGeneratorInstance, RandomEasyPolygonGenerator, RandomPointGenerator}
-import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils, FSegment}
+import lambda.geometry.floating.generators.maps.MapGeneratorInstance
+import lambda.geometry.floating.generators.old.RandomEasyPolygonGenerator
+import lambda.geometry.floating.generators.points.RandomPointGenerator
+import lambda.geometry.floating.{FPoint, FPolygon, FSegment, RenderUtils}
 
 object MapGenerator {
   class MapPanel(polygons: Seq[FPolygon], randomPoints: Seq[FPoint]) extends DrawingPanel {

@@ -1,4 +1,4 @@
-package lambda.geometry.floating.generators
+package lambda.geometry.floating.generators.points
 
 import lambda.geometry.floating.{FPoint, FPolygon}
 

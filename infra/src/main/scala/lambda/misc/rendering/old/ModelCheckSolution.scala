@@ -1,4 +1,4 @@
-package lambda.misc.rendering
+package lambda.misc.rendering.old
 
 import lambda.geometry.floating.visibility.VisibilityChecker
 import lambda.geometry.floating.{FPoint, FPolygon}

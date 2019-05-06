@@ -2,7 +2,9 @@ package lambda.geometry.floating
 
 import lambda.geometry.floating.SegmentUtils._
 import lambda.geometry.floating.examples.FPolygonExamples._
-import lambda.geometry.floating.generators.{MapGeneratorInstance, RandomPointGenerator, RandomRectilinearPolygonGenerator}
+import lambda.geometry.floating.generators.points.RandomPointGenerator
+import lambda.geometry.floating.generators.maps.MapGeneratorInstance
+import lambda.geometry.floating.generators.rectilinear.ContestRectilinearPolygonGenerator
 import org.scalatest.{FlatSpec, Matchers, MustMatchers}
 
 import scala.util.Random
@@ -108,7 +110,7 @@ class SegmentRayIntersectionTests extends FlatSpec with MustMatchers {
 }
 
 class SegmentPolygonProperIntersectionCheckTests extends FlatSpec with Matchers {
-  val generator = new MapGeneratorInstance(RandomRectilinearPolygonGenerator, 1, 1)
+  val generator = new MapGeneratorInstance(ContestRectilinearPolygonGenerator, 1, 1)
   val pointGenerator = new RandomPointGenerator(2)
 
   "Randomly generated outsider" should s"not be inside polygon" in {

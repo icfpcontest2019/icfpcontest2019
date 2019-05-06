@@ -7,6 +7,7 @@ import lambda.geometry.floating.FPolygon
 import lambda.geometry.floating.examples.FPolygonExamples._
 import lambda.geometry.floating.generators.PolygonGenerators._
 import lambda.geometry.floating.generators.PolygonPropertyUtils._
+import lambda.geometry.floating.generators.old.RandomCrazyPolygonGenerator
 import lambda.util.FileUtil.writeToNewFile
 import org.scalacheck.Gen
 
@@ -101,42 +102,10 @@ trait PolygonGenerator extends GeneratorPrimitives {
 
 }
 
-object RectilinearPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "rectilinear.pol"
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myFreqs: Seq[Int] = freqs2
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 24)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 15
-  override val myPolygonsToAttach = polygonsToAttach2
-}
 
-object TriangularPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "triangular.pol"
-  override val myPolygonsToAttach = polygonsToAttach3
-  override val myBasePolygon: FPolygon = triangle1
-  override val myFreqs: Seq[Int] = freqs3
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 80
-}
 
-object QuasiConvexPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "qconvex.pol"
-  override val myPolygonsToAttach = convexPolygons
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myFreqs: Seq[Int] = freqs3
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 20
-}
 
-object CrazyPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "crazy.pol"
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myPolygonsToAttach = polygonsToAttach
-  override val myFreqs: Seq[Int] = freqs4
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 80
-}
+
+
+
+

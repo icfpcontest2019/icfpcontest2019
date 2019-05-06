@@ -1,6 +1,7 @@
-package lambda.geometry.floating.generators
+package lambda.geometry.floating.generators.maps
 
 import lambda.geometry.floating.FPolygon
+import lambda.geometry.floating.generators.PolygonGeneratorInstance
 import org.scalacheck.Arbitrary
 
 class MapGeneratorInstance(polygons: PolygonGeneratorInstance, minObstacles: Int, maxObstacles: Int) {

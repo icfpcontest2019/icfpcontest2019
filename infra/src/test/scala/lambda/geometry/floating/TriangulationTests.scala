@@ -53,7 +53,7 @@ class TriangulationTests extends FlatSpec with Matchers {
 object TriangulationSpecification extends Properties("Triangulation") {
 
   import lambda.geometry.floating.generators.PolygonPropertyUtils._
-  import lambda.geometry.floating.generators.RandomRectilinearPolygonGenerator._
+  import lambda.geometry.floating.generators.rectilinear.ContestRectilinearPolygonGenerator._
 
   val triangulationInside = forAll { (p: CompositePolygon) =>
     collect(polygonCombinatorCollector(p)) {
@@ -78,7 +78,7 @@ object TriangulationSpecification extends Properties("Triangulation") {
 class TriangulationPropertyTests extends FunSuite with Checkers {
 
   import lambda.geometry.floating.generators.PolygonPropertyUtils._
-  import lambda.geometry.floating.generators.RandomRectilinearPolygonGenerator._
+  import lambda.geometry.floating.generators.rectilinear.ContestRectilinearPolygonGenerator._
 
   test("Property: centers of all triangles are in polygon") {
     check((p: CompositePolygon) => {
