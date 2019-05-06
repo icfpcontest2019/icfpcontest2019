@@ -20,11 +20,20 @@ object PolygonPropertyUtils {
     */
   val generateNormalizedRectangle: LazyPolygon =
     (longEdgeSize: Int) => {
-      val i = randomIntBetween(1, longEdgeSize)
-      val j = randomIntBetween(4, longEdgeSize)
+      val i = randomIntBetween(1, 1)
+      val j = randomIntBetween(2, longEdgeSize)
       FPolygon(Seq(
         FPoint(0, 0), FPoint(0, j),
         FPoint(-i, j), FPoint(-i, 0)))
+    }
+
+  val generateNormalizedSquare: LazyPolygon =
+    (longEdgeSize: Int) => {
+      val i = randomIntBetween(1, 1)
+      val j = randomIntBetween(1, 1)
+      FPolygon(Seq(
+        FPoint(0, 0), FPoint(0, 1),
+        FPoint(-1, 1), FPoint(-1, 0)))
     }
 
   val generate3Rectangle: LazyPolygon =
@@ -118,6 +127,15 @@ object PolygonGenerators {
     val aPoint = a + Direction(z.x, z.y)
     Some((phi, aPoint, stretchK))
   }
+  
+  private def degMaxEdges(pc: CompositePolygon)=  {
+    val es = pc.pol.edges
+    val eMax = es.maxBy(_.length).length
+    val eMin = es.minBy(_.length).length
+    val mid = (eMax - eMin) / 2
+    es.filter(_.length >= mid)
+    
+  }
 
   def generatePolygon(base: FPolygon, toAttach: Gen[LazyPolygon], polSize: Gen[Int],
                       n: Int, posStrategy: Double => Option[(Int, Int)]) =
@@ -125,7 +143,7 @@ object PolygonGenerators {
 
   private def extendPolygon(pc: CompositePolygon, attachments: Gen[LazyPolygon],
                             polSize: Gen[Int], posStrategy: Double => Option[(Int, Int)]): CompositePolygon = {
-    val es = randomRotation(pc.pol.edges)
+    val es = randomRotation(degMaxEdges(pc))
     for (e <- es) {
       val size = polSize.sample.get
       val attached = attachments.sample.get(size)
@@ -136,6 +154,7 @@ object PolygonGenerators {
         val np = splitAndAttach(e, pc, adjusted)
         if (np.isDefined) {
           val cp = np.get
+          // TODO: Add more checks
           if (FPolygonUtils.noSelfIntersections(cp.pol)) return cp
         }
       }

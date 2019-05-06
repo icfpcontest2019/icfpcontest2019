@@ -71,7 +71,7 @@ lazy val commonDependencies = Seq (
 	scalaCheck,
 	scalaTest,
 	specs,
-  scopt
+  scopt,
 )
 
 lazy val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
