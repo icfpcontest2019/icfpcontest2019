@@ -143,7 +143,8 @@ object PolygonGenerators {
 
   private def extendPolygon(pc: CompositePolygon, attachments: Gen[LazyPolygon],
                             polSize: Gen[Int], posStrategy: Double => Option[(Int, Int)]): CompositePolygon = {
-    val es = randomRotation(degMaxEdges(pc))
+//    val es = randomRotation(degMaxEdges(pc))
+    val es = randomRotation(pc.pol.edges)
     for (e <- es) {
       val size = polSize.sample.get
       val attached = attachments.sample.get(size)
