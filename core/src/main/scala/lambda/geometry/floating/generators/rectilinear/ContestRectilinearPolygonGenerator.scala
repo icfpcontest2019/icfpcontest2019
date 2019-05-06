@@ -37,14 +37,14 @@ object ContestRectilinearPolygonGenerator extends PolygonGeneratorInstance {
   val basePolygons = Seq(simple3Rectangle)
   val freqsBase = Seq(1)
   val polygonsToAttach = Seq(generateNormalizedRectangle, generateNormalizedSquare)
-  val freqsAtt = Seq(3, 3)
-  val attachedYSize = (2, 15)
-  val generations = 200
+  val freqsAtt = Seq(3, 5)
+  val attachedYSize = (2, 20)
+  val generations = 100
   val positionStrategy = (l: Double) => {
     if (l < 4) None
     else {
-      val startOffset = randomIntBetween(1, l.toInt - 2)
-      val endOffset = randomIntBetween(startOffset + 2, l.toInt - 1)
+      val startOffset = randomIntBetween(1, l.toInt - 3)
+      val endOffset = randomIntBetween(startOffset + 2, math.min(startOffset + 6, l.toInt - 2))
       Some((startOffset, endOffset))
     }
   }
