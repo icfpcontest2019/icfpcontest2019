@@ -39,10 +39,14 @@ object PolygonGenerators {
 
     // Just iterate extension n times
     var p: CompositePolygon = generators.BasePolygon(init.pol)
-    for (i <- 0 until n) {
-      p = extendPolygon(p, attachments, cond, polSize)
+    var p1 = p
+    var i = 0
+    do {
+      p1 = p
       println(s"Iteration: $i / $n")
-    }
+      p = extendPolygon(p, attachments, cond, polSize)
+      i = i + 1
+    } while (i <= n && p1.size < p.size)
     p
   }
 
@@ -126,7 +130,7 @@ object PolygonGenerators {
 
   private def splitAndAttach(e: FSegment, pc: CompositePolygon,
                              attached: FPolygon): Option[CompositePolygon] = {
-    // Check whether these are no_need_obstacles segments
+    // Check whether these are no existing segments
     if (intersectsExisting(e, pc.pol, attached)) return None
 
     Some(Attached(pc, e, attached))

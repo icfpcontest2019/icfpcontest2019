@@ -1,8 +1,7 @@
 package lambda.contest.generators
 
-import lambda.geometry.floating.{FPoint, FPolygonUtils}
+import lambda.geometry.floating.FPolygonUtils
 import lambda.geometry.floating.generators.CompositePolygon
-import lambda.geometry.integer.{IPoint, IPolygon}
 
 import scala.util.Random
 
@@ -12,18 +11,32 @@ import scala.util.Random
   * @author Ilya Sergey
   */
 
-object RectoPolyGenToolbox extends GeneratorRendering {
+object BasicRectoPolyGen extends GeneratorRendering {
+
+  var needLollis : Boolean = false
+
 
   def main(args: Array[String]) {
-    draw(100)
+    if (args.length < 1) {
+      println("Bad format, please specify the size of the bounding box!")
+      return 
+    }
+    
+    val boxSize = args(0).toInt
+    needLollis = if (args.length >= 2) {
+      args(1).toBoolean
+    } else false
+    
+    
+    draw(boxSize)
   
   }
 
   
   protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon = {
     
-    val numGen = 150 + Random.nextInt(150)
-    val generator = ContestGenerators.simpleRGenerator(boxSize)
+    val numGen = 100 + Random.nextInt(150)
+    val generator = ContestGenerators.roomGenerator(boxSize, needLollis)
     val pc = generator.generate(numGen).sample.get
     
     val ipol = pc.pol.toIPolygon.shiftToOrigin

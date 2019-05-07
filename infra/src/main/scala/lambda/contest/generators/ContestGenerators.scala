@@ -1,11 +1,10 @@
 package lambda.contest.generators
 
 import lambda.geometry._
-import lambda.geometry.floating.generators.PolygonGenerators.{AttachmentStrategy, LazyPolygon, prepNoScale}
+import lambda.geometry.floating.generators.PolygonGenerators.{AttachmentStrategy, prepNoScale}
 import lambda.geometry.floating.generators.PolygonPropertyUtils._
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
 
-import scala.collection.immutable
 import scala.util.Random
 
 /**
@@ -20,15 +19,15 @@ object ContestGenerators {
     dx + 1 <= z && dy + 1 <= z
   }
 
-  def simpleRGenerator(size: Int, includeLollis: Boolean = false) = {
+  def roomGenerator(size: Int, includeLollis: Boolean = false) = {
     import Attachments._
     import BasePolygons._
 
     val basePolygons = simpleBases
     val baseFreqs = List(10, 12, 4)
-    
+
     ///////////////////////////////////////////////////
-    
+
     val attachments = List(
       scalableRectangles,
       scalableSquares,
@@ -37,17 +36,29 @@ object ContestGenerators {
       scalableSquares3,
       scalableFlatRectangles,
 
-      scalablePyramide
-    )
+      scalablePyramide,
     
-    val fs1 = Random.nextInt(10) + 10
-    val fs2 = Random.nextInt(10) + 10
+      scalableSquares2,
+      scalableRectangles2,
+      scalableSquares4,
+      scalableRectangles4
+    )
+
+    val fs1 = Random.nextInt(20) + 15
+    val fs2 = Random.nextInt(20) + 15
+    
     val fs3 = Random.nextInt(10) + 7
     val fs4 = Random.nextInt(10) + 7
     val fs5 = Random.nextInt(10) + 5
+    
     val fs6 = Random.nextInt(5) + 5
     
-    val attFqs = List(fs1, fs2, fs3, fs4, fs5, fs6)
+    val fs7 = Random.nextInt(10) + 0
+    val fs8 = Random.nextInt(10) + 0
+    val fs9 = Random.nextInt(10) + 0
+    val fs10 = Random.nextInt(10) + 0
+
+    val attFqs = List(fs1, fs2, fs3, fs4, fs5, fs6, fs7, fs8, fs9, fs10)
 
     ///////////////////////////////////////////////////
     val tetrisAtts = List(
@@ -62,7 +73,7 @@ object ContestGenerators {
 
     ///////////////////////////////////////////////////
     val (lols, lfrews) = if (includeLollis) {
-      (List(unscalableLollis), List(3))
+      (List(unscalableLollis), List(5))
     } else (Nil, Nil)
 
 
@@ -76,11 +87,10 @@ object ContestGenerators {
 
 
     val stickSizes = (3, 12)
-    
-    
+
 
     ContestPolygonGenerator(basePolygons, baseFreqs,
-      atts, attFreqs, boundingBoxSize(size),stickSizes)
+      atts, attFreqs, boundingBoxSize(size), stickSizes)
   }
 
 
@@ -122,48 +132,53 @@ object Attachments {
     FPolygon(Seq(
       FPoint(0, 0), FPoint(0, 1),
       FPoint(-1, 1), FPoint(-1, 0))))
-  
+
   val flatRect = prepNoScale(
     FPolygon(Seq(
       FPoint(0, 0), FPoint(0, 0.5),
       FPoint(-1, 0.5), FPoint(-1, 0))))
-  
+
   val scalableRectangles = (generateNormalizedRectangle, unitScalingStrategy)
+  val scalableRectangles2 = (generateNormalizedRectangle, unit3ScalingStrategy)
+  val scalableRectangles4 = (generateNormalizedRectangle, unit4ScalingStrategy)
   val scalableRectangles3 = (generateNormalizedRectangle, unitAttachmentStrategy3)
   val scalableFlatRectangles = (generateNormalizedRectangle, flatScalingStrategy)
+
   val scalableSquares = (square, unitScalingStrategy)
+  val scalableSquares2 = (square, unit3ScalingStrategy)
+  val scalableSquares4 = (square, unit4ScalingStrategy)
   val scalableSquares3 = (square, unitAttachmentStrategy3)
 
   val unscalableLollis = (prepNoScale(lolli), noScalingStrategy)
 
-  val scalablePyramide = (prepNoScale(pyramide), unitScalingStrategy)
+  val scalablePyramide = (prepNoScale(pyramide), unit3ScalingStrategy)
 
-  val tetrisStickScale = (prepNoScale(tetrisStick), unitScalingStrategy)
+  val tetrisStickScale = (prepNoScale(tetrisStick), unit3ScalingStrategy)
   val tetrisStickNoScale = (prepNoScale(tetrisStick), noScalingStrategy)
   val tetrisStickUnit = (prepNoScale(tetrisStick), unitAttachmentStrategy)
   val tetrisStickUnit3 = (prepNoScale(tetrisStick), unitAttachmentStrategy3)
 
-  val tetrisLScale = (prepNoScale(tetrisL), unitScalingStrategy)
+  val tetrisLScale = (prepNoScale(tetrisL), unit3ScalingStrategy)
   val tetrisLNoScale = (prepNoScale(tetrisL), noScalingStrategy)
   val tetrisLUnit = (prepNoScale(tetrisL), unitAttachmentStrategy)
   val tetrisLUnit3 = (prepNoScale(tetrisL), unitAttachmentStrategy3)
 
-  val tetrisRScale = (prepNoScale(tetrisR), unitScalingStrategy)
+  val tetrisRScale = (prepNoScale(tetrisR), unit3ScalingStrategy)
   val tetrisRNoScale = (prepNoScale(tetrisR), noScalingStrategy)
   val tetrisRUnit = (prepNoScale(tetrisR), unitAttachmentStrategy)
   val tetrisRUnit3 = (prepNoScale(tetrisR), unitAttachmentStrategy3)
 
-  val tetris2Scale = (prepNoScale(tetris2), unitScalingStrategy)
+  val tetris2Scale = (prepNoScale(tetris2), unit3ScalingStrategy)
   val tetris2NoScale = (prepNoScale(tetris2), noScalingStrategy)
   val tetris2Unit = (prepNoScale(tetris2), unitAttachmentStrategy)
   val tetris2Unit3 = (prepNoScale(tetris2), unitAttachmentStrategy3)
 
-  val tetris3lScale = (prepNoScale(tetris3l), unitScalingStrategy)
+  val tetris3lScale = (prepNoScale(tetris3l), unit3ScalingStrategy)
   val tetris3lNoScale = (prepNoScale(tetris3l), noScalingStrategy)
   val tetris3lUnit = (prepNoScale(tetris3l), unitAttachmentStrategy)
   val tetris3lUnit3 = (prepNoScale(tetris3l), unitAttachmentStrategy3)
 
-  val tetris3rScale = (prepNoScale(tetris3r), unitScalingStrategy)
+  val tetris3rScale = (prepNoScale(tetris3r), unit3ScalingStrategy)
   val tetris3rNoScale = (prepNoScale(tetris3r), noScalingStrategy)
   val tetris3rUnit = (prepNoScale(tetris3r), unitAttachmentStrategy)
   val tetris3rUnit3 = (prepNoScale(tetris3r), unitAttachmentStrategy3)
@@ -189,8 +204,8 @@ object Attachments {
   lazy val tetris3l: FPolygon = Seq((0, 0), (0, 3), (-1, 3), (-1, 2), (-2, 2), (-2, 1), (-1, 1), (-1, 0))
 
   lazy val tetris3r: FPolygon = Seq((0, 0), (0, 1), (1, 1), (1, 2), (0, 2), (0, 3), (-1, 3), (-1, 0))
-  
-  
+
+
   lazy val pyramide: FPolygon = Seq((0, 0),
     (0, 10), (-8, 10),
     (-8, 8), (-6, 8),
@@ -231,6 +246,28 @@ object Attachments {
       else {
         val startOffset = randomIntBetween(1, l.toInt - 2)
         val endOffset = randomIntBetween(startOffset + 1, l.toInt - 1)
+        val scalingK = endOffset - startOffset
+        Some((startOffset, endOffset, scalingK))
+      }
+  }
+
+  lazy val unit3ScalingStrategy: AttachmentStrategy = {
+    case (l, rect) =>
+      if (l < 5) None
+      else {
+        val startOffset = randomIntBetween(1, l.toInt - 4)
+        val endOffset = randomIntBetween(startOffset + 3, l.toInt - 1)
+        val scalingK = endOffset - startOffset
+        Some((startOffset, endOffset, scalingK))
+      }
+  }
+
+  lazy val unit4ScalingStrategy: AttachmentStrategy = {
+    case (l, rect) =>
+      if (l < 56) None
+      else {
+        val startOffset = randomIntBetween(1, l.toInt - 5)
+        val endOffset = randomIntBetween(startOffset + 4, l.toInt - 1)
         val scalingK = endOffset - startOffset
         Some((startOffset, endOffset, scalingK))
       }
