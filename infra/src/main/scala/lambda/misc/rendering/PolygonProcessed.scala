@@ -2,21 +2,18 @@ package lambda.misc.rendering
 
 import java.awt.{Color, Graphics}
 
-import javax.swing.JPanel
 import lambda.geometry.floating.{FPoint, FPolygon}
 
 /**
   * @author Ilya Sergey
   */
-case class PolygonProcessed(polygon: FPolygon,
-                            MAX_FRAME_SIZE: Int = 1000,
-                            MARGIN_SIZE: Int = 150,
-                            DOT_RADIUS: Int = 7) extends JPanel {
+case class PolygonProcessed(polygon: FPolygon) {
 
-  override def paint(g: Graphics): Unit = {
-    fillWhiteBackground(this, g)
-    fillPoly(g, this.polygon, this, Color.LIGHT_GRAY)
-  }
+
+  val MAX_FRAME_SIZE: Int = 850
+  val MARGIN_SIZE: Int = 150
+  val DOT_RADIUS: Int = 7
+
   val dimensions = getDimensions
   val bottomLeft = dimensions._1
 
@@ -40,8 +37,11 @@ case class PolygonProcessed(polygon: FPolygon,
   // Processed coordinates
   val processedVertices: Seq[(Int, Int)] = for (v <- polygon.vertices) yield processPoint(v)
 
-  val frameSize: (Int, Int) = ((2 * MARGIN_SIZE + k * xSize).toInt,
-    (2 * MARGIN_SIZE + k * ySize).toInt)
+  val frameSize: (Int, Int) = {
+    val zSize = math.max(xSize, ySize)
+    ((2 * MARGIN_SIZE + k * zSize).toInt,
+      (2 * MARGIN_SIZE + k * zSize).toInt)
+  }
 
   def processPoint(v: FPoint): (Int, Int) = {
     val (x1, y1) = (v.x - bottomLeft._1, ySize + bottomLeft._2 - v.y)
@@ -58,15 +58,15 @@ case class PolygonProcessed(polygon: FPolygon,
     (unz._1, unz._2, ps.size)
   }
 
-  def drawPoly(g: Graphics, p: FPolygon, pp: PolygonProcessed, c: Color): Unit = {
+  def drawPoly(g: Graphics, p: FPolygon, c: Color): Unit = {
     g.setColor(c)
-    val vs = pp.processPoly(p)
+    val vs = processPoly(p)
     g.drawPolygon(vs._1.toArray, vs._2.toArray, vs._3)
   }
 
-  def fillPoly(g: Graphics, p: FPolygon, pp: PolygonProcessed, c: Color): Unit = {
+  def fillPoly(g: Graphics, p: FPolygon, c: Color): Unit = {
     g.setColor(c)
-    val vs = pp.processPoly(p)
+    val vs = processPoly(p)
     g.fillPolygon(vs._1.toArray, vs._2.toArray, vs._3)
   }
 
@@ -88,10 +88,11 @@ case class PolygonProcessed(polygon: FPolygon,
     res
   }
 
-  def fillWhiteBackground(pp: PolygonProcessed, g: Graphics): Unit = {
+  def fillWhiteBackground(g: Graphics): Unit = {
     g.setColor(Color.WHITE)
-    val (x, y) = pp.frameSize
-    g.fillPolygon(Array(0, 0, x, x), Array(0, y, y, 0), 4)
+    val (x, y) = frameSize
+    val z = math.max(x, y)
+    g.fillPolygon(Array(0, 0, z, z), Array(0, z, z, 0), 4)
   }
 
 }
