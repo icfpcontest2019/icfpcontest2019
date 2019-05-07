@@ -1,4 +1,4 @@
-package lambda.misc.rendering
+package lambda.contest.generators
 
 import java.awt.{Color, Graphics}
 

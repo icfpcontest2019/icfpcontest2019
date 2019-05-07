@@ -14,7 +14,7 @@ object MapPropertyUtils {
 
     for {
       obstacleCount <- Gen.choose(minObstacles, maxObstacles)
-      obstacles <- Gen.listOfN(obstacleCount, obstacleGenerator.generateFlat())
+      obstacles <- Gen.listOfN(obstacleCount, obstacleGenerator.generateFlat(100))
     } yield {
       var placed = List[FPolygon]()
 
