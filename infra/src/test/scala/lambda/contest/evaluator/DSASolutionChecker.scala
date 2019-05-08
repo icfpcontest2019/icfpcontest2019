@@ -69,6 +69,7 @@ trait DSASolutions extends StatisticsUtils[Int, Unit] {
 
       println()
     }
+    val ranking = rankTeams(scores, 1, true)
     (tasks, intScores)
   }
   
@@ -157,7 +158,7 @@ trait DSASolutions extends StatisticsUtils[Int, Unit] {
 
   private def convertDSASolution(sol: List[IPoint]): List[List[Action]] = {
     val steps = getPairs(sol).toList
-    val moves = steps.map(pairToAction)
+    val moves = steps.map(pairToAction) //.filter(_ != Snooze)
     List(moves)
 
   }
