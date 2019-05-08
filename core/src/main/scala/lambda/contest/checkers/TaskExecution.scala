@@ -46,7 +46,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
 
   private def checkWatchman[T](watchNum: Int): Boolean = {
-      watchmenPositions.isDefinedAt(watchNum) &&
+    watchmenPositions.isDefinedAt(watchNum) &&
       watchmen.isDefinedAt(watchNum)
   }
 
@@ -58,9 +58,13 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   private def castLight(w: Watchman, wPos: IPoint): Unit = {
     for {litSquare@IPoint(x, y) <- w.getTorchRange(wPos)
-         if squareIsVisible(wPos, litSquare)} {
-      val c = matrix(x)(y)
-      c.shedLight()
+         if positionWithinBoundingBox(litSquare)} {
+      val cell = getCell(litSquare)
+      if (cell.canStep &&
+        !cell.isIlluminated &&
+        squareIsVisible(wPos, litSquare)) {
+        cell.shedLight()
+      }
     }
   }
 

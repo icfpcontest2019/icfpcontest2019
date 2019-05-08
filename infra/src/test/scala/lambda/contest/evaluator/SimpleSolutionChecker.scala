@@ -1,7 +1,8 @@
-package lambda.contest
+package lambda.contest.evaluator
 
 import lambda.contest.checkers.TorchShape
 import lambda.contest.examples.SimpleRooms
+import lambda.contest.ContestConstants
 import org.scalatest.{FlatSpec, Matchers}
 
 /**

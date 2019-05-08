@@ -1,7 +1,8 @@
-package lambda.contest
+package lambda.contest.evaluator
 
 import lambda.contest.checkers.TaskExecution
 import lambda.contest.examples.RoomsWithPartialSolutions
+import lambda.contest.ContestException
 import lambda.geometry.integer.IPoint
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}

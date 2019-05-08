@@ -7,13 +7,10 @@ import scala.collection.mutable.{ArrayBuffer, Map}
 /**
   * Created by gilles on 28/01/17.
   */
-trait StatisticsUtils[AdditionalInfo] {
-
-  // TEAMNAME AND TEAMINFO TYPES CAN BE CHANGED TO SOMETHING ELSE IF NEEDED
-  type TeamName = String
+trait StatisticsUtils[TeamName, AdditionalInfo] {
 
   // FIXED TYPES
-  type resultsToRank = IMap[TeamName, (AdditionalInfo, IMap[Int, Option[Double]])]
+  type ResultsToRank = IMap[TeamName, (AdditionalInfo, IMap[Int, Option[Double]])]
   type GlobalRanking = IMap[Int, Seq[TeamName]] // Map from Global Rank to Team(s)
 
 
@@ -27,7 +24,7 @@ trait StatisticsUtils[AdditionalInfo] {
     * @param scores contains a mapping from teams to their results and meta info. Lowest score is best (unless None then it's worst)
     * @return
     */
-  def rankTeams(scores: resultsToRank, precision: Int, ascOrder: Boolean): GlobalRanking = {
+  def rankTeams(scores: ResultsToRank, precision: Int, ascOrder: Boolean): GlobalRanking = {
 
     var points: Map[TeamName, Int] = Map() // Map from teamname to total of points
 
@@ -92,58 +89,3 @@ trait StatisticsUtils[AdditionalInfo] {
   }
 
 }
-
-/**
-  * [Ilya] Sorry, Gilles, but I don't have time to refactor the imperative code below.
-  */
-
-/*
-object StatisticsUtil extends StatisticsUtils[(String, String)] {
-  /**
-    * Main class just to test ranking on a hardcoded input
-    */
-  def main(args: Array[String]): Unit = {
-
-    val numberOfProblems = 30
-    val precision = 0.000001f
-
-    // initialise a hardcoded array for testing purposes
-    val teaminfos = Seq(("team1", "10/20/17"), ("team2", "10/20/17"), ("team3", "10/20/17"), ("team4", "10/20/17"))
-
-    // generate random scores
-    var teamscores = Buffer.fill(4)(Buffer.fill(numberOfProblems)(Option(0.0f))) //--> teamscores(teamIndex)(problemIndex)
-    for (i <- teamscores.indices) {
-      var temp = Buffer.fill(numberOfProblems)(Option(0.0f))
-      for (j <- temp.indices) {
-        temp(j) = Some((math.random * 99 + 1).toFloat)
-      }
-      teamscores(i) = temp
-    }
-
-    //then randomly change some to None
-    val rnd = new scala.util.Random
-    for (i <- 1 to 10)
-      teamscores(rnd.nextInt(4))(rnd.nextInt(numberOfProblems)) = None
-
-
-    val teamNames = Seq("alpha", "bravo", "charlie", "delta")
-
-    println(teamscores)
-
-    var toRank: resultsToRank = mutable.Map()
-    for (i <- teamNames.indices)
-      toRank += (teamNames(i) -> (teaminfos(i), teamscores(i)))
-    val finalRanking = rankTeams(toRank, precision)
-
-    for (i <- 1 to teaminfos.length) {
-      if (finalRanking.keySet.contains(i))
-        println("Rank " + i + ": " + finalRanking(i))
-    }
-
-    // plot the scores (plot all teamscores(i))
-  }
-
-}
-*/
-
-

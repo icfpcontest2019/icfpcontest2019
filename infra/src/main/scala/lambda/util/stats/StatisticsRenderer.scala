@@ -11,7 +11,7 @@ import scala.xml.Elem
   * @author Ilya Sergey
   */
 
-abstract class StatisticsRenderer extends StatisticsUtils[String] {
+abstract class StatisticsRenderer extends StatisticsUtils[String, String] {
 
   val SInstance : ScenarioInstance
   val SType : SubmissionType
@@ -44,11 +44,11 @@ abstract class StatisticsRenderer extends StatisticsUtils[String] {
     val teamToTimeResults: AllTeamsResults = computeAllTeamResults(sDir)
 
     val orderScoreByIncreasing = true
-    val rankToTeams: Map[Int, Seq[TeamName]] = rankTeams(teamToTimeResults, rankingPrecision, orderScoreByIncreasing)
+    val rankToTeams: Map[Int, Seq[String]] = rankTeams(teamToTimeResults, rankingPrecision, orderScoreByIncreasing)
     // TODO: build entire rows
 
     // Mapping teams back to ranks
-    val rankTeamsMap: Map[TeamName, Int] =
+    val rankTeamsMap: Map[String, Int] =
       (for ((rk, ts) <- rankToTeams.toSeq) yield ts.map(t => (t, rk))).flatten.toMap
 
     assert(rankTeamsMap.size == teamToTimeResults.size)

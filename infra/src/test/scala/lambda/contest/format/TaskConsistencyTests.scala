@@ -1,5 +1,6 @@
-package lambda.contest
+package lambda.contest.format
 
+import lambda.contest.ContestConstants
 import org.scalatest.{FlatSpec, Matchers}
 
 /**

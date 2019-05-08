@@ -1,4 +1,4 @@
-package lambda.contest
+package lambda.contest.shapes
 
 import lambda.geometry.floating.{FPoint, FSegment}
 import lambda.geometry.integer.IntersectionUtils.cellsCrossedBySegment

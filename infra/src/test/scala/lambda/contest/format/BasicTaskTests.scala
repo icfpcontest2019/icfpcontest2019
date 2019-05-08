@@ -1,4 +1,4 @@
-package lambda.contest
+package lambda.contest.format
 
 import lambda.contest.checkers.ContestCheckingUtils._
 import lambda.contest.checkers.TaskCreationUtils._

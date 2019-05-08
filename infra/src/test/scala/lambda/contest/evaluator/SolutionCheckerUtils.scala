@@ -1,4 +1,4 @@
-package lambda.contest
+package lambda.contest.evaluator
 
 import lambda.contest.checkers.TaskCreationUtils.{contestTaskToMatrix, stringToContestTask}
 import lambda.contest.checkers.TaskExecution
