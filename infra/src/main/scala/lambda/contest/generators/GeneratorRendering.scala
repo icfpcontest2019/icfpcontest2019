@@ -16,7 +16,7 @@ trait GeneratorRendering {
   protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon
 
 
-  var pp : PolygonProcessed = _
+  var pp : PolygonToRender = _
   
   /**
     * Draw the generator 
@@ -24,7 +24,7 @@ trait GeneratorRendering {
   def draw(boxSize: Int): Unit = {
 
     val pc = generateNewPolygon(boxSize)
-    pp = PolygonProcessed(pc.pol)
+    pp = PolygonToRender(pc.pol)
 
     val frame = new JFrame()
     val polygonPanel = new JPanel() {
@@ -35,7 +35,7 @@ trait GeneratorRendering {
     }
 
     def generateNewPoly: Unit => Unit = { _ : Unit =>
-      pp = PolygonProcessed(generateNewPolygon(boxSize).pol)
+      pp = PolygonToRender(generateNewPolygon(boxSize).pol)
       polygonPanel.paint(polygonPanel.getGraphics)
     }
 

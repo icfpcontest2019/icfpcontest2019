@@ -1,5 +1,6 @@
-package lambda.contest.generators
+package lambda.contest.generators.runners
 
+import lambda.contest.generators.{ContestGenerators, GeneratorRendering}
 import lambda.geometry.floating.FPolygonUtils
 import lambda.geometry.floating.generators.CompositePolygon
 
@@ -11,7 +12,7 @@ import scala.util.Random
   * @author Ilya Sergey
   */
 
-object BasicRectoPolyGen extends GeneratorRendering {
+object RawRoomGenerator extends GeneratorRendering {
 
   var needLollis : Boolean = false
 

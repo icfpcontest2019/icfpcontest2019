@@ -7,7 +7,7 @@ import lambda.geometry.floating.{FPoint, FPolygon}
 /**
   * @author Ilya Sergey
   */
-case class PolygonProcessed(polygon: FPolygon) {
+case class PolygonToRender(polygon: FPolygon) {
 
 
   val MAX_FRAME_SIZE: Int = 600
@@ -70,7 +70,7 @@ case class PolygonProcessed(polygon: FPolygon) {
     g.fillPolygon(vs._1.toArray, vs._2.toArray, vs._3)
   }
 
-  def drawPoint(g: Graphics, pp: PolygonProcessed, p: FPoint, c: Color): Unit = {
+  def drawPoint(g: Graphics, pp: PolygonToRender, p: FPoint, c: Color): Unit = {
     g.setColor(c)
     val (x, y) = pp.processPoint(p)
     g.fillOval(x - DOT_RADIUS / 2, y - DOT_RADIUS / 2, DOT_RADIUS, DOT_RADIUS)
