@@ -19,7 +19,15 @@ object ContestGenerators {
     dx + 1 <= z && dy + 1 <= z
   }
 
-  def roomGenerator(size: Int, includeLollis: Boolean = false) = {
+  def isWithinBoundary(boundOpt: Option[FPolygon] = None) = (p: FPolygon) =>
+    boundOpt match {
+      case Some(x) =>
+        x.contains(p) && !x.edgeIntersect(p)
+      case None => true
+    }
+
+  def roomGenerator(size: Int, includeLollis: Boolean = false,
+                    boundOpt: Option[FPolygon] = None) = {
     import Attachments._
     import BasePolygons._
 
@@ -37,7 +45,7 @@ object ContestGenerators {
       scalableFlatRectangles,
 
       scalablePyramide,
-    
+
       scalableSquares2,
       scalableRectangles2,
       scalableSquares4,
@@ -46,13 +54,13 @@ object ContestGenerators {
 
     val fs1 = Random.nextInt(20) + 15
     val fs2 = Random.nextInt(20) + 15
-    
-    val fs3 = Random.nextInt(10) + 7
-    val fs4 = Random.nextInt(10) + 7
+
+    val fs3 = Random.nextInt(10) + 2
+    val fs4 = Random.nextInt(10) + 2
     val fs5 = Random.nextInt(10) + 5
-    
+
     val fs6 = Random.nextInt(5) + 5
-    
+
     val fs7 = Random.nextInt(10) + 0
     val fs8 = Random.nextInt(10) + 0
     val fs9 = Random.nextInt(10) + 0
@@ -67,7 +75,7 @@ object ContestGenerators {
       tetrisRScale, //tetrisRNoScale,
       tetris3lScale, //tetris3lNoScale,
       tetris3rScale, //tetris3rNoScale,
-      tetris2Scale, //tetris2NoScale,
+      tetris2Scale //tetris2NoScale,
     )
     val tetrisFreqs = List(2)
 
@@ -86,7 +94,11 @@ object ContestGenerators {
       tetrisFreqs ++ tetrisFreqs ++ tetrisFreqs
 
 
-    val stickSizes = (3, 12)
+    val stickSizes = (3, 6)
+
+    def cond: FPolygon => Boolean = p =>
+      boundingBoxSize(size)(p) &&
+        isWithinBoundary(boundOpt)(p)
 
 
     ContestPolygonGenerator(basePolygons, baseFreqs,

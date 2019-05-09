@@ -1,10 +1,11 @@
 package lambda.contest.generators
 
-import java.awt.event.ActionEvent
+import java.awt.event.{ActionEvent, ActionListener}
 import java.awt.{BorderLayout, Color, Graphics}
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.generators.GeneratorFileUtil.{getAsIsPath, getNeedObstaclesPath, getNewFilePath, noObstacleExtension, readyRoomExtension}
+import lambda.geometry.floating.FPolygon
 import lambda.geometry.floating.generators.CompositePolygon
 import lambda.util.FileUtil
 
@@ -13,7 +14,7 @@ import lambda.util.FileUtil
   */
 trait GeneratorRendering {
 
-  protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon
+  protected def generateNewPolygon(boxSize: Int = 100, boundOpt: Option[FPolygon]): CompositePolygon
 
 
   var pp : PolygonToRender = _
@@ -21,9 +22,9 @@ trait GeneratorRendering {
   /**
     * Draw the generator 
     */
-  def draw(boxSize: Int): Unit = {
+  def draw(boxSize: Int, boundOpt: Option[FPolygon]): Unit = {
 
-    val pc = generateNewPolygon(boxSize)
+    val pc = generateNewPolygon(boxSize, boundOpt)
     pp = PolygonToRender(pc.pol)
 
     val frame = new JFrame()
@@ -31,11 +32,16 @@ trait GeneratorRendering {
       override def paint(g: Graphics) = {
         pp.fillWhiteBackground(g)
         pp.fillPoly(g, pp.polygon, Color.LIGHT_GRAY)
+        boundOpt match {
+          case Some(x) =>
+            PolygonToRender(x).fillPoly(g, x, Color.yellow)
+          case None =>
+        }
       }
     }
 
     def generateNewPoly: Unit => Unit = { _ : Unit =>
-      pp = PolygonToRender(generateNewPolygon(boxSize).pol)
+      pp = PolygonToRender(generateNewPolygon(boxSize, boundOpt).pol)
       polygonPanel.paint(polygonPanel.getGraphics)
     }
 
@@ -66,18 +72,25 @@ trait GeneratorRendering {
     }
 
     val acceptButton = new JButton("Awesome!")
-    acceptButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(getAsIsPath(boxSize), readyRoomExtension)
-
+    acceptButton.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent): Unit = {
+        recordPolygon(getAsIsPath(boxSize), readyRoomExtension)
+      }
     })
     
     val needObstaclesButton = new JButton("Needs obstacles...")
-    needObstaclesButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(getNeedObstaclesPath(boxSize), noObstacleExtension)
+    needObstaclesButton.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent): Unit = {
+        recordPolygon(getNeedObstaclesPath(boxSize), noObstacleExtension)
+      }
     })
 
     val rejectButton = new JButton("Try again")
-    rejectButton.addActionListener((e: ActionEvent) => genNewPoly(()))
+    rejectButton.addActionListener(new ActionListener {
+      override def actionPerformed(e: ActionEvent): Unit = {
+        genNewPoly(())
+      }
+    })
     
     (acceptButton, needObstaclesButton, rejectButton)
   }

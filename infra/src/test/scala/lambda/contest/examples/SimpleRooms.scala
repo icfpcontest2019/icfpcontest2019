@@ -7,8 +7,8 @@ import java.io.File
   */
 trait SimpleRooms {
 
-  val simpleProblemsPath: String = "./infra/src/test/resources/simple/rooms"
-  val simpleSolutionsPath: String = "./infra/src/test/resources/simple/solutions/"
+  val simpleProblemsPath: String = s"${System.getProperty("user.dir")}/infra/src/test/resources/simple/rooms"
+  val simpleSolutionsPath: String = s"${System.getProperty("user.dir")}/infra/src/test/resources/simple/solutions/"
 
   val room1 = "room1"
   val room2 = "room2"

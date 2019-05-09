@@ -1,7 +1,8 @@
 package lambda.contest.generators.runners
 
+import lambda.contest.generators.geodata.GeoHelper
 import lambda.contest.generators.{ContestGenerators, GeneratorRendering}
-import lambda.geometry.floating.FPolygonUtils
+import lambda.geometry.floating.{FPolygon, FPolygonUtils}
 import lambda.geometry.floating.generators.CompositePolygon
 
 import scala.util.Random
@@ -28,16 +29,20 @@ object RawRoomGenerator extends GeneratorRendering {
       args(1).toBoolean
     } else false
     
+    val boundOpt = if (args.length >= 3) {
+      Some(GeoHelper.getCountryScaled(args(2), boxSize))
+    } else None
     
-    draw(boxSize)
+    
+    draw(boxSize, boundOpt)
   
   }
 
   
-  protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon = {
+  protected def generateNewPolygon(boxSize: Int = 100, boundOpt: Option[FPolygon]): CompositePolygon = {
     
-    val numGen = 100 + Random.nextInt(150)
-    val generator = ContestGenerators.roomGenerator(boxSize, needLollis)
+    val numGen = 50 + Random.nextInt(150)
+    val generator = ContestGenerators.roomGenerator(boxSize, needLollis, boundOpt)
     val pc = generator.generate(numGen).sample.get
     
     val ipol = pc.pol.toIPolygon.shiftToOrigin
