@@ -46,9 +46,9 @@ class DSASolutionChecker extends FlatSpec with Matchers
 
 trait DSASolutions extends StatisticsUtils[Int, Unit] {
 
-  val dsaTaskPath = "./infra/src/test/resources/simple/rooms/"
+  val dsaTaskPath = s"${System.getProperty("user.dir")}/src/test/resources/simple/rooms/"
 
-  val dsaSolutionPath = "./infra/src/test/resources/simple/solutions/"
+  val dsaSolutionPath = s"${System.getProperty("user.dir")}/src/test/resources/simple/solutions/"
 
   val torchShape = List((1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1))
 
