@@ -25,7 +25,7 @@ object GeoHelper {
   def main(args: Array[String]): Unit = {
 
     val geoPath = args(0)
-    val boxSize = 100
+    val boxSize = 99
 
     val centered: FPolygon = getCountryScaled(geoPath, boxSize)
 
@@ -56,8 +56,18 @@ object GeoHelper {
     // println(s"Scaled BB: ${getPolygonBoundingBox(countryScaled)}")
     val (_, FPoint(fx, fy)) = getPolygonBoundingBox(countryScaled)
     val centered = countryScaled.shiftToOrigin(FPoint(fx / 2, fy / 2))
-    val scaledAndCentered = FPolygon(centered.vertices.map {case FPoint(x, y) => FPoint(x, y * 1)})
-    scaledAndCentered.removeZeroEdges
+    
+    
+    val xyRatio = math.min(2.5, fx / fy)
+    val scaledAndCentered = FPolygon(centered.vertices.map {case FPoint(x, y) => FPoint(x, y * xyRatio)})
+    val (_, FPoint(dx1, dy1)) = getPolygonBoundingBox(scaledAndCentered)
+    val maxDim1 = math.max(dx1, dy1)
+    val scaleFactor1 = boxSize / maxDim1
+    val countryScaled1 = scaledAndCentered.stretch(scaleFactor1)
+    
+    val finalPoly = countryScaled1.removeZeroEdges
+    println(getPolygonBoundingBox(finalPoly))
+    finalPoly
   }
 
   private def renderCountry(largest: _root_.lambda.geometry.floating.FPolygon) = {
