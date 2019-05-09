@@ -24,10 +24,10 @@ object GeoHelper {
   def main(args: Array[String]): Unit = {
 
     val geoPath = args(0)
-    val boxSize = 200
+    val boxSize = 100
 
     val centered: FPolygon = getCountryScaled(geoPath, boxSize)
-    
+
     renderCountry(centered)
 
 
@@ -55,7 +55,7 @@ object GeoHelper {
     // println(s"Scaled BB: ${getPolygonBoundingBox(countryScaled)}")
     val (_, FPoint(fx, fy)) = getPolygonBoundingBox(countryScaled)
     val centered = countryScaled.shiftToOrigin(FPoint(fx / 2, fy / 2))
-    centered
+    centered.removeZeroEdges
   }
 
   private def renderCountry(largest: _root_.lambda.geometry.floating.FPolygon) = {
@@ -66,6 +66,21 @@ object GeoHelper {
       override def paint(g: Graphics) = {
         pp.fillWhiteBackground(g)
         pp.fillPoly(g, pp.polygon, Color.LIGHT_GRAY)
+
+        val (FPoint(x1, y1), FPoint(x2, y2)) = getPolygonBoundingBox(pp.polygon)
+        for {i <- x1.toInt to x2.toInt
+             j <- y1.toInt to y2.toInt} {
+          
+          val square = FPolygon(List(FPoint(i, j), FPoint(i + 1, j),
+            FPoint(i + 1, j + 1), FPoint(i, j + 1)))
+          if (j == 0) {
+            println(s"Done processing: ${((i - x1) / (x2 - x1) * 100).toInt}%")
+          }
+          if (pp.polygon.contains(square)) {
+            pp.fillPoly(g, square, Color.BLUE)
+          }
+        }
+
       }
     }
 
