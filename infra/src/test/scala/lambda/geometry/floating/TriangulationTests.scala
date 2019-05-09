@@ -77,22 +77,3 @@ object TriangulationSpecification extends Properties("Triangulation") {
   // property("A number of (possibly degenerate) triangles is n − 2") = triangulationCount
 }
 
-/*
-class TriangulationPropertyTests extends FunSuite with Checkers {
-
-  import lambda.geometry.floating.generators.PolygonPropertyUtils._
-  import RandomCrazyPolygonGenerator._
-
-  test("Property: centers of all triangles are in polygon") {
-    check((p: CompositePolygon) => {
-      val trs = Triangulation.triangulate(p)
-      trs.forall(t => {
-        val c = p containsPoint t.center
-        if (!c) println(s"Point ${t.center} is not in polygon $p")
-        c
-      })
-    })
-  }
-}
-*/
-
