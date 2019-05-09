@@ -21,8 +21,8 @@ object ContestGenerators {
 
   def isWithinBoundary(boundOpt: Option[FPolygon] = None) = (p: FPolygon) =>
     boundOpt match {
-      case Some(x) =>
-        x.contains(p) && !x.edgeIntersect(p)
+      case Some(x) => x.contains(p) && 
+        !x.edgeIntersect(p)
       case None => true
     }
 
@@ -102,7 +102,7 @@ object ContestGenerators {
 
 
     ContestPolygonGenerator(basePolygons, baseFreqs,
-      atts, attFreqs, boundingBoxSize(size), stickSizes)
+      atts, attFreqs, cond, stickSizes)
   }
 
 

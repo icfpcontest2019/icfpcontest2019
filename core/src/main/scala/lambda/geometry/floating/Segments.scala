@@ -83,9 +83,13 @@ object SegmentUtils {
     if (intersectProper(s1, s2)) {
       return true
     }
-
+    
     val (a, b) = s1.toPair
     val (c, d) = s2.toPair
+
+    if (a == b) return pointOnSegment(a, s2)
+    if (c == d) return pointOnSegment(c, s1)
+    
     if (pointOnSegment(c, s1) || pointOnSegment(d, s1) ||
         pointOnSegment(a, s2) || pointOnSegment(b, s2)) {
       return true

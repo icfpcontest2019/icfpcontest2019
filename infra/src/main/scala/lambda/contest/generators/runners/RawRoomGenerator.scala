@@ -41,7 +41,7 @@ object RawRoomGenerator extends GeneratorRendering {
   
   protected def generateNewPolygon(boxSize: Int = 100, boundOpt: Option[FPolygon]): CompositePolygon = {
     
-    val numGen = 50 + Random.nextInt(150)
+    val numGen = 250 + Random.nextInt(150)
     val generator = ContestGenerators.roomGenerator(boxSize, needLollis, boundOpt)
     val pc = generator.generate(numGen).sample.get
     

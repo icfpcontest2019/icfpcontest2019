@@ -30,13 +30,14 @@ trait GeneratorRendering {
     val frame = new JFrame()
     val polygonPanel = new JPanel() {
       override def paint(g: Graphics) = {
-        pp.fillWhiteBackground(g)
-        pp.fillPoly(g, pp.polygon, Color.LIGHT_GRAY)
+        val boundPP = PolygonToRender(if (boundOpt.isDefined) boundOpt.get else pc.pol)
+        boundPP.fillWhiteBackground(g)
         boundOpt match {
           case Some(x) =>
-            PolygonToRender(x).fillPoly(g, x, Color.yellow)
+            boundPP.drawPoly(g, x, Color.BLACK)
           case None =>
         }
+        boundPP.fillPoly(g, pp.polygon, Color.LIGHT_GRAY)
       }
     }
 
