@@ -1,24 +1,109 @@
 package lambda.geometry.floating.generators
 
-import lambda.geometry._
-import lambda.geometry.floating.FPointUtils._
-import lambda.geometry.floating.SegmentUtils._
-import lambda.geometry.floating._
-import lambda.geometry.floating.generators.PolygonCombinatorUtils._
+import lambda.geometry.floating.FPolygonUtils.{noSelfIntersections, prepareForAttachment}
+import lambda.geometry.floating.SegmentUtils.intersect
+import lambda.geometry.floating.{Direction, FPoint, FPolygon, FPolygonUtils, FSegment, PI, PointPolar, generators}
+import lambda.geometry.{randomIntBetween, randomRotation}
 import org.scalacheck.Gen
-
-/**
-  * @author Ilya Sergey
-  */
-
 
 /**
   * Generation of simple rectilinear polygons
   */
 object PolygonGenerators {
 
+  type LazyPolygon = Int => FPolygon
+  type PolygonCondition = FPolygon => Boolean
+  type AttachmentStrategy = (Double, FPolygon) => Option[(Int, Int, Int)]
+
+  def generatePolygon(base: FPolygon,
+                      toAttach: Gen[(LazyPolygon, AttachmentStrategy)],
+                      cond: PolygonCondition,
+                      polSize: Gen[Int],
+                      n: Int) =
+    extendPolygonIter(BasePolygon(base), toAttach, cond, polSize, n)
+
+  /**
+    * Extends a rectilinear polygon with appendices n times
+    *
+    * @param init        Initial polygon
+    * @param attachments randomly generated new appendices with position strategy
+    * @param polSize     Sizes for lazy polygons 
+    * @param n           number of iterations
+    * @return new polygon
+    */
+  def extendPolygonIter(init: CompositePolygon,
+                        attachments: Gen[(LazyPolygon, AttachmentStrategy)],
+                        cond: PolygonCondition,
+                        polSize: Gen[Int],
+                        n: Int): CompositePolygon = {
+
+    // Just iterate extension n times
+    var p: CompositePolygon = generators.BasePolygon(init.pol)
+    var p1 = p
+    var i = 0
+    do {
+      p1 = p
+      println(s"Iteration: $i / $n")
+      p = extendPolygon(p, attachments, cond, polSize)
+      i = i + 1
+    } while (i <= n && p1.size < p.size)
+    p
+  }
+
+  private def extendPolygon(pc: CompositePolygon,
+                            attachments: Gen[(LazyPolygon, AttachmentStrategy)],
+                            cond: PolygonCondition,
+                            polSize: Gen[Int]): CompositePolygon = {
+    //    val es = randomRotation(splitMaxEdges(pc))
+    val (es1, es2) = splitMaxEdges(pc)
+    val es = randomRotation(es1)
+    for (e <- es ++ es2) {
+      val size = polSize.sample.get
+      val (attached, posStrategy) = attachments.sample.get
+      val polyToAttach = attached(size)
+      val params = getEdgeParams(e, polyToAttach, posStrategy)
+      if (params.isDefined) {
+        val (phi, a, str) = params.get
+        val adjusted = polyToAttach.stretch(str).rotateCWAndShift(PI - phi, a)
+        splitAndAttach(e, pc, adjusted) match {
+          case Some(cp) =>
+            val pol = cp.pol
+            if (noSelfIntersections(pol) && cond(pol)) {
+              val ipol = pol.toIPolygon
+              val area = FPolygonUtils.computeArea(pol)
+              println(s"${ipol.vertices.size} vertices, area: ${area.toInt}")
+              
+              return cp
+            }
+          case None =>
+        }
+      }
+      // Tries to split while doesn't succeed
+    }
+    pc
+  }
+
+  def prep(p: FPolygon): LazyPolygon = (d: Int) => {
+    val eSize = randomIntBetween(1, d)
+    val r = prepareForAttachment(p, eSize)
+    assert(r.isDefined)
+    r.get
+  }
+
+  def prepNoScale(p: FPolygon): LazyPolygon = (_: Int) => {
+    val r = prepareForAttachment(p, 1)
+    assert(r.isDefined)
+    r.get
+  }
+
+
+  /* -------------------------------------------------------------------- */
+  /*                                  Utility methods                     */
+  /* -------------------------------------------------------------------- */
+
+
   // Get orientation of the outside-going normal ray for the edge
-  def getOrientation(s: FSegment): Double = s.angle
+  private def getOrientation(s: FSegment): Double = s.angle
 
   private def intersectsExisting(e: FSegment, pol: FPolygon, attached: FPolygon): Boolean = {
     val vs = attached.vertices
@@ -45,8 +130,8 @@ object PolygonGenerators {
 
   private def splitAndAttach(e: FSegment, pc: CompositePolygon,
                              attached: FPolygon): Option[CompositePolygon] = {
-    // Check whether these are good segments
-    if (intersectsExisting(e, pc, attached)) return None
+    // Check whether these are no existing segments
+    if (intersectsExisting(e, pc.pol, attached)) return None
 
     Some(Attached(pc, e, attached))
   }
@@ -54,77 +139,33 @@ object PolygonGenerators {
   /**
     * Get a leaning angle and an attachment point of an edge
     */
-  def getEdgeParams(e: FSegment, posStrategy: Double => Option[(Int, Int)]): Option[(Double, FPoint, Int)] = {
+  private def getEdgeParams(e: FSegment,
+                            p: FPolygon,
+                            posStrategy: AttachmentStrategy):
+  Option[(Double, FPoint, Int)] = {
     val l = e.length
     if (l < 1) return None
     val phi = e.angle
     val FSegment(a, _) = e
     // get an attachment point on the edge 1 unit away from the further end
-    val offsets = posStrategy(l)
+    val offsets = posStrategy(l, p)
     if (offsets.isEmpty) return None
-    val (startOffset, endOffset) = offsets.get
+    val (startOffset, endOffset, scalingFactor) = offsets.get
     assert(startOffset >= 0)
     assert(endOffset <= l)
-    val stretchK = endOffset - startOffset
-    assert(stretchK >= 1)
-    val aPoint = a + PointPolar(startOffset, phi).toCart
-    Some((phi, aPoint, stretchK))
+    assert(scalingFactor >= 1)
+    val z = PointPolar(startOffset, phi).toCart
+    val aPoint = a + Direction(z.x, z.y)
+    Some((phi, aPoint, scalingFactor))
   }
 
-  def generatePolygon(base: FPolygon, toAttach: Gen[LazyPolygon], polSize: Gen[Int],
-                      n: Int, posStrategy: Double => Option[(Int, Int)]) =
-    extendPolygonIter(BasePolygon(base), toAttach, polSize, n, posStrategy)
+  private def splitMaxEdges(pc: CompositePolygon): (Seq[FSegment], Seq[FSegment]) = {
+    val es = pc.pol.edges
+    val eMax = es.maxBy(_.length).length
+    val eMin = es.minBy(_.length).length
+    val mid = (eMax - eMin) / 2
+    (es.filter(_.length >= mid), es.filter(_.length < mid))
 
-  private def extendPolygon(pc: CompositePolygon, attachments: Gen[LazyPolygon],
-                            polSize: Gen[Int], posStrategy: Double => Option[(Int, Int)]): CompositePolygon = {
-    val es = randomRotation(pc.edges)
-    for (e <- es) {
-      val size = polSize.sample.get
-      val attached = attachments.sample.get(size)
-      val params = getEdgeParams(e, posStrategy)
-      if (params.isDefined) {
-        val (phi, a, str) = params.get
-        val adjusted = attached.stretch(str).rotateCWAndShift(PI - phi, a)
-        val np = splitAndAttach(e, pc, adjusted)
-        if (np.isDefined) {
-          val pol = np.get
-          if (FPolygonUtils.noSelfIntersections(pol)) return pol
-        }
-      }
-      // Tries to split while doesn't succeed
-    }
-    pc
-  }
-
-  type LazyPolygon = (Int) => FPolygon
-
-  def prep(p: FPolygon): LazyPolygon = (d: Int) => {
-    val eSize = randomIntBetween(1, d)
-    val r = FPolygonUtils.prepareForAttachment(p, eSize)
-    assert(r.isDefined)
-    r.get
-  }
-
-  def prepNoScale(p: FPolygon): LazyPolygon = (d: Int) => {
-    val r = FPolygonUtils.prepareForAttachment(p, 1)
-    assert(r.isDefined)
-    r.get
-  }
-
-  /**
-    * Extends a rectilinear polygon with appendices n times
-    *
-    * @param init        Initial polygon
-    * @param attachments randomly generated new appendices
-    * @param n           number of iterations
-    * @return new polygon
-    */
-  def extendPolygonIter(init: CompositePolygon, attachments: Gen[LazyPolygon], polSize: Gen[Int],
-                        n: Int, posStrategy: Double => Option[(Int, Int)]): CompositePolygon = {
-
-    // Just iterate extension n times
-    val base: CompositePolygon = generators.BasePolygon(init)
-    (0 until n).foldLeft(base)((p, _) => extendPolygon(p, attachments, polSize, posStrategy))
   }
 
 

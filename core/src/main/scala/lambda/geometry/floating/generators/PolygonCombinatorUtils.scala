@@ -27,7 +27,7 @@ object PolygonCombinatorUtils {
    * Compute the map of children, representing the dependency tree.
    *
    * This is a crucial structure as it capture the causality between the polygons, as they were constructed.
-   * By traversing it in a DFS or BFS-like manner, we can compile a reasonably good set of intermediate-ishœ polygons
+   * By traversing it in a DFS or BFS-like manner, we can compile a reasonably asis set of intermediate-ishœ polygons
    *
    */
   def computeAttachmentTree(pc: CompositePolygon): ATree =

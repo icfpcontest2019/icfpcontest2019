@@ -19,11 +19,19 @@ object PolygonPropertyUtils {
     */
   val generateNormalizedRectangle: LazyPolygon =
     (longEdgeSize: Int) => {
-      val i = randomIntBetween(1, longEdgeSize)
-      val j = randomIntBetween(3, longEdgeSize * 3)
+      val j = randomIntBetween(3, longEdgeSize)
       FPolygon(Seq(
         FPoint(0, 0), FPoint(0, j),
-        FPoint(-i, j), FPoint(-i, 0)))
+        FPoint(-1, j), FPoint(-1, 0)))
+    }
+
+  val generateNormalizedSquare: LazyPolygon =
+    (longEdgeSize: Int) => {
+      val i = randomIntBetween(1, 1)
+      val j = randomIntBetween(1, 1)
+      FPolygon(Seq(
+        FPoint(0, 0), FPoint(0, 1),
+        FPoint(-1, 1), FPoint(-1, 0)))
     }
 
   val generate3Rectangle: LazyPolygon =
@@ -56,3 +64,6 @@ object PolygonPropertyUtils {
       PolygonCombinatorUtils.makeTraversals(p)
     }
 }
+
+
+

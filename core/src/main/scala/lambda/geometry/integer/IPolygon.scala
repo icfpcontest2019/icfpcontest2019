@@ -16,7 +16,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
   import lambda.geometry.Turn._
 
 
-  override def toString = vertices.mkString(", ")
+  override def toString = vertices.mkString(",")
 
   def edges: Seq[ISegment] =
     getEdges(vertices).map { case (a, b) => ISegment(a, b) }
@@ -127,6 +127,11 @@ case class IPolygon(vertices: Seq[IPoint]) {
     ((xL, yL), (xR, yR))
   }
 
+  def dimensions: (Int, Int) = {
+    val ((xL, yL), (xR, yR)) = boundingBox
+    (xR - xL, yR - yL)
+  }
+
   /**
     *
     * Convert a polygon to matrix
@@ -154,6 +159,19 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
     (matrix, xr, yr)
   }
+  
+  def pixelsUsed = {
+    val (matrix, xr, yr) = shiftToOrigin.toMatrix
+    var count = 0
+    for {
+      i <- 0 until xr
+      j <- 0 until yr
+      if matrix(i)(j) == 0
+    } {
+      count = count + 1
+    }
+    (count, count.toDouble / (xr * yr))
+  } 
 
   def printInAscii = {
     val (matrix, xsize, ysize) = toMatrix

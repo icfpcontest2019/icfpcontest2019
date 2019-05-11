@@ -60,11 +60,11 @@ object IntersectionUtils {
           t2 = (x + 1 - p0.x) / rx
           yy1 = p0.y + ry * t1
           yy2 = p0.y + ry * t2
-          y1 = floor(min(yy1, yy2)).toInt
-          y2 = ceil(max(yy1, yy2)).toInt
+          y1 = floor(min(yy1, yy2)).toLong
+          y2 = ceil(max(yy1, yy2)).toLong
           y <- y1 to y2
           ty = (y - p0.y) / ry
-        } yield IPoint(x, y)
+        } yield IPoint(x.toInt, y.toInt)
       }
     val ia = IPoint(floor(a.x).toInt, floor(a.y).toInt)
     val ib = IPoint(floor(b.x).toInt, floor(b.y).toInt)

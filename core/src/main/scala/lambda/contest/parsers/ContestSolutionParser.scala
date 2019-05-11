@@ -9,26 +9,28 @@ import lambda.geometry.integer.IPoint
   */
 object ContestSolutionParser extends GeometryParsers {
 
-  // TODO: Implement me
+  // This is more flexible, as it allows arbitrary spaces b/w characters
+  def asString(c: Char): Parser[Char] =
+    s"$c" ^^ {s => s.charAt(0)}
 
   def moveParser: Parser[Action] =
     (// Moves
 
-      UP_LETTER ^^^ MoveUp
-        | DOWN_LETTER ^^^ MoveDown
-        | LEFT_LETTER ^^^ MoveLeft
-        | RIGHT_LETTER ^^^ MoveRight
-        | TURN_LEFT_LETTER ^^^ TurnLeft
-        | TURN_RIGHT_LETTER ^^^ TurnRight
-        | SNOOZE_LETTER ^^^ Snooze
+      asString(UP_LETTER) ^^^ MoveUp
+        | asString(DOWN_LETTER) ^^^ MoveDown
+        | asString(LEFT_LETTER) ^^^ MoveLeft
+        | asString(RIGHT_LETTER) ^^^ MoveRight
+        | asString(TURN_LEFT_LETTER) ^^^ TurnLeft
+        | asString(TURN_RIGHT_LETTER) ^^^ TurnRight
+        | asString(SNOOZE_LETTER) ^^^ Snooze
 
       // Boosters
-      | BATTERIES_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseBatteries(x, y) }
-      | COFFEE_LETTER ^^^ UseCoffee
-      | DRILL_LETTER ^^^ UseDrill
-      | INTSTALL_TELEPORT_LETTER ^^^ InstallTeleport
-      | DO_TELEPORT_LETTER ~ intPoint ^^ { case _ ~ IPoint(x, y) => DoTeleport(x, y) }
-      | CALL_FRIEND_LETTER ^^^ UseCallFriend)
+      | asString(BATTERIES_LETTER) ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseBatteries(x, y) }
+      | asString(COFFEE_LETTER) ^^^ UseCoffee
+      | asString(DRILL_LETTER) ^^^ UseDrill
+      | asString(INTSTALL_TELEPORT_LETTER) ^^^ InstallTeleport
+      | asString(DO_TELEPORT_LETTER) ~ intPoint ^^ { case _ ~ IPoint(x, y) => DoTeleport(x, y) }
+      | asString(CALL_FRIEND_LETTER) ^^^ UseCallFriend)
 
   def moves: Parser[List[Action]] = rep(moveParser)
 

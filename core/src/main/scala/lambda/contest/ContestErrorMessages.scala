@@ -21,14 +21,16 @@ object ContestErrorMessages {
 
   val CELL_DOES_NOT_HAVE_SPACE  = "Cell is not a part of the room interior."
   val CANNOT_COLLECT_BOOSTER = "Cannot collect booster from the non-free cell."
-  val CALL_POINT_INSTALLED = "This cell already has a call point installed."
-  val TELEPORT_INSTALLED = "This cell already has a teleport installed."
+  val CALL_POINT_INSTALLED = "Cannot perform this operation in this location."
+  val TELEPORT_INSTALLED = "Cannot perform this operation in this location."
 
   val WATCHMAN_NOT_FOUND = "Watchman not found."
   val BAD_ACTION = "Bad route action taken; interrupting validation."
   val BAD_BOOSTER = "No such booster exists; interrupting validation."
   val NO_BOOSTER = "No such booster available; interrupting validation."
   val BAD_TELEPORT_LOCATION = "Cannot teleport to this location."
+  val CANNOT_CALL_FRIEND = "Cannot perform this operation in this location."
+  val BAD_BATTERY_POSITION = "Cannot attach battery at this position."
 
 
 }

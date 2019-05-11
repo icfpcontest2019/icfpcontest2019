@@ -7,8 +7,8 @@ import java.io.File
   */
 trait RoomsWithPartialSolutions {
 
-  val problemsPath: String = "./infra/src/test/resources/navigation/"
-  val solutionsPath: String = "./infra/src/test/resources/navigation/routes/"
+  val problemsPath: String = s"${System.getProperty("user.dir")}/src/test/resources/navigation/"
+  val solutionsPath: String = s"${System.getProperty("user.dir")}/src/test/resources/navigation/routes/"
 
   val room0 = "room0"
 

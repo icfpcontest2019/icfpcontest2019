@@ -3,6 +3,7 @@ package lambda.geometry.floating
 import lambda.geometry._
 import lambda.geometry.floating.FPointUtils._
 import lambda.geometry.floating.SegmentUtils._
+import lambda.geometry.integer.{IPoint, IPointUtils, IPolygon}
 import org.apache.commons.math3.linear._
 
 
@@ -129,6 +130,8 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
     assert(k > 0)
     FPolygon(vertices.map(p => FPoint(p.x * k, p.y * k)))
   }
+  
+  def toIPolygon = IPolygon(vertices.map{case FPoint(x, y) => IPoint(x.toInt, y.toInt)})
 
   def prettifyAlmostIntVertices = FPolygon(vertices.map(roundPoint))
 
@@ -170,6 +173,12 @@ case class FPolygon(vertices: Seq[FPoint]) extends EpsEq[FPolygon] {
       edgeLeft intersectInterior edgeRight
     })
   }
+
+  def removeZeroEdges: FPolygon = {
+    val fs = getEdges(vertices).filterNot { case (a, b) => a == b }
+    FPolygon(fs.map(_._1))
+  }
+
 
   def edgeIntersect(other: FPolygon): Boolean = {
     // Polygons intersect edges if and only if two edges intersect

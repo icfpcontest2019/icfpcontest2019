@@ -11,14 +11,9 @@ import scala.collection.mutable
 import scala.collection.mutable.{Map => MMap, Set => MSet}
 
 /**
-  * Global state for validating solutions.
-  *
-  * @author Ilya Sergey
-  */
-
-/**
   * A task execution instance
   *
+  * @author Ilya Sergey
   */
 class TaskExecution(private val matrix: TaskMatrix,
                     val xmax: Int, val ymax: Int,
@@ -50,9 +45,8 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
 
-  private def checkWatchman[T](watchNum: Int, routes: Map[Int, T]): Boolean = {
-    routes.isDefinedAt(watchNum) &&
-      watchmenPositions.isDefinedAt(watchNum) &&
+  private def checkWatchman[T](watchNum: Int): Boolean = {
+    watchmenPositions.isDefinedAt(watchNum) &&
       watchmen.isDefinedAt(watchNum)
   }
 
@@ -64,9 +58,13 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   private def castLight(w: Watchman, wPos: IPoint): Unit = {
     for {litSquare@IPoint(x, y) <- w.getTorchRange(wPos)
-         if squareIsVisible(wPos, litSquare)} {
-      val c = matrix(x)(y)
-      c.shedLight()
+         if positionWithinBoundingBox(litSquare)} {
+      val cell = getCell(litSquare)
+      if (cell.canStep &&
+        !cell.isIlluminated &&
+        squareIsVisible(wPos, litSquare)) {
+        cell.shedLight()
+      }
     }
   }
 
@@ -159,7 +157,7 @@ class TaskExecution(private val matrix: TaskMatrix,
         wPosOld
 
       case UseBatteries(dx, dy) =>
-        // TODO: Implement me
+        w.addBattery(dx, dy)
         wPosOld
 
       case UseDrill =>
@@ -177,8 +175,16 @@ class TaskExecution(private val matrix: TaskMatrix,
         wPosOld
 
       case UseCallFriend =>
-        // TODO: Implement me
-        wPosOld
+        val cell = getCell(wPosOld)
+        if (cell.hasCallPoint) {
+          val newWatchman = new Watchman()
+          val newWNum = watchmen.keys.max + 1
+          watchmen.update(newWNum, newWatchman)
+          watchmenPositions.update(newWNum, wPosOld)
+          wPosOld
+        } else {
+          throw ContestException(CANNOT_CALL_FRIEND, wPosOld)
+        }
     }
   }
 
@@ -274,12 +280,12 @@ class TaskExecution(private val matrix: TaskMatrix,
   // TODO: A single execution step from a given cell
 
   private def step(watchNum: Int): Unit = {
-    if (!checkWatchman(watchNum, routes))
+    if (!checkWatchman(watchNum))
       throw ContestException(WATCHMAN_NOT_FOUND)
 
     val wPosOld@IPoint(x, y) = watchmenPositions(watchNum)
     val w = watchmen(watchNum)
-    val route = routes(watchNum)
+    val route = routes.getOrElse(watchNum, new MStack())
 
     // Step 1: Update illumination at w's position
     castLight(w, wPosOld)
@@ -377,7 +383,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     // Add boosters
     if (availableBoosters.nonEmpty) {
       val boosters = availableBoosters.toList.sorted.map { case (k, v) => s"  $k: $v" }
-      buffer.append(s"Available boosters:\n${boosters.mkString("\n")}\n")
+      buffer.append(s"Available boosters:\n${boosters.sorted.mkString("\n")}\n")
     }
 
     // Watchmen positions
@@ -385,15 +391,15 @@ class TaskExecution(private val matrix: TaskMatrix,
       val IPoint(x, y) = watchmenPositions(k)
       s"($x, $y)"
     }"
-    buffer.append(s"Watchmen positions:\n${wPoss.mkString("\n")}\n")
+    buffer.append(s"Watchmen positions:\n${wPoss.sorted.mkString("\n")}\n")
 
     // Boosters per watchman
     if (watchmen.values.exists(w => w.isDrillGuy || w.isUnderCoffe)) {
       val ws = watchmen.toList.map { case (i, w) =>
         val activeBoosters = w.getActiveBoostersWithTime.sorted.map { case (k, v) => s"($k : $v)" }
-        s"  W$i: ${activeBoosters.mkString(" ")}"
+        s"  W$i: " + activeBoosters.sorted.mkString(" ")
       }
-      buffer.append(s"Active boosters:\n${ws.mkString("\n")}\n")
+      buffer.append(s"Active boosters:\n${ws.sorted.mkString("\n")}\n")
     }
     buffer
   }

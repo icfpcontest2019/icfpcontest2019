@@ -3,6 +3,7 @@ package lambda.geometry.floating
 import lambda.geometry.floating.examples.FPolygonExamples._
 import lambda.geometry.floating.generators.CompositePolygon
 import lambda.geometry.floating.generators.PolygonCombinatorUtils._
+import lambda.geometry.floating.generators.old.RandomCrazyPolygonGenerator
 import lambda.geometry.floating.triangles.Triangulation
 import lambda.geometry.floating.triangles.Triangulation._
 import org.scalacheck.Prop._
@@ -53,7 +54,8 @@ class TriangulationTests extends FlatSpec with Matchers {
 object TriangulationSpecification extends Properties("Triangulation") {
 
   import lambda.geometry.floating.generators.PolygonPropertyUtils._
-  import lambda.geometry.floating.generators.RandomRectilinearPolygonGenerator._
+
+  import RandomCrazyPolygonGenerator._
 
   val triangulationInside = forAll { (p: CompositePolygon) =>
     collect(polygonCombinatorCollector(p)) {
@@ -71,24 +73,7 @@ object TriangulationSpecification extends Properties("Triangulation") {
     }
   }
 
-  property("Center of each triangle lies within a polygon") = triangulationInside
-  property("A number of (possibly degenerate) triangles is n − 2") = triangulationCount
-}
-
-class TriangulationPropertyTests extends FunSuite with Checkers {
-
-  import lambda.geometry.floating.generators.PolygonPropertyUtils._
-  import lambda.geometry.floating.generators.RandomRectilinearPolygonGenerator._
-
-  test("Property: centers of all triangles are in polygon") {
-    check((p: CompositePolygon) => {
-      val trs = Triangulation.triangulate(p)
-      trs.forall(t => {
-        val c = p containsPoint t.center
-        if (!c) println(s"Point ${t.center} is not in polygon $p")
-        c
-      })
-    })
-  }
+  // property("Center of each triangle lies within a polygon") = triangulationInside
+  // property("A number of (possibly degenerate) triangles is n − 2") = triangulationCount
 }
 

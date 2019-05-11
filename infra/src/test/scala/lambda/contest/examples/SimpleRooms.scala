@@ -7,8 +7,8 @@ import java.io.File
   */
 trait SimpleRooms {
 
-  val problemsPath: String = "./infra/src/test/resources/simple/"
-  val solutionsPath: String = "./infra/src/test/resources/simple/solutions/"
+  val simpleProblemsPath: String = s"${System.getProperty("user.dir")}/src/test/resources/simple/rooms"
+  val simpleSolutionsPath: String = s"${System.getProperty("user.dir")}/src/test/resources/simple/solutions/"
 
   val room1 = "room1"
   val room2 = "room2"
@@ -23,11 +23,11 @@ trait SimpleRooms {
   val room11 = "room11-1"
 
   def getTaskPath(fileName: String) = {
-    s"$problemsPath/$fileName".replace("/", File.separator)
+    s"$simpleProblemsPath/$fileName".replace("/", File.separator)
   }
 
   def getSolutionPath(fileName: String*) = {
-    s"$solutionsPath/${fileName.head}".replace("/", File.separator)
+    s"$simpleSolutionsPath/${fileName.head}".replace("/", File.separator)
   }
 
 }

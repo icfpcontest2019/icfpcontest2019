@@ -39,7 +39,7 @@ object ContestConstants {
     RIGHT_LETTER,
     SNOOZE_LETTER,
     TURN_LEFT_LETTER,
-    TURN_RIGHT_LETTER,
+    TURN_RIGHT_LETTER
   )
 
   import Booster._

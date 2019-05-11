@@ -7,6 +7,7 @@ import lambda.geometry.floating.FPolygon
 import lambda.geometry.floating.examples.FPolygonExamples._
 import lambda.geometry.floating.generators.PolygonGenerators._
 import lambda.geometry.floating.generators.PolygonPropertyUtils._
+import lambda.geometry.floating.generators.old.RandomCrazyPolygonGenerator
 import lambda.util.FileUtil.writeToNewFile
 import org.scalacheck.Gen
 
@@ -18,7 +19,7 @@ trait GeneratorPrimitives {
   val freqs = Seq(10, 1, 2, 2, 2, 2)
   val freqs4 = Seq(4, 4, 2, 2, 2, 2)
 
-  val freqs2 = Seq(10,2)
+  val freqs2 = Seq(10, 2)
 
   val polygonsToAttach = Seq(
     generateNormalizedRectangle,
@@ -63,9 +64,9 @@ trait PolygonGenerator extends GeneratorPrimitives {
   val myBasePolygon: FPolygon
   val myFreqs: Seq[Int]
   val myGenerations: Int
-  val myPolygonsToAttach : Seq[LazyPolygon]
+  val myPolygonsToAttach: Seq[LazyPolygon]
   val myPolygonSize: Gen[Int]
-  val myPositionStrategy: Double => Option[(Int, Int)]
+  val myPositionStrategy: AttachmentStrategy
 
   /**
     * Useful definitions
@@ -82,11 +83,17 @@ trait PolygonGenerator extends GeneratorPrimitives {
   }
 
   def generateStuff(polygonsToAttach: Seq[LazyPolygon], freqs: Seq[Int],
-                    base: FPolygon, posStrategy: Double => Option[(Int, Int)],
+                    base: FPolygon, posStrategy: AttachmentStrategy,
                     gens: Int): CompositePolygon = {
-    val attachments: Gen[LazyPolygon] =
-      Gen.frequency(freqs.zip(polygonsToAttach.map(p => Gen.const(p))): _*)
-    generatePolygon(base, attachments, Gen.choose(2, 6), gens, posStrategy)
+    val ats = polygonsToAttach.map(p => Gen.const((p, posStrategy)))
+
+    val attachments: Gen[(LazyPolygon, AttachmentStrategy)] =
+      Gen.frequency(freqs.zip(ats): _*)
+    
+    generatePolygon(base,
+      attachments,
+      _ => true,
+      Gen.choose(2, 6), gens)
   }
 
 
@@ -101,42 +108,10 @@ trait PolygonGenerator extends GeneratorPrimitives {
 
 }
 
-object RectilinearPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "rectilinear.pol"
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myFreqs: Seq[Int] = freqs2
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 24)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 15
-  override val myPolygonsToAttach = polygonsToAttach2
-}
 
-object TriangularPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "triangular.pol"
-  override val myPolygonsToAttach = polygonsToAttach3
-  override val myBasePolygon: FPolygon = triangle1
-  override val myFreqs: Seq[Int] = freqs3
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 80
-}
 
-object QuasiConvexPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "qconvex.pol"
-  override val myPolygonsToAttach = convexPolygons
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myFreqs: Seq[Int] = freqs3
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 20
-}
 
-object CrazyPolygonGenerator extends PolygonGenerator {
-  override val myOutFileName: String = "crazy.pol"
-  override val myBasePolygon: FPolygon = simple3Rectangle
-  override val myPolygonsToAttach = polygonsToAttach
-  override val myFreqs: Seq[Int] = freqs4
-  override val myPolygonSize: Gen[Int] = Gen.choose(2, 6)
-  override val myPositionStrategy = posStrategy1
-  override val myGenerations: Int = 80
-}
+
+
+
+
