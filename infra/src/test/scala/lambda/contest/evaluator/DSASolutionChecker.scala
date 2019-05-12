@@ -5,7 +5,6 @@ import java.io.File
 import lambda.contest.ContestConstants._
 import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
 import lambda.contest.checkers.TaskExecution
-import lambda.contest.examples.SimpleRooms
 import lambda.contest.parsers.ContestTaskParser
 import lambda.contest.{ContestException, ContestTask}
 import lambda.geometry.GeometryParsers
