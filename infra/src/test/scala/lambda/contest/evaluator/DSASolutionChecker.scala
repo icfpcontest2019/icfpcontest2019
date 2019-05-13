@@ -112,8 +112,8 @@ trait DSASolutions extends StatisticsUtils[Int, Unit] {
       val task = tasks(i)
       val sol = teamSolutions(i)
       val (matrix, mx, my) = contestTaskToMatrix(task)
-      val state = TaskExecution.createState(matrix, mx, my, task.initPos, sol, torchShape)
-      val res = state.evalSolution(Nil)
+      val state = TaskExecution.createState(matrix, mx, my, task.initPos, sol, Nil, torchShape)
+      val res = state.evalSolution()
       // println(state.toStringBuffer)
 
       assert(res.isDefined)
@@ -206,10 +206,11 @@ object DSASolutionConverter extends DSASolutions {
     
     for ((k, sol) <- teamSolution.toList) {
       val solString = sol.map(r => r.map(_.pp).mkString("")).mkString("#")
-      val fNum = f"$k%03d"
+      val fNum = FileUtil.intAs3CharString(k)
       val filePath = s"$solPath/prob-$fNum.sol"
       FileUtil.writeToNewFile(filePath, solString)
     }
 
   }
+
 }

@@ -21,7 +21,31 @@ To assemble the executable JARs, run
 sbt assembly
 ```
 
-## Running the checker 
+## Running the checker
+
+After having run `sbt assembly`, you can execute the checker in various modes. You can run 
+
+```
+./checker --help
+
+``` 
+
+for basic information. 
+
+To grade an individual folder with solutions against a folder with tasks and recore the results into a file, run
+
+```
+./checker -p <problemsPath> -s <colutionPath> -o <outputFile> 
+
+```
+
+For instance, from the root of the project you can run:
+
+```
+./checker team -p ./infra/src/test/resources/contest/toy/problems -s ./infra/src/test/resources/contest/toy/teams/hare/2019-05-11-12-03-00 -o ./results.csv -v true
+```
+
+Run `./checker team --help` for the reference.
 
 ### Scala programming and related frameworks to be used
 

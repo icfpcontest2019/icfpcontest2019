@@ -17,6 +17,8 @@ import scala.collection.mutable.{Map => MMap, Set => MSet}
   */
 class TaskExecution(private val matrix: TaskMatrix,
                     val xmax: Int, val ymax: Int,
+                    // Boosters collected during the execution
+                    private val availableBoosters: MMap[Booster.Value, Int] = MMap.empty, 
                     private val routes: Map[Int, MStack[Action]]) {
 
   private var timeElapsed: Int = 0
@@ -27,9 +29,6 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   private val watchmen: MMap[Int, Watchman] = MMap.empty
   private val watchmenPositions: MMap[Int, IPoint] = MMap.empty
-
-  // Boosters collected during the execution
-  private val availableBoosters: MMap[Booster.Value, Int] = MMap.empty
 
   /* --------------------------------------------------- */
   /*          Checking runtime properties                */
@@ -325,11 +324,8 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   /**
     * A driver loop and a final checker
-    *
-    * @param purchasedBoosters A set of purchased boosters
     */
-  def evalSolution(purchasedBoosters: List[(Booster.Value, Int)]): Option[Int] = {
-    addPurchasedBoosters(purchasedBoosters)
+  def evalSolution(): Option[Int] = {
     while (moreStepsToDo()) {
       evalRound()
     }
@@ -434,12 +430,15 @@ object TaskExecution {
                   xmax: Int, ymax: Int,
                   initPos: IPoint,
                   routeList: List[List[Action]],
+                  initBoosters: List[Booster.Value] = Nil,
                   torchShape: TorchShape = DEFAULT_CONTEST_TORCH): TaskExecution = {
 
     val entries = routeList.zipWithIndex.map { case (r, i) => i -> new MStack(r) }
     val routes = Map(entries: _*)
-
-    val state = new TaskExecution(matrix, xmax, ymax, routes)
+    
+    val boostersWithCount = initBoosters.distinct.map(b => (b, initBoosters.count(_ == b)))
+    
+    val state = new TaskExecution(matrix, xmax, ymax, mutable.Map(boostersWithCount: _*), routes)
 
     // Create initial watchman
     val initWatchman = new Watchman(MSet(torchShape: _*))

@@ -20,7 +20,7 @@ class SolutionPropertyTests extends FlatSpec with Matchers
     println(name)
     println("Initial state:")
     println(state.toStringBuffer)
-    state.evalSolution(Nil)
+    state.evalSolution()
     val stateString = state.toStringBuffer.toString().trim
 
     println("Final state:")
@@ -34,7 +34,7 @@ class SolutionPropertyTests extends FlatSpec with Matchers
     println("Initial state:")
     println(state.toStringBuffer)
     try {
-      state.evalSolution(Nil)
+      state.evalSolution()
     } catch {
       case ContestException(_, p: IPoint) =>
         println("Final state:")

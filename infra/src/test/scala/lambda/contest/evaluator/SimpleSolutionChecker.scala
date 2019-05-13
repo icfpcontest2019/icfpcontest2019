@@ -16,7 +16,7 @@ class SimpleSolutionChecker extends FlatSpec with Matchers
     s"The solution evaluator" should s"work on $taskFile" in {
       val (solution, state) = createContestState(taskFile)(solutionFile)
       assertResult(Some(solution.head.length)) {
-        val res = state.evalSolution(Nil)
+        val res = state.evalSolution()
         println(state.toStringBuffer)
         res
       }

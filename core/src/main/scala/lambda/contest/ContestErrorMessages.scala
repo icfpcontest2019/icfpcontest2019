@@ -33,4 +33,10 @@ object ContestErrorMessages {
   val BAD_BATTERY_POSITION = "Cannot attach battery at this position."
 
 
+  val BAD_BOOSTER_FORMAT = "Booster descriptor is malformed"
+  val DUPLICATED_SOLUTION = "Duplicating solution file"
+  val BAD_SOLUTION_FILE_NAME = "Ill-formed solution file name"
+  val BAD_SOLUTION_FORMAT = "Solution is malformed"
+
+
 }

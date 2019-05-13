@@ -1,7 +1,8 @@
 
 ThisBuild / name := "icfpcontest-2019"
 ThisBuild / organization := "lambda"
-ThisBuild / scalaVersion := "2.11.12"
+// ThisBuild / scalaVersion := "2.11.12"
+ThisBuild / scalaVersion := "2.12.8"
 ThisBuild / version := "1.0.0"
 
 /** ******************************************/
@@ -77,8 +78,8 @@ lazy val commonDependencies = Seq(
 )
 
 lazy val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
-lazy val geoJSON = "org.locationtech.geotrellis" %% "geotrellis-raster" % "1.1.0"
-lazy val scalaIO = "com.github.scala-incubator.io" %% "scala-io-file" % "0.4.3"
+lazy val geoJSON = "org.locationtech.geotrellis" %% "geotrellis-raster" % "2.2.0"
+lazy val scalaIO = "com.madgag" %% "scala-io-file" % "0.4.9"
 lazy val email = "org.apache.commons" % "commons-email" % "1.4"
 lazy val commonsIO = "commons-io" % "commons-io" % "2.4"
 lazy val slick = "com.typesafe.slick" %% "slick" % "3.3.0"
@@ -87,7 +88,7 @@ lazy val math = "org.apache.commons" % "commons-math3" % "3.6.1"
 lazy val scalaCheck = "org.scalacheck" %% "scalacheck" % "1.14.0"
 lazy val scalaTest = "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 lazy val specs = "org.specs2" %% "specs2-core" % "4.3.4" % "test"
-lazy val scopt = "com.github.scopt" %% "scopt" % "3.7.0"
+lazy val scopt = "com.github.scopt" %% "scopt" % "4.0.0-RC2"
 
 val akka = {
   val akkaV = "2.4.19"

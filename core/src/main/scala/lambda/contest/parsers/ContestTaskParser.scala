@@ -1,6 +1,8 @@
 package lambda.contest.parsers
 
+import lambda.contest.Booster.Booster
 import lambda.contest.ContestConstants._
+import lambda.contest.parsers.ContestTaskParser.boosterParser
 import lambda.contest.{Booster, ContestTask}
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.IPoint
@@ -44,3 +46,7 @@ object ContestTaskParser extends GeometryParsers {
   def apply(s: String): ContestTaskParser.ParseResult[ContestTask] = parseAll(taskParser, s)
 
 }
+
+
+
+

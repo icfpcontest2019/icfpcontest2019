@@ -36,6 +36,6 @@ object FileUtil {
     res
   }
 
-
+  def intAs3CharString(k: Int): String = f"$k%03d"
 
 }
