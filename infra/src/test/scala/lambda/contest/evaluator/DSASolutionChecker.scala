@@ -23,15 +23,15 @@ import scala.collection.mutable.{Map => MMap}
 
 class DSASolutionChecker extends FlatSpec with Matchers
   with DSASolutions {
-  
+
   val (tNum, tasks) = getTeamsAndTasks
 
   s"An evaluator for tasks" should "work correctly on all 10 rooms for teams solutions" in {}
   for (i <- 1 to tNum) {
     checkTeam(i)
   }
-  
-  
+
+
   def checkTeam(i: Int) = {
     it should s"make all solutions of team $i pass" in {
       println("----- Team 1 -----")
@@ -40,7 +40,7 @@ class DSASolutionChecker extends FlatSpec with Matchers
       println()
     }
   }
-  
+
 }
 
 trait DSASolutions extends StatisticsUtils[Int, Unit] {
@@ -71,7 +71,7 @@ trait DSASolutions extends StatisticsUtils[Int, Unit] {
     val ranking = rankTeams(scores, 1, true)
     (tasks, intScores)
   }
-  
+
   def getTeamsAndTasks = {
     val teamDir = new File(dsaSolutionPath)
     assert(teamDir.isDirectory)
@@ -193,4 +193,23 @@ object DSARunner extends DSASolutions with App {
   var intScores: Map[Int, Map[Int, Int]] = checkTeamsResult._2
 
   printToCSV(intScores, tasks.size)
+}
+
+object DSASolutionConverter extends DSASolutions {
+
+  val path = "./infra/src/test/resources/contest/toy/teams/tortoise"
+  
+  def main(args: Array[String]): Unit = {
+    val teamNum = args(0).toInt
+    val solPath= args(1)
+    val teamSolution = readSolutionsForTeam(teamNum)
+    
+    for ((k, sol) <- teamSolution.toList) {
+      val solString = sol.map(r => r.map(_.pp).mkString("")).mkString("#")
+      val fNum = f"$k%03d"
+      val filePath = s"$solPath/prob-$fNum.sol"
+      FileUtil.writeToNewFile(filePath, solString)
+    }
+
+  }
 }

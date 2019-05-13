@@ -59,6 +59,8 @@ object ContestConstants {
 
   sealed abstract class Action(char: Char) {
     def isMove: Boolean = false
+
+    def pp: String = char.toString
   }
 
   sealed trait UseBooster
@@ -84,19 +86,29 @@ object ContestConstants {
   // Rotations and skip
 
   case object TurnLeft extends Action(TURN_LEFT_LETTER)
+
   case object TurnRight extends Action(TURN_RIGHT_LETTER)
+
   case object Snooze extends Action(SNOOZE_LETTER)
 
   // Using boosters
 
-  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster
+  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster {
+    override def pp = s"${super.toString}($dx,$dy)"
+  }
+
   case object UseCoffee extends Action(COFFEE_LETTER) with UseBooster
+
   case object UseDrill extends Action(DRILL_LETTER) with UseBooster
+
   case object InstallTeleport extends Action(INTSTALL_TELEPORT_LETTER) with UseBooster
+
   case object UseCallFriend extends Action(CALL_FRIEND_LETTER) with UseBooster
 
   // Teleporting
-  case class DoTeleport(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER)
+  case class DoTeleport(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER) {
+    override def pp = s"${super.toString}($x,$y)"
+  }
 
   /* *************************************** */
   //            Booster constants            //
@@ -110,6 +122,7 @@ object ContestConstants {
   /* *************************************** */
 
   def DEFAULT_CONTEST_TORCH = List((1, 1), (1, 0), (1, -1))
+
   def SQUARE_TORCH = List((1, 1), (1, 0), (1, -1), (0, 1), (0, -1), (-1, 1), (-1, 0), (-1, -1))
 
 
