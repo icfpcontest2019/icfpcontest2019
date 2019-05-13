@@ -41,11 +41,7 @@ object IndividualGrader extends ContestGrader {
     
     // Writing to CSV
     writeGradesToCSV(gradeMap, config.outPath)
-    
-    
     println("Grading complete")
-    
-    
 
   }
 
