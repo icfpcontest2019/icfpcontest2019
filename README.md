@@ -35,7 +35,7 @@ for basic information.
 To grade an individual folder with solutions against a folder with tasks and recore the results into a file, run
 
 ```
-./checker -p <problemsPath> -s <colutionPath> -o <outputFile> 
+./checker -p <problemsFolderPath> -s <solutionFolderPath> -o <outputFile> 
 
 ```
 
