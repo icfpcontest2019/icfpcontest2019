@@ -131,7 +131,9 @@ mainClass in assembly := Some("lambda.runners.Main")
 
 test in assembly := {}
 
-assemblyJarName in assembly := "icfcontest2019.jar"
+assemblyJarName in assembly := "icfpcontest2019.jar"
+
+mainClass in assembly := Some("lambda.contest.checkers.MainContestChecker")
 
 assemblyMergeStrategy in assembly := {
   case PathList("META-INF", xs@_*) => MergeStrategy.discard

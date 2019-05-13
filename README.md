@@ -18,8 +18,10 @@ sbt test
 To assemble the executable JARs, run
 
 ```
-sbt assemble
+sbt assembly
 ```
+
+## Running the checker 
 
 ### Scala programming and related frameworks to be used
 

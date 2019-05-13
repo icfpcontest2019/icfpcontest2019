@@ -1,0 +1,2 @@
+#!/bin/bash
+scala ./target/scala-2.11/icfpcontest2019.jar $*

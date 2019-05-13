@@ -3,10 +3,10 @@ package lambda.contest.checkers
 /**
   * @author Ilya Sergey
   */
-object BatchChecker {
+object ChainEvaluator {
 
   def main(args: Array[String]): Unit = {
-    // TODO
+    // TODO: Parse appropriate arguments
   }
-  
+
 }
