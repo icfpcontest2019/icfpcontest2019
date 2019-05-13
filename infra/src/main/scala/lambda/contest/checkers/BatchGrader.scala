@@ -5,7 +5,7 @@ import lambda.contest.checkers.MainContestChecker.{SCRIPTNAME, TOOLNAME}
 /**
   * @author Ilya Sergey
   */
-object BatchGrader extends  ContestGrader {
+object BatchGrader extends ContestGrader {
 
   def main(args: Array[String]): Unit = {
     val configOpt = handleInput(args)
@@ -18,10 +18,10 @@ object BatchGrader extends  ContestGrader {
     val taskMap = readTasks(config.problemPath)
 
     // TODO: Get the required team folder and get the latest solution
-    
-    
+
+
     // TODO: Grade the submissions -- check IndividualGrader for examples
-    
+
   }
 
   /* --------------------------------------------------------- */
@@ -29,15 +29,15 @@ object BatchGrader extends  ContestGrader {
   /* --------------------------------------------------------- */
 
   case class BatchGraderConfig(problemPath: String = LOCAL_DIR,
-                                    teamPath: String = LOCAL_DIR,
-                                    outPath: String = s"LOCAL_DIR/results.csv",
-                                    override val verbose: Boolean = false)
+                               teamPath: String = LOCAL_DIR,
+                               outPath: String = s"LOCAL_DIR/results.csv",
+                               override val verbose: Boolean = false)
     extends GraderConfig(verbose)
 
   type MyConfig = BatchGraderConfig
 
   override val defaultConfig = BatchGraderConfig()
-  
+
   protected val flagParser = new scopt.OptionParser[BatchGraderConfig](SCRIPTNAME) {
     head(TOOLNAME, MainContestChecker.VERSION_STRING)
 
@@ -54,7 +54,7 @@ object BatchGrader extends  ContestGrader {
       .action { (x, c) =>
         c.copy(teamPath = x)
       }.text("A path to the folder with solutions of a particular team")
-    
+
     opt[String]('o', "out")
       .required()
       .valueName("<outputFilePath>")
