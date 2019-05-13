@@ -25,7 +25,7 @@ object GeoHelper {
   def main(args: Array[String]): Unit = {
 
     val geoPath = args(0)
-    val boxSize = 99
+    val boxSize = 199
 
     val centered: FPolygon = getCountryScaled(geoPath, boxSize)
 
