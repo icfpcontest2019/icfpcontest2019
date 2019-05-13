@@ -1,6 +1,5 @@
 package lambda.contest.checkers
 
-import lambda.contest.checkers.IndividualGrader.{handleInput, readTasks}
 import lambda.contest.checkers.MainContestChecker.{SCRIPTNAME, TOOLNAME}
 
 /**
