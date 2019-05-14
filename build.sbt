@@ -1,7 +1,6 @@
 
 ThisBuild / name := "icfpcontest-2019"
 ThisBuild / organization := "lambda"
-// ThisBuild / scalaVersion := "2.11.12"
 ThisBuild / scalaVersion := "2.12.8"
 ThisBuild / version := "1.0.0"
 

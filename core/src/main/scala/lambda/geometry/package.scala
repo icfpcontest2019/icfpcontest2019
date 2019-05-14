@@ -34,17 +34,17 @@ package object geometry {
   def getTriples[T](s: Seq[T]): Seq[(T, T, T)] = {
     if (s.size < 3) return Nil
 
-    def walk(l: List[T]): List[(T, T, T)] = l match {
+    def walk(l: List[T], acc: List[(T, T, T)]): List[(T, T, T)] = l match {
       case x :: y :: Nil => {
         val (a, b) = (s.head, s.tail.head)
-        List((x, y, a), (y, a, b))
+        acc ++ List((x, y, a), (y, a, b))
       }
       case x :: y :: z :: t =>
-        (x, y, z) :: walk(y :: z :: t)
+        walk(y :: z :: t, (x, y, z) :: acc)
       case _ => Nil
     }
 
-    walk(s.toList)
+    walk(s.toList, Nil)
   }
 
 

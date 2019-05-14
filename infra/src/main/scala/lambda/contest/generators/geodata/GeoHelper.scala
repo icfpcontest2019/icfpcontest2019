@@ -30,9 +30,7 @@ object GeoHelper {
     val centered: FPolygon = getCountryScaled(geoPath, boxSize)
 
     renderCountry(centered)
-
-
-
+    
     //val json = collection.toJson
     //val list = json.asJsObject.getFields("features")
     //val aruba = list(0)
@@ -42,7 +40,9 @@ object GeoHelper {
     val collection = GeoJson.fromFile[JsonFeatureCollection](geoPath)
     val polys = collection.getAllPolygons().toList.map(polyToFPoly)
 
-    val largest = polys.maxBy(FPolygonUtils.computeArea)
+    val largest = if (geoPath.contains("denmark")) {
+      polys.sortBy(FPolygonUtils.computeArea).reverse(1)
+    } else polys.maxBy(FPolygonUtils.computeArea)
 
     // println(largest)
     val bottomLeft = getPolygonBoundingBox(largest)._1
@@ -66,8 +66,9 @@ object GeoHelper {
     val countryScaled1 = scaledAndCentered.stretch(scaleFactor1)
     
     val finalPoly = countryScaled1.removeZeroEdges
-    println(getPolygonBoundingBox(finalPoly))
-    finalPoly
+    
+    val (lower, _ ) = getPolygonBoundingBox(finalPoly)
+    finalPoly.shiftToOrigin(lower)
   }
 
   private def renderCountry(largest: _root_.lambda.geometry.floating.FPolygon) = {
