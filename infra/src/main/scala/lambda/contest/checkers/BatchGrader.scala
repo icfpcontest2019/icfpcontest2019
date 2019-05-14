@@ -14,9 +14,8 @@ object BatchGrader extends ContestGrader {
     }
 
     val config = configOpt.get
-    // Get all tasks
-    val taskMap = readTasks(config.problemPath)
-
+    // TODO: read tasks
+    
     // TODO: Get the required team folder and get the latest solution
 
 

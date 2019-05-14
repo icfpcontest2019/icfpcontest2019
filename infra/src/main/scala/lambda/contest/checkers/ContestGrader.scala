@@ -23,13 +23,13 @@ trait ContestGrader {
   val PROBLEM_DESC_EXT = ".desc"
   val SOLUTION_EXT = ".sol"
   val BOOSTERS_EXT = ".buy"
-  
+
   type MyConfig <: GraderConfig
-  
-  val defaultConfig : MyConfig
-  
+
+  val defaultConfig: MyConfig
+
   protected def flagParser: OptionParser[MyConfig]
-  
+
   def handleInput(paramString: Array[String]): Option[MyConfig] = {
     flagParser.parse(paramString, defaultConfig)
   }
@@ -50,9 +50,11 @@ trait ContestGrader {
 
 
   /**
-    * Returns a map from task number to the matrix that describes it  
+    * @param taskPath  path for the tasks
+    * @param solutions numbers of provided solutions
+    * @return a map from task number to the matrix that describes it  
     */
-  def readTasks(taskPath: String): Map[Int, TaskDescription] = {
+  def readTasks(taskPath: String, solutions: Set[Int]): Map[Int, TaskDescription] = {
     val dir = new File(taskPath)
     if (!dir.isDirectory)
       throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
@@ -61,8 +63,9 @@ trait ContestGrader {
 
     for (f <- dir.listFiles();
          fname = f.getName
-         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT)) {
-      val tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
+         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
+         tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
+         if solutions.contains(tNum)) {
       val line = readFromFile(f.getAbsolutePath).mkString("").trim
       val task: ContestTask = ContestTaskParser(line).get
       val (matrix, dx, dy) = contestTaskToMatrix(task)
@@ -104,8 +107,7 @@ trait ContestGrader {
 
     for (f <- dir.listFiles();
          fname = f.getName
-         if fname.startsWith(PROBLEM_PREFIX) &&
-           fname.endsWith(SOLUTION_EXT);
+         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(SOLUTION_EXT);
          stripped = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(SOLUTION_EXT)
          if isNumericString(stripped)) {
 
@@ -173,7 +175,6 @@ trait ContestGrader {
   /* --------------------------------------------------------- */
 
 
-
   def writeGradesToCSV(gradeMap: Map[Int, Option[Int]], outPath: String): Unit = {
     val lines = for (i <- gradeMap.keySet.toList.sorted) yield {
 
@@ -191,7 +192,7 @@ trait ContestGrader {
   /*                   Grader config                           */
   /* --------------------------------------------------------- */
 
-  
-  abstract class GraderConfig(val verbose: Boolean) 
+
+  abstract class GraderConfig(val verbose: Boolean)
 
 }

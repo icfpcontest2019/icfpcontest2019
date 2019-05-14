@@ -17,11 +17,15 @@ object IndividualGrader extends ContestGrader {
     } 
     
     val config = configOpt.get
-    // Get all tasks
-    val taskMap = readTasks(config.problemPath)
-    
     // Get all solutions (with boosters) from the folder 
     val solutionMap = readSolutionsAndBoosters(config.solutionPath)
+
+
+    // Get all tasks for the problems
+    val taskMap = readTasks(config.problemPath, solutionMap.keySet)
+
+
+
     val solutionFolder = new File(config.solutionPath).getName
     
     // Grade solutions
