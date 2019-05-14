@@ -2,6 +2,7 @@ package lambda.contest.generators.runners.raw
 
 import java.awt.event.ActionEvent
 import java.awt.{BorderLayout, Color, Graphics}
+import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
@@ -44,17 +45,12 @@ trait GeneratorRendering {
       pp = PolygonToRender(generateNewPolygon(boxSize, None).pol)
       polygonPanel.paint(polygonPanel.getGraphics)
     }
-
-    val (button1, button2, button3, rejectButton) =
-      addButtons(generateNewPoly, boxSize)
-
+    
     frame.setLayout(new BoxLayout(frame.getContentPane, BoxLayout.Y_AXIS))
     frame.add(polygonPanel, BorderLayout.NORTH)
-
-    frame.add(button1, BorderLayout.SOUTH)
-    frame.add(button2, BorderLayout.SOUTH)
-    frame.add(button3, BorderLayout.SOUTH)
-    frame.add(rejectButton, BorderLayout.SOUTH)
+    
+    val buttons = addButtons(generateNewPoly, boxSize)
+    buttons.foreach(b => frame.add(b, BorderLayout.SOUTH))
 
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     val size = pp.frameSize
@@ -77,30 +73,30 @@ trait GeneratorRendering {
       }
     }
 
-    val partOneButton = new JButton("Part 1")
-    val partOneFolder = s"$rawPath/part-1/$boxSize-random/"
-    partOneButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partOneFolder)
-    })
+    val parts = List(
+      ("part-1", "Part 1"),
+      ("part-2", "Part 2"),
+      ("part-3", "Part 3"),
+      ("bonus", "Bonus"),
+    )
 
-    val partTwoButton = new JButton("Part 2")
-    val partTwoFolder = s"$rawPath/part-2/$boxSize-random/"
-    partTwoButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partTwoFolder)
-    })
-
-    val partThreeButton = new JButton("Part 3")
-    val partThreeFolder = s"$rawPath/part-3/$boxSize-random/"
-    partThreeButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partThreeFolder)
-    })
-
+    val buttons = parts.filter { case (dir, caption) =>
+      val f = new File(s"$rawPath/$dir/$boxSize-random/")
+      f.isDirectory && f.exists()
+    }.map { case (dir, caption) =>
+      val button = new JButton(caption)
+      button.addActionListener((e: ActionEvent) => {
+        recordPolygon(s"$rawPath/$dir/$boxSize-random/")
+      })
+      button
+    }
+    
     val rejectButton = new JButton("Try again")
     rejectButton.addActionListener((e: ActionEvent) => {
       genNewPoly(())
     })
 
-    (partOneButton, partTwoButton, partThreeButton, rejectButton)
+    buttons ++ List(rejectButton)
   }
 
 }
