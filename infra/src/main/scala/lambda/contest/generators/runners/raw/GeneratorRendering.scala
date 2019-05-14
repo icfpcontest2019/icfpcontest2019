@@ -11,19 +11,20 @@ import lambda.contest.generators.runners.raw.RawRoomMover.polyParser
 import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.floating.FPolygon
 import lambda.geometry.floating.generators.CompositePolygon
+import lambda.geometry.integer.IPolygon
 import lambda.util.FileUtil
 
 /**
   * @author Ilya Sergey
   */
 trait GeneratorRendering {
-  
+
   val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
 
   protected def generateNewPolygon(boxSize: Int = 100, boundOpt: Option[FPolygon]): CompositePolygon
 
-  var pp : PolygonToRender = _
-  
+  var pp: PolygonToRender = _
+
   /**
     * Draw the generator 
     */
@@ -40,17 +41,17 @@ trait GeneratorRendering {
       }
     }
 
-    def generateNewPoly: Unit => Unit = { _ : Unit =>
+    def generateNewPoly: Unit => Unit = { _: Unit =>
       pp = PolygonToRender(generateNewPolygon(boxSize, None).pol)
       polygonPanel.paint(polygonPanel.getGraphics)
     }
 
-    val (button1, button2, button3, rejectButton) = 
+    val (button1, button2, button3, rejectButton) =
       addButtons(generateNewPoly, boxSize)
 
     frame.setLayout(new BoxLayout(frame.getContentPane, BoxLayout.Y_AXIS))
     frame.add(polygonPanel, BorderLayout.NORTH)
-    
+
     frame.add(button1, BorderLayout.SOUTH)
     frame.add(button2, BorderLayout.SOUTH)
     frame.add(button3, BorderLayout.SOUTH)
@@ -61,19 +62,14 @@ trait GeneratorRendering {
     frame.setSize(size._1, size._2)
     frame.setVisible(true)
   }
-  
+
   def addButtons(genNewPoly: Unit => Unit, boxSize: Int) = {
     def recordPolygon(path: String) = {
       val ext = GraderUtils.PROBLEM_DESC_EXT
       getNewFilePath(path, ext) match {
         case Some(newFile) =>
           val poly = pp.polygon.toIPolygon
-          val polyString = poly.vertices.map {
-            _.toString
-          }.mkString(",")
-          val finalString = List(polyString, poly.randomCellWithin.toString, " ", "").mkString(ContestTaskParser.sepToken)
-          assert(!ContestTaskParser(finalString).isEmpty)
-          FileUtil.writeToNewFile(newFile, finalString)
+          writeRoomToFile(newFile, poly)
           println(s"Recorded polygon to $newFile")
           println()
         case None =>
@@ -87,7 +83,7 @@ trait GeneratorRendering {
     partOneButton.addActionListener((e: ActionEvent) => {
       recordPolygon(partOneFolder)
     })
-    
+
     val partTwoButton = new JButton("Part 2")
     val partTwoFolder = s"$rawPath/part-2/$boxSize-random/"
     partTwoButton.addActionListener((e: ActionEvent) => {
@@ -104,8 +100,17 @@ trait GeneratorRendering {
     rejectButton.addActionListener((e: ActionEvent) => {
       genNewPoly(())
     })
-    
+
     (partOneButton, partTwoButton, partThreeButton, rejectButton)
   }
-  
+
+  private def writeRoomToFile(newFile: String, poly: IPolygon) = {
+    val goodPoly = poly.shiftToOrigin
+    val polyString = goodPoly.vertices.map {
+      _.toString
+    }.mkString(",")
+    val finalString = List(polyString, goodPoly.randomCellWithin.toString, " ", "").mkString(ContestTaskParser.sepToken)
+    assert(!ContestTaskParser(finalString).isEmpty)
+    FileUtil.writeToNewFile(newFile, finalString)
+  }
 }

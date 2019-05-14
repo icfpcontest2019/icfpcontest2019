@@ -72,7 +72,9 @@ object ContestCheckingUtils {
   def roomWithinPositiveBoundingBox(room: IPolygon): Boolean = {
     val ((xl, yl), (xr, yr)) = room.boundingBox
 
-    if (!(xl >= 0 && yl >= 0 && xl < xr && yl < yr)) return false
+    if (!(xl >= 0 && yl >= 0 && xl < xr && yl < yr)) {
+      return false
+    }
 
     room.vertices.forall { case IPoint(x, y) =>
       xl <= x && x <= xr &&

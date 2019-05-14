@@ -17,7 +17,16 @@ import lambda.geometry.integer.{IPoint, IPointUtils, IPolygon}
 case class ContestTask(room: IPolygon,
                        initPos: IPoint,
                        obstacles: List[IPolygon],
-                       boosters: List[(Booster.Value, IPoint)])
+                       boosters: List[(Booster.Value, IPoint)]) {
+  override def toString = {
+    val roomStr = room.vertices.map(_.toString).mkString(",")
+    val posStr = initPos.toString
+    val obStr = obstacles.map(obs => obs.vertices.map(_.toString).mkString(",")).mkString(";")
+    val booStr = boosters.map{case (b, p) => s"${Booster.toChar(b)}${p.toString}"}.mkString(";")
+    List(roomStr, posStr, obStr, booStr).mkString("#")
+  } 
+  
+}
 
 
 /* ********************************************** */
