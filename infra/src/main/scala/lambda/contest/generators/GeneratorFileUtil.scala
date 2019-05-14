@@ -2,6 +2,9 @@ package lambda.contest.generators
 
 import java.io.File
 
+import lambda.contest.checkers.GraderUtils
+import lambda.contest.checkers.GraderUtils._
+import lambda.util.FileUtil
 import org.apache.commons.io.FilenameUtils
 
 /**
@@ -12,9 +15,10 @@ object GeneratorFileUtil {
   private val candidatesPath = "./infra/src/main/resources/candidates/raw/"
   private val asIs = "as-is"
   private val needObstacles = "need-obstacles"
-  
+
   val readyRoomExtension = ".rroom"
   val noObstacleExtension = ".nobs"
+  val positionExtension = ".pos"
 
   def getCandidatesPath(boxSize: Int) = {
     s"$candidatesPath/$boxSize/".replace("/", File.separator)
@@ -28,18 +32,29 @@ object GeneratorFileUtil {
     s"${getCandidatesPath(boxSize)}/$needObstacles/".replace("/", File.separator)
   }
 
-  def getNewFilePath(path: String, ext: String) = {
-    val file = new File(path)
-    if (!file.exists()) {
-      file.mkdirs()
+  def getNewFilePath(path: String, ext: String, startNum: Int = 1): Option[String] = {
+    val dir = new File(path)
+    if (!dir.exists()) {
+      dir.mkdirs()
     } else {
-      assert(file.isDirectory)
+      assert(dir.isDirectory)
     }
-    val fileNumbers: List[Int] = 
-      file.listFiles().toList.map(f => FilenameUtils.removeExtension(f.getName).toInt)
-    val maxNum = if (fileNumbers.isEmpty) 0 else fileNumbers.max + 1
-    val newName = "%03d".format(maxNum) + ext
-    s"$path/$newName".replace("/", File.separator)
+    val posFile = dir.listFiles().find(f => f.getName.endsWith(positionExtension)).get.getName.stripSuffix(positionExtension)
+    val List(startStr, numStr) = posFile.split("-").toList
+    val startNum = startStr.toInt
+    val totalNum = numStr.toInt
+
+
+    val fileNumbers: List[Int] =
+      dir.listFiles().toList
+        .filter(_.getName.endsWith(PROBLEM_DESC_EXT))
+        .map(_.getName.stripSuffix(PROBLEM_DESC_EXT).stripPrefix("prob-").toInt)
+    val maxNum = if (fileNumbers.isEmpty) startNum else fileNumbers.max + 1
+    if (maxNum >= startNum + totalNum) return None
+
+
+    val newName = s"prob-${FileUtil.intAs3CharString(maxNum)}$ext"
+    Some(s"$path/$newName".replace("/", File.separator))
 
   }
 

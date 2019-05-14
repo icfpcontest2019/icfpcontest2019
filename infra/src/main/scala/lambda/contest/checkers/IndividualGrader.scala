@@ -3,6 +3,7 @@ package lambda.contest.checkers
 import java.io.File
 
 import lambda.contest.checkers.MainContestChecker.{SCRIPTNAME, TOOLNAME}
+import GraderUtils._
 
 /**
   * @author Ilya Sergey

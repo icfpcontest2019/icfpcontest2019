@@ -10,7 +10,7 @@ import lambda.geometry.floating.{FPoint, FPolygon}
 case class PolygonToRender(polygon: FPolygon) {
 
 
-  val MAX_FRAME_SIZE: Int = 1000
+  val MAX_FRAME_SIZE: Int = 800
   val MARGIN_SIZE: Int = 110
   val DOT_RADIUS: Int = 7
 
@@ -48,7 +48,7 @@ case class PolygonToRender(polygon: FPolygon) {
     val (x2, y2) = (x1 * k, y1 * k)
     val x3 = x2.toInt + MARGIN_SIZE
     val y3 = y2.toInt + MARGIN_SIZE / 2
-    assert(x3 > 0 && y3 > 0)
+    assert(x3 >= 0 && y3 >= 0)
     (x3, y3)
   }
 

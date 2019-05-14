@@ -1,6 +1,7 @@
 package lambda.contest.checkers
 
 import lambda.contest.checkers.MainContestChecker.{SCRIPTNAME, TOOLNAME}
+import GraderUtils._
 
 /**
   * @author Ilya Sergey

@@ -17,12 +17,7 @@ import scopt.OptionParser
   */
 trait ContestGrader {
 
-  val OUT_EXTENSION = ".csv"
-  val LOCAL_DIR = "."
-  val PROBLEM_PREFIX = "prob-"
-  val PROBLEM_DESC_EXT = ".desc"
-  val SOLUTION_EXT = ".sol"
-  val BOOSTERS_EXT = ".buy"
+  import GraderUtils._
 
   type MyConfig <: GraderConfig
 
@@ -38,7 +33,6 @@ trait ContestGrader {
   /* --------------------------------------------------------- */
   /*                    Retrieving tasks                       */
   /* --------------------------------------------------------- */
-
 
   /*
    * - Room matrix

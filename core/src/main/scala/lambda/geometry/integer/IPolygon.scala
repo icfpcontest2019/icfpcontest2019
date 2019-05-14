@@ -5,6 +5,8 @@ import lambda.geometry.floating.{FPolygon, FPolygonUtils}
 import lambda.geometry.{GeometryException, getEdges, getTriples}
 import lambda.geometry.integer.IPointUtils.direction
 
+import scala.util.Random
+
 /**
   *
   * A polygon with integer-point coordinates
@@ -208,6 +210,20 @@ case class IPolygon(vertices: Seq[IPoint]) {
     // Should contain a square from another polygon
     this.containsCell(v)
   }
+  
+  
+  def randomCellWithin: IPoint = {
+    val ((xl, yl), (xr, yr)) =  boundingBox
+    var x = xl + Random.nextInt(xr - xl)
+    var y = yl + Random.nextInt(yr - yl)
+    while (!containsCell(IPoint(x, y))) {
+      x = xl + Random.nextInt(xr - xl)
+      y = yl + Random.nextInt(yr - yl)
+    }
+    val res = IPoint(x, y)
+    assert(this.containsCell(res))
+    res
+  }  
 
 
 }
