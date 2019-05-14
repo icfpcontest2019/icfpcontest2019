@@ -38,6 +38,9 @@ trait GeneratorRendering {
     }
 
     def generateNewPoly: Unit => Unit = { _: Unit =>
+      pp.fillWhiteBackground(polygonPanel.getGraphics)
+      val text = "Rendering new polygon"
+      polygonPanel.getGraphics.drawChars(text.toCharArray, 0, text.length, 200, 200)
       pp = PolygonToRender(generateNewPolygon(boxSize, None).pol)
       polygonPanel.paint(polygonPanel.getGraphics)
     }
