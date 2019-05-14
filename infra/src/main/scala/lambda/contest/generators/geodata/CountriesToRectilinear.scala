@@ -26,14 +26,16 @@ object CountriesToRectilinear {
 
 
   def main(args: Array[String]): Unit = {
-    if (args.size > 0 && args(0) == "all") {
+    if (args.length > 0 && args(0) == "all") {
       processShapes(countriesInputPath, countriesOutputPath, 100)
       processShapes(countriesInputPath, countriesOutputPath, 200)
       processShapes(countriesInputPath, countriesOutputPath, 400)
+      processShapes(countriesInputPath, countriesOutputPath, 800)
       
       processShapes(statesInputPath, statesOutputPath, 100)
       processShapes(statesInputPath, statesOutputPath, 200)
       processShapes(statesInputPath, statesOutputPath, 400)
+      processShapes(statesInputPath, statesOutputPath, 800)
     } else {
       val path = s"$countriesInputPath/${args(0)}$JSON"
       val poly = pixelisedShape(path, args(1).toInt)
@@ -46,13 +48,13 @@ object CountriesToRectilinear {
     val countryDir = new File(inputPath)
     assert(countryDir.exists())
     for {
-      f <- countryDir.listFiles().toList
+      f <- countryDir.listFiles().toList.sortBy(_.getName)
       if f.getName.endsWith(JSON)
       cname = f.getName.stripSuffix(JSON)
       cpath = f.getAbsolutePath
     } {
       try {
-        print(s"Processing $cname for size $boxSize ... ")
+        print(s"${cname.capitalize}, size $boxSize ... ")
         val poly = pixelisedShape(cpath, boxSize)
         val dir = s"$outPath/$boxSize"
         val dirFile = new File(dir) 
@@ -61,17 +63,13 @@ object CountriesToRectilinear {
         } 
         val out = s"$dir/$cname${GeneratorFileUtil.noObstacleExtension}"
         FileUtil.writeToNewFile(out, poly.vertices.mkString(","))
-        println("done!")
+        println(s"done! Size: ${poly.vertices.size}, box: ${poly.boundingBox}")
       } catch {
         case _: Throwable => println("failed. :(")
       }
     }
     
   }
-  
-  
-  
-
 
   ///////////////////////////////////////////////////////////////////////////////////
   //                      Obtaining the rectilinear polygon
