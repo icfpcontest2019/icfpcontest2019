@@ -27,7 +27,6 @@ After having run `sbt assembly`, you can execute the checker in various modes. Y
 
 ```
 ./checker --help
-
 ``` 
 
 for basic information. 
@@ -36,7 +35,6 @@ To grade an individual folder with solutions against a folder with tasks and rec
 
 ```
 ./checker -p <problemsFolderPath> -s <solutionFolderPath> -o <outputFile> 
-
 ```
 
 For instance, from the root of the project you can run:
