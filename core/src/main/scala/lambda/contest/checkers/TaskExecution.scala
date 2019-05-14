@@ -397,6 +397,10 @@ class TaskExecution(private val matrix: TaskMatrix,
       }
       buffer.append(s"Active boosters:\n${ws.sorted.mkString("\n")}\n")
     }
+    
+    // Elapsed time
+    buffer.append(s"Elapsed time: $timeElapsed")
+    
     buffer
   }
 

@@ -19,3 +19,4 @@ Watchmen positions:
 Active boosters:
   W0: 
   W1: (CoffeeBooster : 42) (DrillBooster : 16)
+Elapsed time: 21
