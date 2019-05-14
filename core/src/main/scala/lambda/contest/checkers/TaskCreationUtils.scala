@@ -40,7 +40,7 @@ object TaskCreationUtils {
     val ((xl, yl), (xr, yr)) = room.boundingBox
 
     // Initial matrix
-    val matrix = Array.fill(xr)(Array.fill(yr)(new Cell()))
+    val matrix = Array.fill(xr)(Array.fill(yr)(Cell()))
 
     for {i <- 0 until xr // right BB boundary not included
          j <- 0 until yr // top BB boundary not included
@@ -110,7 +110,7 @@ object TaskCreationUtils {
     if (rest.isEmpty) throw ContestException(BAD_TASK_MATRIX)
     val dy = rest.size
     val dx = rest.head.length
-    val matrix = Array.fill(dx)(Array.fill(dy)(new Cell()))
+    val matrix = Array.fill(dx)(Array.fill(dy)(Cell()))
     for (j <- rest.indices) {
       val line = rest(j)
       for (i <- line.indices) {
