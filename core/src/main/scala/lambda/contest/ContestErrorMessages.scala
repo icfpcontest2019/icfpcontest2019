@@ -37,6 +37,8 @@ object ContestErrorMessages {
   val DUPLICATED_SOLUTION = "Duplicating solution file"
   val BAD_SOLUTION_FILE_NAME = "Ill-formed solution file name"
   val BAD_SOLUTION_FORMAT = "Solution is malformed"
+  
+  val BAD_TASK_MATRIX = "Ill-formed task matrix"
 
 
 }

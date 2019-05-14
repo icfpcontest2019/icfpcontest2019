@@ -4,7 +4,7 @@ import java.io.File
 
 import lambda.contest.ContestConstants
 import lambda.contest.checkers.ContestCheckingUtils._
-import lambda.contest.checkers.GraderUtils
+import lambda.contest.checkers.{GraderUtils, TaskCreationUtils}
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 import org.scalatest.{FlatSpec, Matchers}
@@ -33,6 +33,7 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
         it should s"pass for ${f.getName}" in {
           assert(!res.isEmpty)
           val task = res.get
+          // val (matrix, _, _) = TaskCreationUtils.contestTaskToMatrix(task)
           assert(checkTaskWellFormed(task))
         }
     }

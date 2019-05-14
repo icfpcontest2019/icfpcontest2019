@@ -22,10 +22,10 @@ case class ContestTask(room: IPolygon,
     val roomStr = room.vertices.map(_.toString).mkString(",")
     val posStr = initPos.toString
     val obStr = obstacles.map(obs => obs.vertices.map(_.toString).mkString(",")).mkString(";")
-    val booStr = boosters.map{case (b, p) => s"${Booster.toChar(b)}${p.toString}"}.mkString(";")
+    val booStr = boosters.map { case (b, p) => s"${Booster.toChar(b)}${p.toString}" }.mkString(";")
     List(roomStr, posStr, obStr, booStr).mkString("#")
-  } 
-  
+  }
+
 }
 
 
@@ -64,11 +64,11 @@ object Booster extends Enumeration {
   * @param teleport         true if has a teleport installed
   */
 
-class Cell(private var hasSpace: Boolean = false,
-           private var illuminated: Boolean = false,
-           private var boosterToCollect: Option[Booster.Value] = None,
-           private var callPoint: Boolean = false,
-           private var teleport: Boolean = false) {
+case class Cell(private var hasSpace: Boolean = false,
+                private var illuminated: Boolean = false,
+                private var boosterToCollect: Option[Booster.Value] = None,
+                private var callPoint: Boolean = false,
+                private var teleport: Boolean = false) {
 
   /**
     * Avoiding checks with laziness
@@ -231,7 +231,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
   /* ---------------------------------------------- */
   //            Adding a new battery                //
   /* ---------------------------------------------- */
-  
+
   def addBattery(dx: Int, dy: Int) = {
     val squares = getTorchRange(IPoint(0, 0)).map(_.toSquare)
     val newSquare = IPoint(dx, dy).toSquare

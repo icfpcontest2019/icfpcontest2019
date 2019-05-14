@@ -7,6 +7,8 @@ import lambda.contest.parsers.ContestTaskParser
 import lambda.contest.{Booster, Cell, ContestConstants, ContestException, ContestTask}
 import lambda.geometry.integer.IPoint
 
+import scala.collection.mutable
+
 /**
   * Various conversions
   *
@@ -70,6 +72,78 @@ object TaskCreationUtils {
     (matrix, xr, yr)
   }
 
+  val SOLID_WALL_CHAR = '#'
+  val NOTHING_CHAR = '.'
+  val NEWLINE = '\n'
+
+  def taskToMatrixString(t: ContestTask) = {
+    val buffer = new mutable.Queue[String]()
+    val (matrix, dx, dy) = contestTaskToMatrix(t)
+    // Add initial position
+    buffer.enqueue(t.initPos.toString)
+    for {j <- 0 until dy} {
+      val line = new mutable.StringBuilder()
+      for (i <- 0 until dx; cell = matrix(i)(j)) {
+        if (!cell.canStep) {
+          line.append(SOLID_WALL_CHAR)
+        } else if (cell.hasCallPoint) {
+          line.append(CALL_POINT_LETTER)
+        } else if (cell.peekBooster.isDefined) {
+          line.append(Booster.toChar(cell.peekBooster.get))
+        } else {
+          line.append(NOTHING_CHAR)
+        }
+      }
+      buffer.enqueue(line.toString())
+    }
+    buffer.toList.mkString(NEWLINE.toString)
+  }
+
+  def stringsToTaskMatrix(ls: List[String]): (TaskMatrix, Int, Int, IPoint) = {
+    if (ls.isEmpty) throw ContestException(BAD_TASK_MATRIX)
+    import lambda.contest.parsers.ContestTaskParser._
+
+    val initRes = parseAll(intPoint, ls.head)
+    if (initRes.isEmpty) throw ContestException(BAD_TASK_MATRIX)
+    val initPos = initRes.get
+    val rest = ls.tail
+    if (rest.isEmpty) throw ContestException(BAD_TASK_MATRIX)
+    val dy = rest.size
+    val dx = rest.head.length
+    val matrix = Array.fill(dx)(Array.fill(dy)(new Cell()))
+    for (j <- rest.indices) {
+      val line = rest(j)
+      for (i <- line.indices) {
+        val cell = matrix(i)(j)
+        line.charAt(i) match {
+          case `SOLID_WALL_CHAR` =>  
+          case NOTHING_CHAR => cell.clearSpace()
+          case CALL_POINT_LETTER => 
+            cell.clearSpace()
+            cell.setCallPoint()
+          case COFFEE_LETTER =>
+            cell.clearSpace()
+            cell.setBooster(Booster.CoffeeBooster)
+          case BATTERIES_LETTER =>
+            cell.clearSpace()
+            cell.setBooster(Booster.BatteriesBooster)
+          case DRILL_LETTER =>
+            cell.clearSpace()
+            cell.setBooster(Booster.DrillBooster)
+          case INTSTALL_TELEPORT_LETTER =>
+            cell.clearSpace()
+            cell.setBooster(Booster.TeleportBooster)
+          case CALL_FRIEND_LETTER =>
+            cell.clearSpace()
+            cell.setBooster(Booster.CallWatchmanBooster)
+          case _ => throw ContestException(BAD_TASK_MATRIX)
+        } 
+      }
+    }
+    (matrix, dx, dy, initPos)
+  }
+
+
   def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, positions: List[IPoint]): StringBuilder = {
     val wallChar = '#'
     val watchmanChar = 'W'
@@ -78,6 +152,7 @@ object TaskCreationUtils {
     def println(): Unit = {
       buffer.append("\n")
     }
+
     def print(s: Char): Unit = {
       buffer.append(s)
     }
