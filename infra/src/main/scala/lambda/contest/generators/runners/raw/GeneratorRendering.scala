@@ -7,12 +7,8 @@ import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
 import lambda.contest.generators.GeneratorFileUtil._
 import lambda.contest.generators.PolygonToRender
-import lambda.contest.generators.runners.raw.RawRoomMover.polyParser
-import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.floating.FPolygon
 import lambda.geometry.floating.generators.CompositePolygon
-import lambda.geometry.integer.IPolygon
-import lambda.util.FileUtil
 
 /**
   * @author Ilya Sergey
@@ -72,10 +68,10 @@ trait GeneratorRendering {
           writeRoomToFile(newFile, poly)
           println(s"Recorded polygon to $newFile")
           println()
+          genNewPoly(())
         case None =>
           System.err.println(s"Cannot write a new file to the path $path.")
       }
-      genNewPoly(())
     }
 
     val partOneButton = new JButton("Part 1")
@@ -91,7 +87,7 @@ trait GeneratorRendering {
     })
 
     val partThreeButton = new JButton("Part 3")
-    val partThreeFolder = s"$rawPath/part-2/$boxSize-random/"
+    val partThreeFolder = s"$rawPath/part-3/$boxSize-random/"
     partThreeButton.addActionListener((e: ActionEvent) => {
       recordPolygon(partThreeFolder)
     })
@@ -104,13 +100,4 @@ trait GeneratorRendering {
     (partOneButton, partTwoButton, partThreeButton, rejectButton)
   }
 
-  private def writeRoomToFile(newFile: String, poly: IPolygon) = {
-    val goodPoly = poly.shiftToOrigin
-    val polyString = goodPoly.vertices.map {
-      _.toString
-    }.mkString(",")
-    val finalString = List(polyString, goodPoly.randomCellWithin.toString, " ", "").mkString(ContestTaskParser.sepToken)
-    assert(!ContestTaskParser(finalString).isEmpty)
-    FileUtil.writeToNewFile(newFile, finalString)
-  }
 }

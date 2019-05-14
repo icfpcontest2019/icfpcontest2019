@@ -4,6 +4,8 @@ import java.io.File
 
 import lambda.contest.checkers.GraderUtils
 import lambda.contest.checkers.GraderUtils._
+import lambda.contest.parsers.ContestTaskParser
+import lambda.geometry.integer.IPolygon
 import lambda.util.FileUtil
 import org.apache.commons.io.FilenameUtils
 
@@ -57,6 +59,19 @@ object GeneratorFileUtil {
     Some(s"$path/$newName".replace("/", File.separator))
 
   }
+
+  def writeRoomToFile(newFile: String, poly: IPolygon) = {
+    val goodPoly = poly.shiftToOrigin
+    val polyString = goodPoly.vertices.map {
+      _.toString
+    }.mkString(",")
+    val finalString = List(polyString, goodPoly.randomCellWithin.toString, " ", "").mkString(ContestTaskParser.sepToken)
+    assert(!ContestTaskParser(finalString).isEmpty)
+    FileUtil.writeToNewFile(newFile, finalString)
+  }
+
+
+
 
 
 }

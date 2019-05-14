@@ -20,16 +20,17 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     assertResult(letters)(d)
   }
   
-  val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
+  val rawPath = "./src/main/resources/contest/no_obstacles_no_boosters"
   
   def checkRawTasksInFolder(folder: String): Unit = {
+    s"A consistency check for $folder" should "succeed" in {}  
       val dir = new File(s"$rawPath/$folder/")
       assert(dir.isDirectory)
       for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
         val path = f.getAbsolutePath
         val contents = FileUtil.readFromFileWithNewLines(path).trim
         val res = ContestTaskParser(contents)
-        it should s"pass for $folder/${f.getName}" in {
+        it should s"pass for ${f.getName}" in {
           assert(!res.isEmpty)
           val task = res.get
           assert(checkTaskWellFormed(task))
@@ -37,7 +38,6 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     }
   }
 
-  s"A consistency check" should "succeed in `no_obstacles_no_boosters`" in {}
   checkRawTasksInFolder("genesis")
   
   checkRawTasksInFolder("part-1/10-simple")
