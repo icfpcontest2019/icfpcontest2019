@@ -44,6 +44,39 @@ trait ContestGrader {
 
 
   /**
+    * @param taskPath path for the tasks
+    */
+  def readTasksNumbers(taskPath: String): List[Int] = {
+    val dir = new File(taskPath)
+    if (!dir.isDirectory)
+      throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
+
+    val nums = for (f <- dir.listFiles();
+                    fname = f.getName
+                    if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
+                    tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt)
+      yield tNum
+    nums.toList.sorted
+  }
+
+  def readOneTask(taskPath: String, solution: Int): Option[TaskDescription] = {
+    val dir = new File(taskPath)
+    if (!dir.isDirectory)
+      throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
+    for (f <- dir.listFiles();
+         fname = f.getName
+         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
+         tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
+         if solution == tNum) {
+      val line = readFromFile(f.getAbsolutePath).mkString("").trim
+      val task: ContestTask = ContestTaskParser(line).get
+      val (matrix, dx, dy) = contestTaskToMatrix(task)
+      return Some(matrix, dx, dy, task.initPos)
+    }
+    None
+  }
+
+  /**
     * @param taskPath  path for the tasks
     * @param solutions numbers of provided solutions
     * @return a map from task number to the matrix that describes it  
@@ -129,35 +162,35 @@ trait ContestGrader {
   /*                        Grade solutions                    */
   /* --------------------------------------------------------- */
 
-  def gradeSolutions(tFolder: String,
-                     tasks: Map[Int, TaskDescription],
+  def gradeSolutions(solutionFolder: String,
+                     taskPath: String,
                      solutions: Map[Int, Solution],
                      config: GraderConfig = defaultConfig): Map[Int, Option[Int]] = {
 
     var gradeMap = Map.empty[Int, Option[Int]]
 
-    for {taskN <- tasks.keys.toList.sorted
-         (matrix, dx, dy, init) = tasks(taskN)} {
-      if (!solutions.isDefinedAt(taskN)) {
-        gradeMap = gradeMap + (taskN -> None)
-      } else {
-        val (boosters, moves) = solutions(taskN)
-        val state = TaskExecution.createState(matrix, dx, dy, init, moves, boosters)
-        val res = try {
+    for {taskN <- solutions.keys.toList.sorted} {
+      readOneTask(taskPath, taskN) match {
+        case Some((matrix, dx, dy, init)) =>
+          val (boosters, moves) = solutions(taskN)
+          val state = TaskExecution.createState(matrix, dx, dy, init, moves, boosters)
+          val res = try {
+            if (config.verbose) {
+              print(s"[$solutionFolder] Grading ${intAs3CharString(taskN)} ... ")
+            }
+            state.evalSolution()
+          } catch {
+            case _: Throwable => None
+          }
           if (config.verbose) {
-            print(s"[$tFolder] Grading ${intAs3CharString(taskN)} ... ")
+            res match {
+              case Some(value) => println(s"$value")
+              case None => println("failed")
+            }
           }
-          state.evalSolution()
-        } catch {
-          case _: Throwable => None
-        }
-        if (config.verbose) {
-          res match {
-            case Some(value) => println(s"$value")
-            case None => println("failed")
-          }
-        }
-        gradeMap = gradeMap + (taskN -> res)
+          gradeMap = gradeMap + (taskN -> res)
+        case None =>
+          gradeMap = gradeMap + (taskN -> None)
       }
     }
     gradeMap
@@ -169,10 +202,12 @@ trait ContestGrader {
   /* --------------------------------------------------------- */
 
 
-  def writeGradesToCSV(gradeMap: Map[Int, Option[Int]], outPath: String): Unit = {
-    val lines = for (i <- gradeMap.keySet.toList.sorted) yield {
+  def writeGradesToCSV(taskNumbers: List[Int],
+                       gradeMap: Map[Int, Option[Int]],
+                       outPath: String): Unit = {
+    val lines = for (i <- taskNumbers) yield {
 
-      val res = gradeMap(i)
+      val res = gradeMap.getOrElse(i, None)
       val steps = if (res.isDefined) res.get else 0
       val status = if (res.isDefined) "Ok" else "Failed"
       s"$i, $steps, $status"

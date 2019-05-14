@@ -21,16 +21,10 @@ object IndividualGrader extends ContestGrader {
     // Get all solutions (with boosters) from the folder 
     val solutionMap = readSolutionsAndBoosters(config.solutionPath)
 
-
-    // Get all tasks for the problems
-    val taskMap = readTasks(config.problemPath, solutionMap.keySet)
-
-
-
     val solutionFolder = new File(config.solutionPath).getName
     
-    // Grade solutions
-    val gradeMap = gradeSolutions(solutionFolder, taskMap, solutionMap, config)
+    // Grade solutions; tasks are fetched lazily
+    val gradeMap = gradeSolutions(solutionFolder, config.problemPath, solutionMap, config)
 
     if (config.verbose) {
       println()
@@ -45,7 +39,8 @@ object IndividualGrader extends ContestGrader {
     }
     
     // Writing to CSV
-    writeGradesToCSV(gradeMap, config.outPath)
+    val taskNumbers = readTasksNumbers(config.problemPath)
+    writeGradesToCSV(taskNumbers, gradeMap, config.outPath)
     println("Grading complete")
 
   }
