@@ -2,6 +2,7 @@ package lambda.contest.generators
 
 import java.io.File
 
+import lambda.contest.ContestTask
 import lambda.contest.checkers.GraderUtils
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.parsers.ContestTaskParser
@@ -62,12 +63,9 @@ object GeneratorFileUtil {
 
   def writeRoomToFile(newFile: String, poly: IPolygon) = {
     val goodPoly = poly.shiftToOrigin
-    val polyString = goodPoly.vertices.map {
-      _.toString
-    }.mkString(",")
-    val finalString = List(polyString, goodPoly.randomCellWithin.toString, " ", "").mkString(ContestTaskParser.sepToken)
-    assert(!ContestTaskParser(finalString).isEmpty)
-    FileUtil.writeToNewFile(newFile, finalString)
+    val task = ContestTask(goodPoly, goodPoly.randomCellWithin, Nil, Nil)
+    assert(!ContestTaskParser(task.toString).isEmpty)
+    FileUtil.writeToNewFile(newFile, task.toString)
   }
 
 

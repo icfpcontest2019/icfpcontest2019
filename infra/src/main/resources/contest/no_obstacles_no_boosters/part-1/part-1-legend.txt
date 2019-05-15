@@ -50,3 +50,76 @@ prob-047 - random polygon within 50x50 box
 prob-048 - random polygon within 50x50 box
 prob-049 - random polygon within 50x50 box
 prob-050 - random polygon within 50x50 box
+
+prob-051 - andorra (100x100)
+prob-052 - argentina (100x100)
+prob-053 - armenia (100x100)
+prob-054 - austria (100x100)
+prob-055 - belgium (100x100)
+prob-056 - estonia (100x100)
+prob-057 - france (100x100)
+prob-058 - iran (100x100)
+prob-059 - luxembourg (100x100)
+prob-060 - mexico (100x100)
+prob-061 - montenegro (100x100)
+prob-062 - serbia (100x100)
+prob-063 - singapore (100x100)
+prob-064 - slovenia (100x100)
+prob-065 - south_korea (100x100)
+prob-066 - switzerland (100x100)
+prob-067 - tajikistan (100x100)
+prob-068 - thailand (100x100)
+prob-069 - ukraine (100x100)
+prob-070 - united_kingdom (100x100)
+
+prob-071 - random polygon within 100x100 box
+prob-072 - random polygon within 100x100 box
+prob-073 - random polygon within 100x100 box
+prob-074 - random polygon within 100x100 box
+prob-075 - random polygon within 100x100 box
+prob-076 - random polygon within 100x100 box
+prob-077 - random polygon within 100x100 box
+prob-078 - random polygon within 100x100 box
+prob-079 - random polygon within 100x100 box
+prob-080 - random polygon within 100x100 box
+prob-081 - random polygon within 100x100 box
+prob-082 - random polygon within 100x100 box
+prob-083 - random polygon within 100x100 box
+prob-084 - random polygon within 100x100 box
+prob-085 - random polygon within 100x100 box
+prob-086 - random polygon within 100x100 box
+prob-087 - random polygon within 100x100 box
+prob-088 - random polygon within 100x100 box
+prob-089 - random polygon within 100x100 box
+prob-090 - random polygon within 100x100 box
+prob-091 - random polygon within 100x100 box
+prob-092 - random polygon within 100x100 box
+prob-093 - random polygon within 100x100 box
+prob-094 - random polygon within 100x100 box
+prob-095 - random polygon within 100x100 box
+prob-096 - random polygon within 100x100 box
+prob-097 - random polygon within 100x100 box
+prob-098 - random polygon within 100x100 box
+prob-099 - random polygon within 100x100 box
+prob-100 - random polygon within 100x100 box
+
+prob-101 - australia (200x200)
+prob-102 - brazil (200x200)
+prob-103 - bulgaria (200x200)
+prob-104 - canada (200x200)
+prob-105 - finland (200x200)
+prob-106 - hungary (200x200)
+prob-107 - iceland (200x200)
+prob-108 - ireland (200x200)
+prob-109 - macedonia (200x200)
+prob-110 - netherlands (200x200)
+prob-111 - poland (200x200)
+prob-112 - romania (200x200)
+prob-113 - slovakia (200x200)
+prob-114 - spain (200x200)
+prob-115 - sweden (200x200)
+prob-116 - tunisia (200x200)
+prob-117 - turkey (200x200)
+prob-118 - usa (200x200)
+prob-119 - vatican (200x200)
+prob-120 - zambia (200x200)

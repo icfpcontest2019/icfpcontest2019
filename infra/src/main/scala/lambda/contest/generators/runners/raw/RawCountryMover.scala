@@ -20,9 +20,10 @@ import scala.collection.mutable
 object RawCountryMover {
 
   val queue = new mutable.Queue[(IPolygon, String)]()
-  val claimed = new mutable.HashSet[String]()
+  val claimed = new mutable.HashSet[(String, String)]()
 
   var pp: PolygonToRender = _
+  var cName: String = _
 
   private val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
   private val countryPath = "./infra/src/main/resources/geoshapes/countries"
@@ -32,33 +33,50 @@ object RawCountryMover {
     for (z@(poly, file) <- fetchCountries(boxSize)) {
       queue.enqueue(z)
     }
-    // for 
+    for (c <- fetchClaimedCountries()) {
+      claimed.add(c)
+    }
     draw(boxSize)
+  }
+  
+  def nextNonClaimedCountry(): Option[(IPolygon, String)] = {
+    val cs = claimed.toList.map(_._2)
+    while (queue.nonEmpty && cs.contains(queue.front._2)) {
+      queue.dequeue()
+    }
+    if (queue.isEmpty) None else Some(queue.front)
   }
 
   def draw(boxSize: Int): Unit = {
-
-    pp = PolygonToRender(queue.front._1.toFPolygon)
+    
+    val (poly, cn) = nextNonClaimedCountry().get
+    pp = PolygonToRender(poly.toFPolygon)
+    cName = cn
 
     val frame = new JFrame()
     val polygonPanel = new JPanel() {
       override def paint(g: Graphics) = {
         pp.fillWhiteBackground(g)
         pp.fillPoly(g, pp.polygon, Color.LIGHT_GRAY)
+        val text = cName
+        g.setColor(Color.BLACK)
+        g.drawChars(text.toCharArray, 0, text.length, 100, 100)
       }
     }
 
-    def generateNewPoly: Unit => Unit = { _: Unit =>
+    def moveToNextCountry: Unit => Unit = { _: Unit =>
       if (queue.isEmpty) {
-        System.err.println("Ran out of polygons!")
+        System.err.println("Ran out of countries!")
       } else {
         queue.dequeue()
 
         if (queue.nonEmpty) {
-          pp = PolygonToRender(queue.front._1.toFPolygon)
+          val (poly, cn) = nextNonClaimedCountry().get
+          pp = PolygonToRender(poly.toFPolygon)
+          cName = cn
           polygonPanel.paint(polygonPanel.getGraphics)
         } else {
-          System.err.println("Ran out of polygons!")
+          System.err.println("Ran out of countries!")
         }
       }
     }
@@ -66,7 +84,7 @@ object RawCountryMover {
     frame.setLayout(new BoxLayout(frame.getContentPane, BoxLayout.Y_AXIS))
     frame.add(polygonPanel, BorderLayout.NORTH)
 
-    val buttons = addButtons(generateNewPoly, boxSize)
+    val buttons = addButtons(moveToNextCountry, boxSize)
     buttons.foreach(b => frame.add(b, BorderLayout.SOUTH))
 
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
@@ -75,15 +93,24 @@ object RawCountryMover {
     frame.setVisible(true)
     
   }
+  
+  def recordAllClaimedCountries() = {
+    val contents = claimed.toList.map{case (f, c) => s"$f$splitToken$c"}.sorted.mkString("\n")
+    FileUtil.writeToNewFile(s"$rawPath/countries", contents)
+  }
 
   def addButtons(genNewPoly: Unit => Unit, boxSize: Int) = {
-    def recordPolygon(path: String) = {
+    def recordCountry(path: String) = {
       val ext = GraderUtils.PROBLEM_DESC_EXT
       getNewFilePath(path, ext) match {
         case Some(newFile) =>
           val poly = pp.polygon.toIPolygon
+          val cn = cName
+          val fName = new File(newFile).getName
           writeRoomToFile(newFile, poly)
-          println(s"Recorded polygon to $newFile")
+          claimed.add(fName, cName)
+          recordAllClaimedCountries
+          println(s"Recorded $cn to $newFile, updated claimed countries")
           println()
           genNewPoly(())
         case None =>
@@ -95,16 +122,17 @@ object RawCountryMover {
       ("part-1", "Part 1"),
       ("part-2", "Part 2"),
       ("part-3", "Part 3"),
+      ("genesis", "genesis"),
       ("bonus", "Bonus"),
     )
 
     val buttons = parts.filter { case (dir, caption) =>
-      val f = new File(s"$rawPath/$dir/$boxSize-random/")
+      val f = new File(s"$rawPath/$dir/$boxSize-countries/")
       f.isDirectory && f.exists()
     }.map { case (dir, caption) =>
       val button = new JButton(caption)
       button.addActionListener((e: ActionEvent) => {
-        recordPolygon(s"$rawPath/$dir/$boxSize-random/")
+        recordCountry(s"$rawPath/$dir/$boxSize-countries/")
       })
       button
     }
