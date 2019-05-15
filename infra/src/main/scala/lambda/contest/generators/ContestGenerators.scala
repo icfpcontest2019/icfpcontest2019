@@ -26,8 +26,8 @@ object ContestGenerators {
       case None => true
     }
 
-  def roomGenerator(size: Int, includeLollis: Boolean = false,
-                    boundOpt: Option[FPolygon] = None) = {
+  def largeRoomGenerator(size: Int, includeLollis: Boolean = false,
+                         boundOpt: Option[FPolygon] = None) = {
     import Attachments._
     import BasePolygons._
 

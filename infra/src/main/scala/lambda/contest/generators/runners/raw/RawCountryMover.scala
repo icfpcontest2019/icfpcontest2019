@@ -6,12 +6,10 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
-import lambda.contest.checkers.GraderUtils._
-import lambda.contest.generators.GeneratorFileUtil._
+import lambda.contest.generators.GeneratorFileUtil.{getNewFilePath, noObstacleExtension, writeRoomToFile}
 import lambda.contest.generators.PolygonToRender
-import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.GeometryParsers
-import lambda.geometry.integer.{IPoint, IPolygon}
+import lambda.geometry.integer.IPolygon
 import lambda.util.FileUtil
 
 import scala.collection.mutable
@@ -19,24 +17,24 @@ import scala.collection.mutable
 /**
   * @author Ilya Sergey
   */
-object RawRoomMover {
+object RawCountryMover {
 
-  val queue = new mutable.Queue[(IPolygon, File)]()
+  val queue = new mutable.Queue[(IPolygon, String)]()
+  val claimed = new mutable.HashSet[String]()
+
   var pp: PolygonToRender = _
 
+  private val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
+  private val countryPath = "./infra/src/main/resources/geoshapes/countries"
 
   def main(args: Array[String]): Unit = {
     val boxSize = args(0).toInt
-    for {
-      z@(poly, file) <- getRandomPolygonsAndInitPositions(boxSize)
-    } {
+    for (z@(poly, file) <- fetchCountries(boxSize)) {
       queue.enqueue(z)
     }
+    // for 
     draw(boxSize)
   }
-
-  
-  private val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
 
   def draw(boxSize: Int): Unit = {
 
@@ -54,8 +52,7 @@ object RawRoomMover {
       if (queue.isEmpty) {
         System.err.println("Ran out of polygons!")
       } else {
-        val (_, f) = queue.dequeue()
-        f.delete()
+        queue.dequeue()
 
         if (queue.nonEmpty) {
           pp = PolygonToRender(queue.front._1.toFPolygon)
@@ -66,21 +63,17 @@ object RawRoomMover {
       }
     }
 
-    val (button1, button2, button3, reject) =
-      addButtons(generateNewPoly, boxSize)
-
     frame.setLayout(new BoxLayout(frame.getContentPane, BoxLayout.Y_AXIS))
     frame.add(polygonPanel, BorderLayout.NORTH)
 
-    frame.add(button1, BorderLayout.SOUTH)
-    frame.add(button2, BorderLayout.SOUTH)
-    frame.add(button3, BorderLayout.SOUTH)
-    frame.add(reject, BorderLayout.SOUTH)
+    val buttons = addButtons(generateNewPoly, boxSize)
+    buttons.foreach(b => frame.add(b, BorderLayout.SOUTH))
 
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE)
     val size = pp.frameSize
     frame.setSize(size._1, size._2)
     frame.setVisible(true)
+    
   }
 
   def addButtons(genNewPoly: Unit => Unit, boxSize: Int) = {
@@ -98,69 +91,65 @@ object RawRoomMover {
       }
     }
 
-    val partOneButton = new JButton("Part 1")
-    val partOneFolder = s"$rawPath/part-1/$boxSize-random/"
-    partOneButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partOneFolder)
-    })
+    val parts = List(
+      ("part-1", "Part 1"),
+      ("part-2", "Part 2"),
+      ("part-3", "Part 3"),
+      ("bonus", "Bonus"),
+    )
 
-    val partTwoButton = new JButton("Part 2")
-    val partTwoFolder = s"$rawPath/part-2/$boxSize-random/"
-    partTwoButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partTwoFolder)
-    })
+    val buttons = parts.filter { case (dir, caption) =>
+      val f = new File(s"$rawPath/$dir/$boxSize-random/")
+      f.isDirectory && f.exists()
+    }.map { case (dir, caption) =>
+      val button = new JButton(caption)
+      button.addActionListener((e: ActionEvent) => {
+        recordPolygon(s"$rawPath/$dir/$boxSize-random/")
+      })
+      button
+    }
 
-    val partThreeButton = new JButton("Part 3")
-    val partThreeFolder = s"$rawPath/part-3/$boxSize-random/"
-    partThreeButton.addActionListener((e: ActionEvent) => {
-      recordPolygon(partThreeFolder)
-    })
-
-    val rejectButton = new JButton("Try again")
+    val rejectButton = new JButton("Skip for now")
     rejectButton.addActionListener((e: ActionEvent) => {
       genNewPoly(())
     })
 
-
-    (partOneButton, partTwoButton, partThreeButton, rejectButton)
+    buttons ++ List(rejectButton)
   }
 
-  
+
   //////////////////////////////////////////////////////////////////////////////////////////
-  
+
   private def polyParser = new GeometryParsers {
     def apply(s: String) = parseAll(ipoly, s)
   }
 
-  def getRandomPolygonsAndInitPositions(size: Int): List[(IPolygon, File)] = {
-    val asIsFolder = new File(getAsIsPath(size)).listFiles().toList.
-      filter(_.getName.endsWith(readyRoomExtension))
-    val needObs = new File(getNeedObstaclesPath(size)).listFiles().toList.
-      filter(_.getName.endsWith(noObstacleExtension))
-    println()
-    for {
-      f <- asIsFolder ++ needObs
+  def fetchCountries(size: Int): List[(IPolygon, String)] = {
+    val countryFolder = new File(s"$countryPath/$size")
+      .listFiles().toList
+      .filter(f => f.getName.endsWith(noObstacleExtension))
+
+    (for {
+      f <- countryFolder
       line = FileUtil.readFromFileWithNewLines(f.getAbsolutePath).trim
       polyRes = polyParser(line)
       if !polyRes.isEmpty
       poly = polyRes.get
-    } yield (poly, f)
-
+    } yield (poly, f.getName.stripSuffix(noObstacleExtension))).sortBy(_._2)
   }
-
-  def printToTaskFile(poly: IPolygon, initPos: IPoint,
-                      outFolder: String, num: Int): Unit = {
-
-    val polyString = poly.vertices.map {
-      _.toString
-    }.mkString(",")
-    val finalString = List(polyString, initPos.toString, " ", "").mkString(polyParser.sepToken)
-    assert(!ContestTaskParser(finalString).isEmpty)
-
-    val out = s"$outFolder/prob-${FileUtil.intAs3CharString(num)}$PROBLEM_DESC_EXT"
-    FileUtil.writeToNewFile(out, finalString)
-
+  
+  private val splitToken = " - "
+  
+  def fetchClaimedCountries(): List[(String, String)] = {
+    val countriesFile = new File(s"$rawPath/countries")
+    assert(countriesFile.exists() && !countriesFile.isDirectory)
+    val lines = FileUtil.readFromFile(countriesFile.getAbsolutePath).filter(_.trim.nonEmpty)
+    lines.map(l => {
+      val strings = l.split(splitToken)
+      (strings(0), strings(1))
+    })
+    
+    
   }
 
 }
-
