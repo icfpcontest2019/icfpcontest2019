@@ -8,7 +8,6 @@ prob-007 - simple randomly generated polygon
 prob-008 - simple randomly generated polygon
 prob-009 - simple randomly generated polygon
 prob-010 - simple randomly generated polygon
-
 prob-011 - random polygon within 30x30 box
 prob-012 - random polygon within 30x30 box
 prob-013 - random polygon within 30x30 box
@@ -19,7 +18,6 @@ prob-017 - random polygon within 30x30 box
 prob-018 - random polygon within 30x30 box
 prob-019 - random polygon within 30x30 box
 prob-020 - random polygon within 30x30 box
-
 prob-021 - random polygon within 50x50 box
 prob-022 - random polygon within 50x50 box
 prob-023 - random polygon within 50x50 box
@@ -50,7 +48,6 @@ prob-047 - random polygon within 50x50 box
 prob-048 - random polygon within 50x50 box
 prob-049 - random polygon within 50x50 box
 prob-050 - random polygon within 50x50 box
-
 prob-051 - andorra (100x100)
 prob-052 - argentina (100x100)
 prob-053 - armenia (100x100)
@@ -71,7 +68,6 @@ prob-067 - tajikistan (100x100)
 prob-068 - thailand (100x100)
 prob-069 - ukraine (100x100)
 prob-070 - united_kingdom (100x100)
-
 prob-071 - random polygon within 100x100 box
 prob-072 - random polygon within 100x100 box
 prob-073 - random polygon within 100x100 box
@@ -102,7 +98,6 @@ prob-097 - random polygon within 100x100 box
 prob-098 - random polygon within 100x100 box
 prob-099 - random polygon within 100x100 box
 prob-100 - random polygon within 100x100 box
-
 prob-101 - australia (200x200)
 prob-102 - brazil (200x200)
 prob-103 - bulgaria (200x200)

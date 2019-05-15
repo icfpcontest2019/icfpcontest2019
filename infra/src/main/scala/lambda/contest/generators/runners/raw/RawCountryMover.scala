@@ -27,6 +27,7 @@ object RawCountryMover {
 
   private val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
   private val countryPath = "./infra/src/main/resources/geoshapes/countries"
+  private val statesPath = "./infra/src/main/resources/geoshapes/usa_states"
 
   def main(args: Array[String]): Unit = {
     val boxSize = args(0).toInt
@@ -157,8 +158,13 @@ object RawCountryMover {
       .listFiles().toList
       .filter(f => f.getName.endsWith(noObstacleExtension))
 
+    val statesFolder = new File(s"$statesPath/$size")
+      .listFiles().toList
+      .filter(f => f.getName.endsWith(noObstacleExtension))
+
+
     (for {
-      f <- countryFolder
+      f <- (countryFolder ++ statesFolder).sortBy(_.getName)
       line = FileUtil.readFromFileWithNewLines(f.getAbsolutePath).trim
       polyRes = polyParser(line)
       if !polyRes.isEmpty
