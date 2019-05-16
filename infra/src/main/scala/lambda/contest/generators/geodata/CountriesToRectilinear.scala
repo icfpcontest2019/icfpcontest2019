@@ -4,7 +4,7 @@ import java.awt.{BorderLayout, Color, Graphics}
 import java.io.File
 
 import javax.swing.{BoxLayout, JFrame, JPanel}
-import lambda.contest.generators.{GeneratorFileUtil, PolygonToRender}
+import lambda.contest.generators.{TaskGeneratorUtils, PolygonToRender}
 import lambda.geometry.floating.{FPoint, FSegment, RenderUtils}
 import lambda.geometry.integer.{IPoint, IPolygon, IntersectionUtils}
 import lambda.util.FileUtil
@@ -64,7 +64,7 @@ object CountriesToRectilinear {
         if (!dirFile.exists()) {
           dirFile.mkdirs()
         } 
-        val out = s"$dir/$cname${GeneratorFileUtil.noObstacleExtension}"
+        val out = s"$dir/$cname${TaskGeneratorUtils.noObstacleExtension}"
         FileUtil.writeToNewFile(out, poly.vertices.mkString(","))
         println(s"done! Size: ${poly.vertices.size}, box: ${poly.boundingBox}")
       } catch {

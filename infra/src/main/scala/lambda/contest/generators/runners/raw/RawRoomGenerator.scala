@@ -6,11 +6,10 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
-import lambda.contest.generators.{ContestGenerators, ContestPolygonGenerator, PolygonToRender}
-import lambda.contest.generators.GeneratorFileUtil.{getNewFilePath, writeRoomToFile}
+import lambda.contest.generators.TaskGeneratorUtils.{getNewFilePath, writeRoomToFile}
+import lambda.contest.generators.{PolygonToRender, TaskGeneratorUtils}
+import lambda.geometry.floating.FPolygonUtils
 import lambda.geometry.floating.generators.CompositePolygon
-import lambda.geometry.floating.{FPolygon, FPolygonUtils}
-import lambda.geometry.integer.IPolygon
 
 import scala.util.Random
 
@@ -135,7 +134,7 @@ object RawRoomGenerator {
 
   protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon = {
     val numGen = gens + Random.nextInt(gens)
-    val generator = getSuitableGenerator(boxSize, None)
+    val generator = TaskGeneratorUtils.getSuitableGenerator(boxSize, None)
     val pc = generator.generate(numGen).sample.get
     val ipol = pc.pol.toIPolygon.shiftToOrigin
     assert(ipol.isWellFormed && ipol.isRectilinear)
@@ -153,21 +152,6 @@ object RawRoomGenerator {
     println()
 
     pc
-  }
-
-  def getSuitableGenerator(boxSize: Int = 200, boundOpt: Option[IPolygon]): ContestPolygonGenerator = {
-    val size = boundOpt match {
-      case Some(poly) =>
-        val (dx, dy) = poly.dimensions
-        math.min(math.min(dx, dy), boxSize)
-      case None => boxSize
-    }
-    if (size < 10) return ContestGenerators.obstacles_5x5(boundOpt)
-    if (size < 20) return ContestGenerators.obstacles_10x10(boundOpt)
-    if (size < 30) return ContestGenerators.obstacles_20x20(boundOpt)
-    if (size < 50) return ContestGenerators.obstacles_30x30(boundOpt)
-    if (size < 150) return ContestGenerators.obstacles_50x50(boundOpt)
-    ContestGenerators.largeRoomGenerator(boxSize, boundOpt)
   }
 
 }

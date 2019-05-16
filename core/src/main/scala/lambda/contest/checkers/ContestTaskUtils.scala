@@ -8,8 +8,10 @@ import lambda.geometry.integer.{IPoint, IPolygon}
   * @author Ilya Sergey
   */
 object ContestTaskUtils {
-  
-  
+
+  /**
+    * Assuming the room always has at leas one cell
+    */
   def getVacantCell(task: ContestTask): IPoint = {
     val ContestTask(room, initPos, obstacles, boosterPositions) = task
     
@@ -27,7 +29,7 @@ object ContestTaskUtils {
   /**
     * Generate a random box within the task room 
     */
-  def findRandomBox(task: ContestTask, minSize: Int, attempts: Int = 15): Option[(IPoint, IPolygon)] = {
+  def findRandomBox(task: ContestTask, minSize: Int = 5, attempts: Int = 15): Option[(IPoint, IPolygon)] = {
     val ContestTask(room, initPos, obstacles, boosterPositions) = task
 
     def boxIsAllowed(xl: Int, yl: Int, xr: Int, yr: Int): Boolean = {

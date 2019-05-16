@@ -3,6 +3,7 @@ package lambda.contest.generators
 import java.awt.{Color, Graphics}
 
 import lambda.geometry.floating.{FPoint, FPolygon}
+import lambda.geometry.integer.IPoint
 
 /**
   * @author Ilya Sergey
@@ -12,7 +13,7 @@ case class PolygonToRender(polygon: FPolygon) {
 
   val MAX_FRAME_SIZE: Int = 1000
   val MARGIN_SIZE: Int = 110
-  val DOT_RADIUS: Int = 7
+  val DOT_RADIUS: Int = 5
 
   val dimensions = getDimensions
   val bottomLeft = dimensions._1
@@ -62,18 +63,21 @@ case class PolygonToRender(polygon: FPolygon) {
     g.setColor(c)
     val vs = processPoly(p)
     g.drawPolygon(vs._1.toArray, vs._2.toArray, vs._3)
+    g.setColor(Color.BLACK)
   }
 
   def fillPoly(g: Graphics, p: FPolygon, c: Color): Unit = {
     g.setColor(c)
     val vs = processPoly(p)
     g.fillPolygon(vs._1.toArray, vs._2.toArray, vs._3)
+    g.setColor(Color.BLACK)
   }
-
-  def drawPoint(g: Graphics, pp: PolygonToRender, p: FPoint, c: Color): Unit = {
+  
+  def drawPoint(g: Graphics, p: FPoint, c: Color): Unit = {
     g.setColor(c)
-    val (x, y) = pp.processPoint(p)
+    val (x, y) = processPoint(p)
     g.fillOval(x - DOT_RADIUS / 2, y - DOT_RADIUS / 2, DOT_RADIUS, DOT_RADIUS)
+    g.setColor(Color.BLACK)
   }
 
   private def getDimensions: ((Double, Double), (Double, Double)) = {

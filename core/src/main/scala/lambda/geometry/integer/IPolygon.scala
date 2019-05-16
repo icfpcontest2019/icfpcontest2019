@@ -112,6 +112,8 @@ case class IPolygon(vertices: Seq[IPoint]) {
     IPolygon(vertices.map { v => v - mp })
   }
 
+  def +(p: IPoint) = IPolygon(vertices.map { _ + p })
+
 
   /**
     * Returns a bounding box of a room
@@ -161,7 +163,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
     (matrix, xr, yr)
   }
-  
+
   def pixelsUsed = {
     val (matrix, xr, yr) = shiftToOrigin.toMatrix
     var count = 0
@@ -173,7 +175,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
       count = count + 1
     }
     (count, count.toDouble / (xr * yr))
-  } 
+  }
 
   def printInAscii = {
     val (matrix, xsize, ysize) = toMatrix
@@ -210,10 +212,10 @@ case class IPolygon(vertices: Seq[IPoint]) {
     // Should contain a square from another polygon
     this.containsCell(v)
   }
-  
-  
+
+
   def randomCellWithin: IPoint = {
-    val ((xl, yl), (xr, yr)) =  boundingBox
+    val ((xl, yl), (xr, yr)) = boundingBox
     var x = xl + Random.nextInt(xr - xl)
     var y = yl + Random.nextInt(yr - yl)
     while (!containsCell(IPoint(x, y))) {
@@ -223,7 +225,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     val res = IPoint(x, y)
     assert(this.containsCell(res))
     res
-  }  
+  }
 
 
 }

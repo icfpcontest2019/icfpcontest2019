@@ -6,7 +6,7 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
-import lambda.contest.generators.GeneratorFileUtil.{getNewFilePath, noObstacleExtension, writeRoomToFile}
+import lambda.contest.generators.TaskGeneratorUtils.{getNewFilePath, noObstacleExtension, writeRoomToFile}
 import lambda.contest.generators.PolygonToRender
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.IPolygon
@@ -19,11 +19,11 @@ import scala.collection.mutable
   */
 object RawCountryMover {
 
-  val queue = new mutable.Queue[(IPolygon, String)]()
-  val claimed = new mutable.HashSet[(String, String)]()
+  private val queue = new mutable.Queue[(IPolygon, String)]()
+  private val claimed = new mutable.HashSet[(String, String)]()
 
-  var pp: PolygonToRender = _
-  var cName: String = _
+  private var pp: PolygonToRender = _
+  private var cName: String = _
 
   private val rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
   private val countryPath = "./infra/src/main/resources/geoshapes/countries"
