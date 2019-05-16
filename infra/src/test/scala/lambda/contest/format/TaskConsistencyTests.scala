@@ -66,5 +66,33 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
   checkRawTasksInFolder("bonus/400-random")
   checkRawTasksInFolder("bonus/400-countries")
   checkRawTasksInFolder("bonus/600-random")
+
+
+  val obstaclesPath = "./src/main/resources/contest/obstacles_no_boosters"
+
+  def checkTasksWithObstaclesInFolder(folder: String): Unit = {
+    s"A check for rooms with obstacles in $folder" should "succeed" in {}
+    val dir = new File(s"$obstaclesPath/$folder/")
+    assert(dir.isDirectory)
+    for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
+      val path = f.getAbsolutePath
+      val contents = FileUtil.readFromFileWithNewLines(path).trim
+      val res = ContestTaskParser(contents)
+      it should s"pass for ${f.getName}" in {
+        assert(!res.isEmpty)
+        val task = res.get
+        // val (matrix, _, _) = TaskCreationUtils.contestTaskToMatrix(task)
+        assert(checkTaskWellFormed(task))
+      }
+    }
+  }
+
+  checkTasksWithObstaclesInFolder("genesis")
+
+  checkTasksWithObstaclesInFolder("part-1")
+  checkTasksWithObstaclesInFolder("part-2")
+  checkTasksWithObstaclesInFolder("part-3")
+  checkTasksWithObstaclesInFolder("bonus")
   
+
 }

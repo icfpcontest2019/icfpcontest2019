@@ -97,9 +97,9 @@ object ContestGenerators {
   // For obstacles within 20x20 box
   def obstacles_20x20(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
     val tetrisBases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
-    val otherBases = List(square4, square5, wPoly)
+    val otherBases = List(square4, wPoly)
     val bases = tetrisBases ++ otherBases
-    val baseFreqs = tetrisBases.map(_ => 1) ++ List(3, 5, 3)
+    val baseFreqs = tetrisBases.map(_ => 1) ++ List(4, 3)
     val atts = List((generateNormalizedRectangle, simpleStrategy)) ++
       tetrisAtts.map(a => (prepNoScale(a), simpleStrategy))
     val attFreqs = List(3) ++ tetrisAtts.map(_ => 1)
@@ -110,9 +110,9 @@ object ContestGenerators {
   // For obstacles within 30x30 box
   def obstacles_30x30(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
     val tetrisBases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
-    val otherBases = List(square4, square5, square6, wPoly)
+    val otherBases = List(square4, square5, wPoly)
     val bases = tetrisBases ++ otherBases
-    val baseFreqs = tetrisBases.map(_ => 1) ++ List(3, 5, 3)
+    val baseFreqs = tetrisBases.map(_ => 1) ++ List(3, 1, 3)
     val atts = List((generateNormalizedRectangle, simpleStrategy2)) ++
       List(scalableRectangles, scalableSquares) ++
       tetrisAtts.map(a => (prepNoScale(a), simpleStrategy))

@@ -76,9 +76,10 @@ object AddObstaclesToTasks {
     // Make new obstacle
     val newObstacle = newObstacleButton(repaint)
     val removeObstacle = removeObstacleButton(repaint)
+    val record = recordButton(repaint)
     val skip = skipButton(repaint)
     
-    List(newObstacle, removeObstacle, skip)
+    List(newObstacle, removeObstacle, record, skip)
       
   }
 
@@ -129,8 +130,33 @@ object AddObstaclesToTasks {
       if (currentTaskFile.isEmpty) {
         System.err.println("Cannot skip.")
       } else {
-        if (queue.nonEmpty) currentTaskFile = Some(queue.dequeue())
-        repaint(())
+        if (queue.nonEmpty) {
+          currentTaskFile = Some(queue.dequeue())
+          repaint(())
+        } else {
+          System.err.println("Finished with the current folder.")
+        }
+      }
+    })
+    button
+  }
+
+  private def recordButton(repaint: Unit => Unit): JButton = {
+    val button = new JButton("Good!")
+    button.addActionListener((e: ActionEvent) => {
+      if (currentTaskFile.isEmpty) {
+        System.err.println("Cannot record")
+      } else {
+        if (queue.nonEmpty) {
+          val (task, file) = currentTaskFile.get
+          val outFile = s"$obstaclesPath/${file.getName}"
+          FileUtil.writeToNewFile(outFile, task.toString)
+          println(s"Written result to ${new File(outFile).getAbsolutePath}")
+          currentTaskFile = Some(queue.dequeue())
+          repaint(())
+        } else {
+          System.err.println("Finished with the current folder.")
+        }
       }
     })
     button

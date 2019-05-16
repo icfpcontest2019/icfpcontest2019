@@ -47,6 +47,7 @@ object TaskRenderingUtils {
     g.setColor(Color.BLACK)
     g.drawChars(text.toCharArray, 0, text.length, 10, 10)
 
+    pp.drawPoly(g, room.toFPolygon, Color.BLACK)
   }
 
   def boosterToColor(b: Booster.Value): Color = b match {

@@ -6,6 +6,7 @@ import lambda.contest.ContestTask
 import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.ContestTaskUtils.findRandomBox
 import lambda.contest.checkers.GraderUtils._
+import lambda.contest.generators.ContestGenerators.isWithinBoxAtOrigin
 import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.integer.IPolygon
 import lambda.util.FileUtil
@@ -100,13 +101,11 @@ object TaskGeneratorUtils {
         val numGen = math.min(100, math.min(dx, dy)) 
         val generator = getSuitableGenerator(100, Some(box))
         generator.generate(numGen).sample match {
-          case Some(res) =>
-            assert(ContestGenerators.isWithinBoxAtOrigin(Some(box))(res.pol))
-            
+          case Some(res)
+          if isWithinBoxAtOrigin(Some(box))(res.pol) =>
             val obs = res.pol.toIPolygon.shiftToOrigin + pt
             
             assert(obs.isWellFormed && obs.isRectilinear)
-            assert(ContestGenerators.isWithinBoxAtOrigin(Some(box))(obs.toFPolygon))
             assert(box.toFPolygon.contains(obs.toFPolygon))
             
             assert(task.room.containsPolygonProperly(box))
@@ -114,7 +113,7 @@ object TaskGeneratorUtils {
             val newTask = task.copy(obstacles = obs :: task.obstacles)
             assert(ContestTaskUtils.checkTaskWellFormed(newTask))
             Left(newTask)
-          case None => Right("Couldn't generate an obstacle.")
+          case _ => Right("Couldn't generate an obstacle.")
         }
       case None => Right("Couldn't find the box large enough. :(")
     }
