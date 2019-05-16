@@ -75,7 +75,7 @@ object TaskGeneratorUtils {
     val size = boundOpt match {
       case Some(poly) =>
         val (dx, dy) = poly.dimensions
-        math.min(math.min(dx, dy), boxSize)
+        math.max(math.max(dx, dy), boxSize)
       case None => boxSize
     }
     if (size < 10) return ContestGenerators.obstacles_5x5(boundOpt)
@@ -91,15 +91,26 @@ object TaskGeneratorUtils {
     */
   def generateNewObstacle(task: ContestTask): Either[ContestTask, String] = {
     findRandomBox(task) match {
-      case Some((pt, poly)) =>
-        val box =  poly.shiftToOrigin + pt
+      case Some((pt, box)) =>
+        
+        // Check that the box is okay
+        assert(ContestTaskUtils.checkTaskWellFormed(task.copy(obstacles = box :: task.obstacles)))
+        
         val (dx, dy) = box.dimensions
         val numGen = math.min(100, math.min(dx, dy)) 
         val generator = getSuitableGenerator(100, Some(box))
         generator.generate(numGen).sample match {
           case Some(res) =>
-            val obs = res.pol.toIPolygon.shiftToOrigin
+            assert(ContestGenerators.isWithinBoxAtOrigin(Some(box))(res.pol))
+            
+            val obs = res.pol.toIPolygon.shiftToOrigin + pt
+            
             assert(obs.isWellFormed && obs.isRectilinear)
+            assert(ContestGenerators.isWithinBoxAtOrigin(Some(box))(obs.toFPolygon))
+            assert(box.toFPolygon.contains(obs.toFPolygon))
+            
+            assert(task.room.containsPolygonProperly(box))
+            
             val newTask = task.copy(obstacles = obs :: task.obstacles)
             assert(ContestTaskUtils.checkTaskWellFormed(newTask))
             Left(newTask)

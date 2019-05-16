@@ -28,7 +28,7 @@ object ContestGenerators {
         val boxAtOrigin = box.shiftToOrigin.toFPolygon
         val (z, _) = RenderUtils.getPolygonBoundingBox(p)
         val q = p.shiftToOrigin(z)
-        boxAtOrigin.contains(q) && !boxAtOrigin.edgeIntersect(q)
+        boxAtOrigin.contains(q)
       case None => true
     }
 

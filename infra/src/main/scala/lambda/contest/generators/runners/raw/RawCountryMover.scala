@@ -94,13 +94,13 @@ object RawCountryMover {
     frame.setVisible(true)
     
   }
-  
-  def recordAllClaimedCountries() = {
+
+  private def recordAllClaimedCountries() = {
     val contents = claimed.toList.map{case (f, c) => s"$f$splitToken$c"}.sorted.mkString("\n")
     FileUtil.writeToNewFile(s"$rawPath/countries", contents)
   }
 
-  def addButtons(genNewPoly: Unit => Unit, boxSize: Int) = {
+  private def addButtons(genNewPoly: Unit => Unit, boxSize: Int) = {
     def recordCountry(path: String) = {
       val ext = GraderUtils.PROBLEM_DESC_EXT
       getNewFilePath(path, ext) match {

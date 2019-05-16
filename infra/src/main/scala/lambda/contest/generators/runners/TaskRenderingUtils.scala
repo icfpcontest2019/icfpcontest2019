@@ -3,6 +3,7 @@ package lambda.contest.generators.runners
 import java.awt.{Color, Graphics}
 import java.io.File
 
+import javax.swing.JButton
 import lambda.contest.{Booster, ContestTask}
 import lambda.contest.generators.PolygonToRender
 
@@ -26,19 +27,19 @@ object TaskRenderingUtils {
         // Dark yellow
         pp.fillPoly(g, head.toFPolygon, new Color(255, 204, 0))
         pp.drawPoly(g, head.toFPolygon, Color.BLACK)
-        // 
         tl.foreach { o =>
-          pp.fillPoly(g, o.toFPolygon, Color.YELLOW)
+          // Very light yellow
+          pp.fillPoly(g, o.toFPolygon, new Color(255, 255, 204))
           pp.drawPoly(g, o.toFPolygon, Color.BLACK)
         }
     }
 
     // Render initial position
-    pp.drawPoint(g, init.toFPoint, Color.RED)
+    pp.fillPoly(g, init.toSquare.toFPolygon, Color.RED)
 
     // Draw boosters
     for ((b, bp) <- boosters) {
-      pp.drawPoint(g, bp.toFPoint, boosterToColor(b))
+      pp.fillPoly(g, bp.toSquare.toFPolygon, boosterToColor(b))
     }
 
     // Write file name
