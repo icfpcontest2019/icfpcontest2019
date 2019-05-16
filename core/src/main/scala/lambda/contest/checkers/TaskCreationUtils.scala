@@ -46,6 +46,10 @@ object TaskCreationUtils {
          j <- 0 until yr // top BB boundary not included
          cell = IPoint(i, j)} {
       val cellInRoom = room.containsCell(cell)
+      //      if (j == 0) {
+      //        val proc = (i.toDouble / xr * 100).toInt
+      //        println(s"Done: $proc%")
+      //      }
       val cellNotInObstacles = obstacles.forall(o => !o.containsCell(cell))
 
       // Add space
