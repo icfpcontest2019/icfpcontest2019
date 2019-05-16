@@ -1,6 +1,6 @@
 package lambda.geometry.integer
 
-import lambda.contest.checkers.ContestCheckingUtils
+import lambda.contest.checkers.ContestTaskUtils
 import lambda.geometry.integer.examples.WatchmanExamples._
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -31,7 +31,7 @@ class IPolygonTests extends FlatSpec with Matchers {
     }
 
     it should "be within its bounding box" in {
-      ContestCheckingUtils.roomWithinPositiveBoundingBox(room)
+      ContestTaskUtils.roomWithinPositiveBoundingBox(room)
     }
 
   }

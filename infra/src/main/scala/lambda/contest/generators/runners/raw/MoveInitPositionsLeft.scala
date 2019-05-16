@@ -3,7 +3,7 @@ package lambda.contest.generators.runners.raw
 import java.io.File
 
 import lambda.contest.ContestTask
-import lambda.contest.checkers.ContestCheckingUtils
+import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.GraderUtils.PROBLEM_DESC_EXT
 import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.integer.IPoint
@@ -40,7 +40,7 @@ object MoveInitPositionsLeft {
       if (minLeft != init) {
         val newTask = ContestTask(room, minLeft, Nil, Nil)
 
-        assert(ContestCheckingUtils.checkTaskWellFormed(newTask))
+        assert(ContestTaskUtils.checkTaskWellFormed(newTask))
 
         FileUtil.writeToNewFile(f.getAbsolutePath, newTask.toString)
         println(s"Processed file ${f.getName}")

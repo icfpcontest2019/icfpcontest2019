@@ -3,7 +3,7 @@ package lambda.contest.format
 import java.io.File
 
 import lambda.contest.ContestConstants
-import lambda.contest.checkers.ContestCheckingUtils._
+import lambda.contest.checkers.ContestTaskUtils._
 import lambda.contest.checkers.{GraderUtils, TaskCreationUtils}
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil

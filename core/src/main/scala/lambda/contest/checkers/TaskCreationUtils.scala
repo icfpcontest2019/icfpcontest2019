@@ -2,9 +2,9 @@ package lambda.contest.checkers
 
 import lambda.contest.ContestConstants._
 import lambda.contest.ContestErrorMessages._
-import lambda.contest.checkers.ContestCheckingUtils.checkTaskWellFormed
+import lambda.contest.checkers.ContestTaskUtils._
 import lambda.contest.parsers.ContestTaskParser
-import lambda.contest.{Booster, Cell, ContestConstants, ContestException, ContestTask}
+import lambda.contest.{Booster, Cell, ContestException, ContestTask}
 import lambda.geometry.integer.IPoint
 
 import scala.collection.mutable

@@ -1,6 +1,6 @@
 package lambda.contest.format
 
-import lambda.contest.checkers.ContestCheckingUtils._
+import lambda.contest.checkers.ContestTaskUtils._
 import lambda.contest.checkers.TaskCreationUtils._
 import lambda.contest.examples.SimpleRooms
 import lambda.contest.parsers.ContestTaskParser

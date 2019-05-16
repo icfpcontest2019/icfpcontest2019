@@ -1,9 +1,12 @@
 package lambda.contest.generators
 
+import lambda.contest.generators.Attachments._
+import lambda.contest.generators.BasePolygons._
 import lambda.geometry._
 import lambda.geometry.floating.generators.PolygonGenerators.{AttachmentStrategy, prepNoScale}
 import lambda.geometry.floating.generators.PolygonPropertyUtils._
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
+import lambda.geometry.integer.IPolygon
 
 import scala.util.Random
 
@@ -19,15 +22,114 @@ object ContestGenerators {
     dx + 1 <= z && dy + 1 <= z
   }
 
+  def isWithinIPoly(boundPoly: Option[IPolygon] = None) = (p: FPolygon) =>
+    boundPoly match {
+      case Some(y) =>
+        val (z@FPoint(xl, yl), _) = RenderUtils.getPolygonBoundingBox(p)
+        val q = p.shiftToOrigin(z)
+        val x = y.shiftToOrigin.toFPolygon
+        x.contains(q) && !x.edgeIntersect(q)
+      case None => true
+    }
+
+
   def isWithinBoundary(boundOpt: Option[FPolygon] = None) = (p: FPolygon) =>
     boundOpt match {
-      case Some(x) => x.contains(p) && 
+      case Some(x) => x.contains(p) &&
         !x.edgeIntersect(p)
       case None => true
     }
 
-  def largeRoomGenerator(size: Int, includeLollis: Boolean = false,
-                         boundOpt: Option[FPolygon] = None) = {
+  /** ****************************************************************************/
+  /*                           Polygon Generators                               */
+  /** ****************************************************************************/
+
+  /*----------------------------------------------------------------------------*/
+  /*                                Obstacles                                   */
+  /*----------------------------------------------------------------------------*/
+
+  private val tetrisAtts = List(tetrisStick, tetrisL, tetrisR, tetris2, tetris3l, tetrisR)
+  private val baseTetrisPolygons = tetrisAtts.map(_.toIPolygon.shiftToOrigin)
+  private val baseTetrisPolygonsRotated =
+    baseTetrisPolygons.map(p => IPolygon(p.vertices.map(_.rotateLeft)).shiftToOrigin)
+
+  val simpleStrategy: AttachmentStrategy = {
+    case (l, rect) =>
+      if (l < 3) None else {
+        val startOffset = randomIntBetween(1, l.toInt - 2)
+        val endOffset = startOffset + 1
+        Some((startOffset, endOffset, 1))
+      }
+  }
+
+  val simpleStrategy2: AttachmentStrategy = {
+    case (l, rect) =>
+      if (l < 5) None else {
+        val startOffset = randomIntBetween(1, l.toInt - 2)
+        val endOffset = startOffset + 1
+        Some((startOffset, endOffset, 1))
+      }
+  }
+
+  // For obstacles within 5 x 5 bounding box
+  def obstacles_5x5(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
+    val bases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
+    val baseFreqs = bases.map(_ => 1)
+    val cond: FPolygon => Boolean = p => boundingBoxSize(5)(p) && isWithinIPoly(boundOpt)(p)
+    val atts = List(scalableRectangles)
+
+    ContestPolygonGenerator(bases, baseFreqs, atts, List(1), cond, (1, 1))
+  }
+
+  // For obstacles within 10x10 box
+  def obstacles_10x10(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
+    val tetrisBases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
+    val otherBases = List(square4, wPoly)
+    val bases = tetrisBases ++ otherBases
+    val baseFreqs = tetrisBases.map(_ => 1) ++ List(5, 3)
+    val atts = List((generateNormalizedRectangle, simpleStrategy)) ++
+      tetrisAtts.map(a => (prepNoScale(a), simpleStrategy))
+    val attFreqs = List(3) ++ atts.map(_ => 1)
+    val cond: FPolygon => Boolean = p => boundingBoxSize(10)(p) && isWithinIPoly(boundOpt)(p)
+    ContestPolygonGenerator(bases, baseFreqs, atts, attFreqs, cond, (1, 5))
+  }
+
+  // For obstacles within 20x20 box
+  def obstacles_20x20(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
+    val tetrisBases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
+    val otherBases = List(square4, square5, wPoly)
+    val bases = tetrisBases ++ otherBases
+    val baseFreqs = tetrisBases.map(_ => 1) ++ List(3, 5, 3)
+    val atts = List((generateNormalizedRectangle, simpleStrategy)) ++
+      tetrisAtts.map(a => (prepNoScale(a), simpleStrategy))
+    val attFreqs = List(3) ++ tetrisAtts.map(_ => 1)
+    val cond: FPolygon => Boolean = p => boundingBoxSize(20)(p) && isWithinIPoly(boundOpt)(p)
+    ContestPolygonGenerator(bases, baseFreqs, atts, attFreqs, cond, (2, 7))
+  }
+
+  // For obstacles within 30x30 box
+  def obstacles_30x30(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator = {
+    val tetrisBases = (baseTetrisPolygons ++ baseTetrisPolygonsRotated).map(_.toFPolygon)
+    val otherBases = List(square4, square5, square6, wPoly)
+    val bases = tetrisBases ++ otherBases
+    val baseFreqs = tetrisBases.map(_ => 1) ++ List(3, 5, 3)
+    val atts = List((generateNormalizedRectangle, simpleStrategy2)) ++
+      List(scalableRectangles, scalableSquares) ++
+      tetrisAtts.map(a => (prepNoScale(a), simpleStrategy))
+    val attFreqs = List(5) ++ List(4, 4) ++ tetrisAtts.map(_ => 1)
+    val cond: FPolygon => Boolean = p => boundingBoxSize(30)(p) && isWithinIPoly(boundOpt)(p)
+    ContestPolygonGenerator(bases, baseFreqs, atts, attFreqs, cond, (2, 8))
+  }
+
+  // For obstacles within 50x50 box
+  def obstacles_50x50(boundOpt: Option[IPolygon] = None): ContestPolygonGenerator =
+    largeRoomGenerator(50, boundOpt)
+  
+  /*----------------------------------------------------------------------------*/
+  /*                                  Large rooms                               */
+  /*----------------------------------------------------------------------------*/
+
+  def largeRoomGenerator(size: Int, boundOpt: Option[IPolygon] = None) = {
     import Attachments._
     import BasePolygons._
 
@@ -78,6 +180,8 @@ object ContestGenerators {
       tetris2Scale //tetris2NoScale,
     )
     val tetrisFreqs = List(2)
+    
+    val includeLollis = size >= 200
 
     ///////////////////////////////////////////////////
     val (lols, lfrews) = if (includeLollis) {
@@ -98,8 +202,7 @@ object ContestGenerators {
 
     def cond: FPolygon => Boolean = p =>
       boundingBoxSize(size)(p) &&
-        isWithinBoundary(boundOpt)(p)
-
+        isWithinIPoly(boundOpt)(p)
 
     ContestPolygonGenerator(basePolygons, baseFreqs,
       atts, attFreqs, cond, stickSizes)
@@ -117,6 +220,10 @@ object BasePolygons {
   /* ------------------------------------------------------------- */
 
   val square4: FPolygon =
+    Seq((0, 0), (4, 0), (4, 4), (0, 4))
+  val square5: FPolygon =
+    Seq((0, 0), (5, 0), (5, 5), (0, 5))
+  val square6: FPolygon =
     Seq((0, 0), (6, 0), (6, 6), (0, 6))
   val square10: FPolygon =
     Seq((0, 0), (10, 0), (10, 10), (0, 10))
@@ -131,7 +238,7 @@ object BasePolygons {
   /*                          Combinations                        */
   /* ------------------------------------------------------------- */
 
-  val simpleBases = List(square4, square10, wPoly)
+  val simpleBases = List(square6, square10, wPoly)
 
 }
 
@@ -234,13 +341,13 @@ object Attachments {
   lazy val unitAttachmentStrategy: AttachmentStrategy = {
     case (l, rect) =>
       if (l != 1) None
-      Some((0, 1, 1))
+      else Some((0, 1, 1))
   }
 
   lazy val unitAttachmentStrategy3: AttachmentStrategy = {
     case (l, rect) =>
       if (l != 1) None
-      Some((0, 1, 3))
+      else Some((0, 1, 3))
   }
 
   lazy val noScalingStrategy: AttachmentStrategy = {

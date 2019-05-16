@@ -12,6 +12,9 @@ import lambda.util.FileUtil
 import scala.collection.mutable
 
 /**
+  * Transform all JSON-described countries into rectilinear polygons
+  * with different resolutions (100 - 800).
+  * 
   * @author Ilya Sergey
   */
 object CountriesToRectilinear {
