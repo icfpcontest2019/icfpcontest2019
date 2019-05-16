@@ -3,7 +3,6 @@ package lambda.contest.generators
 import java.awt.{Color, Graphics}
 
 import lambda.geometry.floating.{FPoint, FPolygon}
-import lambda.geometry.integer.IPoint
 
 /**
   * @author Ilya Sergey
@@ -11,7 +10,7 @@ import lambda.geometry.integer.IPoint
 case class PolygonToRender(polygon: FPolygon) {
 
 
-  val MAX_FRAME_SIZE: Int = 1000
+  val MAX_FRAME_SIZE: Int = 600
   val MARGIN_SIZE: Int = 110
   val DOT_RADIUS: Int = 5
 
