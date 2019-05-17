@@ -86,6 +86,7 @@ object AddObstaclesToTasks {
   private def newObstacleButton(repaint: Unit => Unit): JButton = {
     val button = new JButton("Add another obstacle")
     button.addActionListener((e: ActionEvent) => {
+      button.setEnabled(false)
       if (currentTaskFile.isEmpty) {
         System.err.println("Cannot add obstacle: no task given!")
       } else {
@@ -99,6 +100,7 @@ object AddObstaclesToTasks {
             System.err.println(msg)
         }
       }
+      button.setEnabled(true)
     })
     button
   }
