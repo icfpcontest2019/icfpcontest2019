@@ -20,6 +20,8 @@ import scala.collection.mutable
 object AddObstaclesToTasks {
 
   val queue = new mutable.Queue[(ContestTask, File)]()
+  var iterations = 10
+  var initIterations = 50 
 
   private var rawPath = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
   private var obstaclesPath = "./infra/src/main/resources/contest/obstacles_no_boosters"
@@ -28,21 +30,26 @@ object AddObstaclesToTasks {
   def main(args: Array[String]): Unit = {
     if (args.isEmpty) {
       System.err.println("No folder given.")
-      return 
-    } 
-    
+      return
+    }
+
     val folder = args(0)
     // Yeah, it's nice to be on a dark imperative side...
     rawPath = s"$rawPath/$folder"
     obstaclesPath = s"$obstaclesPath/$folder"
     fillQueueWithFiles()
-    
+
+    if (args.length > 0) {
+      initIterations = args(1).toInt
+      iterations = initIterations
+    }
+
     if (queue.nonEmpty) currentTaskFile = Some(queue.dequeue())
     draw()
   }
 
   def draw(): Unit = {
-    
+
     val frame = new JFrame()
     val polygonPanel = new JPanel() {
       override def paint(g: Graphics) = {
@@ -72,41 +79,51 @@ object AddObstaclesToTasks {
   }
 
   def createButtons(repaint: Unit => Unit): List[JButton] = {
-    
+
     // Make new obstacle
     val newObstacle = newObstacleButton(repaint)
     val removeObstacle = removeObstacleButton(repaint)
     val record = recordButton(repaint)
     val skip = skipButton(repaint)
-    
+
     List(newObstacle, removeObstacle, record, skip)
-      
+
   }
 
   private def newObstacleButton(repaint: Unit => Unit): JButton = {
-    val button = new JButton("Add another obstacle")
+    val button = new JButton("Add more obstacles")
     button.addActionListener((e: ActionEvent) => {
       button.setEnabled(false)
       if (currentTaskFile.isEmpty) {
         System.err.println("Cannot add obstacle: no task given!")
       } else {
-        val (task, file) = currentTaskFile.get
-        println(s"Generating new obstacle for task ${file.getName}")
-        TaskGeneratorUtils.generateNewObstacle(task) match {
-          case Left(newTask) =>
-            currentTaskFile = Some(newTask, file)
-            repaint(())
-            println(s"Done generating a new obstacle!")
-          case Right(msg) =>
-            System.err.println(msg)
+        var continue = true
+        for (_ <- 1 to iterations if continue) {
+          val (task, file) = currentTaskFile.get
+          println(s"Generating obstacle ${task.obstacles.size + 1} for task ${file.getName}")
+          TaskGeneratorUtils.generateNewObstacle(task) match {
+            case Left(newTask) =>
+              currentTaskFile = Some(newTask, file)
+              repaint(())
+            case Right(msg) =>
+              System.err.println(msg)
+              if (msg.endsWith(":(")) {
+                continue = false
+              }
+          }
         }
+        if (iterations >= 20) {
+          iterations = iterations / 2
+        }
+        println()
+        println(s"Done generating new obstacles!")
       }
       button.setEnabled(true)
     })
     button
   }
 
-  
+
   private def removeObstacleButton(repaint: Unit => Unit): JButton = {
     val button = new JButton("Remove last obstacle")
     button.addActionListener((e: ActionEvent) => {
@@ -134,6 +151,7 @@ object AddObstaclesToTasks {
         System.err.println("Cannot skip.")
       } else {
         if (queue.nonEmpty) {
+          iterations = initIterations
           currentTaskFile = Some(queue.dequeue())
           repaint(())
         } else {
@@ -157,6 +175,7 @@ object AddObstaclesToTasks {
           println(s"Written result to ${new File(outFile).getAbsolutePath}")
           currentTaskFile = Some(queue.dequeue())
           repaint(())
+          iterations = initIterations
         } else {
           System.err.println("Finished with the current folder.")
         }
@@ -166,14 +185,13 @@ object AddObstaclesToTasks {
   }
 
 
-
   private def fillQueueWithFiles(): Unit = {
     val rawDir = new File(rawPath)
     assert(rawDir.exists() && rawDir.isDirectory())
 
     val outDir = new File(obstaclesPath)
     assert(outDir.exists() && outDir.isDirectory())
-    
+
     val alreadyProcessed = outDir.listFiles.toList
       .map(_.getName)
       .filter(_.endsWith(PROBLEM_DESC_EXT))
@@ -194,6 +212,7 @@ object AddObstaclesToTasks {
         val task = ContestTaskParser(content).get
         (task, f)
       })
+      .reverse
       .foreach(queue.enqueue(_))
   }
 }
