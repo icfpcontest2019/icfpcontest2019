@@ -79,11 +79,11 @@ object TaskGeneratorUtils {
         math.min(math.max(dx, dy), boxSize)
       case None => boxSize
     }
-    if (size < 10) {
+    if (size < 8) {
       println("Choosing 5x5 generator")
       return ContestGenerators.obstacles_5x5(boundOpt)
     }
-    if (size < 20) {
+    if (size < 16) {
       println("Choosing 10x10 generator")
       return ContestGenerators.obstacles_10x10(boundOpt)
     }
@@ -95,7 +95,7 @@ object TaskGeneratorUtils {
       println("Choosing 30x30 generator")
       return ContestGenerators.obstacles_30x30(boundOpt)
     }
-    if (size < 150) {
+    if (size < 100) {
       println("Choosing default generator")
       return ContestGenerators.obstacles_50x50(boundOpt)
     }

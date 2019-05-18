@@ -96,6 +96,7 @@ object AddObstaclesToTasks {
           case Left(newTask) =>
             currentTaskFile = Some(newTask, file)
             repaint(())
+            println(s"Done generating a new obstacle!")
           case Right(msg) =>
             System.err.println(msg)
         }
