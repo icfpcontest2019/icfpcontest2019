@@ -60,7 +60,6 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
   checkRawTasksInFolder("part-3/100-countries")
   checkRawTasksInFolder("part-3/200-random")
   checkRawTasksInFolder("part-3/200-countries")
-  checkRawTasksInFolder("part-3/400-random")
   checkRawTasksInFolder("part-3/400-countries")
 
   checkRawTasksInFolder("bonus/400-random")
