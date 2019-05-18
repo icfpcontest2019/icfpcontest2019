@@ -50,31 +50,11 @@ prob-269 - random polygon within 200x200 box
 prob-270 - random polygon within 200x200 box
 prob-271 - israel
 prob-272 - pakistan
-prob-273 - russia
+prob-273 - indiana
 prob-274 - west_virginia
 prob-275 - cuba
 prob-276 - dominican_republic
 prob-277 - egypt
 prob-278 - honduras
 prob-279 - illinois
-prob-280 - indiana
-prob-281 - random polygon within 400x400 box
-prob-282 - random polygon within 400x400 box
-prob-283 - random polygon within 400x400 box
-prob-284 - random polygon within 400x400 box
-prob-285 - random polygon within 400x400 box
-prob-286 - random polygon within 400x400 box
-prob-287 - random polygon within 400x400 box
-prob-288 - random polygon within 400x400 box
-prob-289 - random polygon within 400x400 box
-prob-290 - random polygon within 400x400 box
-prob-291 - random polygon within 400x400 box
-prob-292 - random polygon within 400x400 box
-prob-293 - random polygon within 400x400 box
-prob-294 - random polygon within 400x400 box
-prob-295 - random polygon within 400x400 box
-prob-296 - random polygon within 400x400 box
-prob-297 - random polygon within 400x400 box
-prob-298 - random polygon within 400x400 box
-prob-299 - random polygon within 400x400 box
-prob-300 - random polygon within 400x400 box
+prob-280 - russia
