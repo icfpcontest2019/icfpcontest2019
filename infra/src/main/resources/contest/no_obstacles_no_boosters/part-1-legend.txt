@@ -147,4 +147,4 @@ prob-146 - random polygon within 200x200 box
 prob-147 - random polygon within 200x200 box
 prob-148 - random polygon within 200x200 box
 prob-149 - random polygon within 200x200 box
-prob-150 - random polygon within 200x200 box
+prob-150 - USS Enterprise (200x200)

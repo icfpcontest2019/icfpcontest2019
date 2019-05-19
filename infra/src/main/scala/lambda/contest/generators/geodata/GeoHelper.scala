@@ -44,9 +44,13 @@ object GeoHelper {
       polys.sortBy(FPolygonUtils.computeArea).reverse(1)
     } else polys.maxBy(FPolygonUtils.computeArea)
 
+    rescaleCountry(boxSize, largest)
+  }
+
+  def rescaleCountry(boxSize: Int, poly: FPolygon) = {
     // println(largest)
-    val bottomLeft = getPolygonBoundingBox(largest)._1
-    val shifted = largest.shiftToOrigin(bottomLeft)
+    val bottomLeft = getPolygonBoundingBox(poly)._1
+    val shifted = poly.shiftToOrigin(bottomLeft)
     val (_, FPoint(dx, dy)) = getPolygonBoundingBox(shifted)
 
     // println(s"Dimensions: ${(dx, dy)}")
@@ -56,18 +60,18 @@ object GeoHelper {
     // println(s"Scaled BB: ${getPolygonBoundingBox(countryScaled)}")
     val (_, FPoint(fx, fy)) = getPolygonBoundingBox(countryScaled)
     val centered = countryScaled.shiftToOrigin(FPoint(fx / 2, fy / 2))
-    
-    
+
+
     val xyRatio = math.min(2.5, fx / fy)
-    val scaledAndCentered = FPolygon(centered.vertices.map {case FPoint(x, y) => FPoint(x, y * xyRatio)})
+    val scaledAndCentered = FPolygon(centered.vertices.map { case FPoint(x, y) => FPoint(x, y * xyRatio) })
     val (_, FPoint(dx1, dy1)) = getPolygonBoundingBox(scaledAndCentered)
     val maxDim1 = math.max(dx1, dy1)
     val scaleFactor1 = boxSize / maxDim1
     val countryScaled1 = scaledAndCentered.stretch(scaleFactor1)
-    
+
     val finalPoly = countryScaled1.removeZeroEdges
-    
-    val (lower, _ ) = getPolygonBoundingBox(finalPoly)
+
+    val (lower, _) = getPolygonBoundingBox(finalPoly)
     finalPoly.shiftToOrigin(lower)
   }
 
