@@ -3,11 +3,8 @@ package lambda.contest.generators.geodata
 import lambda.contest.ContestTask
 import lambda.contest.generators.geodata.CountriesToRectilinear.{getLowestStartingPoint, liftedOrigin, walkArrayInDirection}
 import lambda.contest.generators.geodata.GeoHelper.rescaleCountry
-import lambda.contest.parsers.ContestTaskParser
-import lambda.geometry.floating.RenderUtils.getPolygonBoundingBox
 import lambda.geometry.floating.{FPoint, FPolygon, FSegment, RenderUtils}
 import lambda.geometry.integer.{IPoint, IntersectionUtils}
-import lambda.util.FileUtil
 
 /**
   * @author Ilya Sergey

@@ -73,20 +73,20 @@ object TaskGeneratorUtils {
     * Get generator for the box size 
     */
   def getSuitableGenerator(boxSize: Int = 200, boundOpt: Option[IPolygon]): ContestPolygonGenerator = {
-//    val size = boundOpt match {
-//      case Some(poly) =>
-//        val (dx, dy) = poly.dimensions
-//        math.min(math.max(dx, dy), boxSize)
-//      case None => boxSize
-//    }
-//    if (size < 8) {
-//      println("Choosing 5x5 generator")
-//      return ContestGenerators.obstacles_5x5(boundOpt)
-//    }
-//    if (size < 16) {
-//      println("Choosing 10x10 generator")
-//      return ContestGenerators.obstacles_10x10(boundOpt)
-//    }
+    val size = boundOpt match {
+      case Some(poly) =>
+        val (dx, dy) = poly.dimensions
+        math.min(math.max(dx, dy), boxSize)
+      case None => boxSize
+    }
+    if (size < 8) {
+      println("Choosing 5x5 generator")
+      return ContestGenerators.obstacles_5x5(boundOpt)
+    }
+    if (size < 16) {
+      println("Choosing 10x10 generator")
+      return ContestGenerators.obstacles_10x10(boundOpt)
+    }
 //    if (size < 30) {
 //      println("Choosing 20x20 generator")
 //      return ContestGenerators.obstacles_20x20(boundOpt)

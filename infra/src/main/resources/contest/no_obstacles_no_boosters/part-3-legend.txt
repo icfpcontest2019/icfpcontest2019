@@ -1,13 +1,13 @@
 prob-221 - congo (100x100)
-prob-222 - czech
-prob-223 - ecuador
-prob-224 - gabon
-prob-225 - colombia
-prob-226 - guinea
-prob-227 - kyrgyzstan
-prob-228 - malaysia
-prob-229 - philippines
-prob-230 - solomon_islands
+prob-222 - czech (100x100)
+prob-223 - ecuador (100x100)
+prob-224 - gabon (100x100)
+prob-225 - colombia (100x100)
+prob-226 - guinea (100x100)
+prob-227 - kyrgyzstan (100x100)
+prob-228 - malaysia (100x100)
+prob-229 - philippines (100x100)
+prob-230 - solomon_islands (100x100)
 prob-231 - random polygon within 100x100 box
 prob-232 - random polygon within 100x100 box
 prob-233 - random polygon within 100x100 box
@@ -18,16 +18,16 @@ prob-237 - random polygon within 100x100 box
 prob-238 - random polygon within 100x100 box
 prob-239 - random polygon within 100x100 box
 prob-240 - random polygon within 100x100 box
-prob-241 - bangladesh
-prob-242 - burundi
-prob-243 - croatia
-prob-244 - lithuania
-prob-245 - mozambique
-prob-246 - united_arab_emirates
-prob-247 - uzbekistan
-prob-248 - vietnam
-prob-249 - brunei
-prob-250 - cameroon
+prob-241 - bangladesh (200x200)
+prob-242 - burundi (200x200)
+prob-243 - croatia (200x200)
+prob-244 - lithuania (200x200)
+prob-245 - mozambique (200x200)
+prob-246 - united_arab_emirates (200x200)
+prob-247 - uzbekistan (200x200)
+prob-248 - vietnam (200x200)
+prob-249 - brunei (200x200)
+prob-250 - cameroon (200x200)
 prob-251 - random polygon within 200x200 box
 prob-252 - random polygon within 200x200 box
 prob-253 - random polygon within 200x200 box
@@ -48,13 +48,13 @@ prob-267 - random polygon within 200x200 box
 prob-268 - random polygon within 200x200 box
 prob-269 - random polygon within 200x200 box
 prob-270 - random polygon within 200x200 box
-prob-271 - israel
-prob-272 - pakistan
-prob-273 - indiana
-prob-274 - west_virginia
-prob-275 - cuba
-prob-276 - dominican_republic
-prob-277 - egypt
-prob-278 - honduras
-prob-279 - illinois
-prob-280 - russia
+prob-271 - israel (400x400)
+prob-272 - pakistan (400x400)
+prob-273 - indiana (400x400)
+prob-274 - west_virginia (400x400)
+prob-275 - cuba (400x400)
+prob-276 - dominican_republic (400x400)
+prob-277 - egypt (400x400)
+prob-278 - honduras (400x400)
+prob-279 - illinois (400x400)
+prob-280 - russia (400x400)
