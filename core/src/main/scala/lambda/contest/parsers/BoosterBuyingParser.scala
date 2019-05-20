@@ -15,7 +15,7 @@ object BoosterBuyingParser extends GeometryParsers {
 
   private def boostersAlt: Parser[(Booster.Value)] =
     boosterParser(DRILL_LETTER) |
-      boosterParser(INTSTALL_TELEPORT_LETTER) |
+      boosterParser(INSTALL_TELEPORT_LETTER) |
       boosterParser(BATTERIES_LETTER) |
       boosterParser(COFFEE_LETTER) |
       boosterParser(CALL_FRIEND_LETTER)

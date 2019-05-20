@@ -134,7 +134,7 @@ object TaskCreationUtils {
           case DRILL_LETTER =>
             cell.clearSpace()
             cell.setBooster(Booster.DrillBooster)
-          case INTSTALL_TELEPORT_LETTER =>
+          case INSTALL_TELEPORT_LETTER =>
             cell.clearSpace()
             cell.setBooster(Booster.TeleportBooster)
           case CALL_FRIEND_LETTER =>
@@ -174,7 +174,7 @@ object TaskCreationUtils {
         } else if (c.hasCallPoint) {
           print(CALL_POINT_LETTER)
         } else if (c.hasTeleport) {
-          print(INTSTALL_TELEPORT_LETTER)
+          print(INSTALL_TELEPORT_LETTER)
         } else if (c.peekBooster.isDefined) {
           print(Booster.toChar(c.peekBooster.get))
         } else if (c.isIlluminated) {

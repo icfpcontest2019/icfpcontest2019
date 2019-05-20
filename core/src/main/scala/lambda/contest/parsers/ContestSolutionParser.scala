@@ -28,7 +28,7 @@ object ContestSolutionParser extends GeometryParsers {
       | asString(BATTERIES_LETTER) ~ intPoint ^^ { case _ ~ IPoint(x, y) => UseBatteries(x, y) }
       | asString(COFFEE_LETTER) ^^^ UseCoffee
       | asString(DRILL_LETTER) ^^^ UseDrill
-      | asString(INTSTALL_TELEPORT_LETTER) ^^^ InstallTeleport
+      | asString(INSTALL_TELEPORT_LETTER) ^^^ InstallTeleport
       | asString(DO_TELEPORT_LETTER) ~ intPoint ^^ { case _ ~ IPoint(x, y) => DoTeleport(x, y) }
       | asString(CALL_FRIEND_LETTER) ^^^ UseCallFriend)
 
