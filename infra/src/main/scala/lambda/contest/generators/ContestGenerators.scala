@@ -138,24 +138,24 @@ object ContestGenerators {
     import BasePolygons._
 
     val basePolygons = simpleBases
-    val baseFreqs = List(10, 12, 4)
+    val baseFreqs = List(10, 12)
 
     ///////////////////////////////////////////////////
 
     val attachments = List(
-      scalableRectangles,
+      //scalableRectangles,
       scalableSquares,
 
-      scalableRectangles3,
+      //scalableRectangles3,
       scalableSquares3,
-      scalableFlatRectangles,
-
-      scalablePyramide,
-
-      scalableSquares2,
-      scalableRectangles2,
-      scalableSquares4,
-      scalableRectangles4
+//      scalableFlatRectangles,
+//
+//      scalablePyramide,
+//
+//      scalableSquares2,
+//      scalableRectangles2,
+//      scalableSquares4,
+//      scalableRectangles4
     )
 
     val fs1 = Random.nextInt(20) + 15
@@ -242,7 +242,7 @@ object BasePolygons {
   /*                          Combinations                        */
   /* ------------------------------------------------------------- */
 
-  val simpleBases = List(square6, square10, wPoly)
+  val simpleBases = List(square6, square10)
 
 }
 

@@ -39,32 +39,32 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     }
   }
 
-  checkRawTasksInFolder("genesis")
-  
-  checkRawTasksInFolder("part-1/10-simple")
-  checkRawTasksInFolder("part-1/30-random")
-  checkRawTasksInFolder("part-1/50-random")
-  checkRawTasksInFolder("part-1/100-random")
-  checkRawTasksInFolder("part-1/100-countries")
-  checkRawTasksInFolder("part-1/200-random")
-  checkRawTasksInFolder("part-1/200-countries")
-  
-  checkRawTasksInFolder("part-2/100-random")
-  checkRawTasksInFolder("part-2/100-countries")
-  checkRawTasksInFolder("part-2/200-random")
-  checkRawTasksInFolder("part-2/200-countries")
-  checkRawTasksInFolder("part-2/400-random")
-  checkRawTasksInFolder("part-2/400-countries")
-  
-  checkRawTasksInFolder("part-3/100-random")
-  checkRawTasksInFolder("part-3/100-countries")
-  checkRawTasksInFolder("part-3/200-random")
-  checkRawTasksInFolder("part-3/200-countries")
-  checkRawTasksInFolder("part-3/400-countries")
-
-  checkRawTasksInFolder("bonus/400-random")
-  checkRawTasksInFolder("bonus/400-countries")
-  checkRawTasksInFolder("bonus/600-random")
+//  checkRawTasksInFolder("genesis")
+//  
+//  checkRawTasksInFolder("part-1/10-simple")
+//  checkRawTasksInFolder("part-1/30-random")
+//  checkRawTasksInFolder("part-1/50-random")
+//  checkRawTasksInFolder("part-1/100-random")
+//  checkRawTasksInFolder("part-1/100-countries")
+//  checkRawTasksInFolder("part-1/200-random")
+//  checkRawTasksInFolder("part-1/200-countries")
+//  
+//  checkRawTasksInFolder("part-2/100-random")
+//  checkRawTasksInFolder("part-2/100-countries")
+//  checkRawTasksInFolder("part-2/200-random")
+//  checkRawTasksInFolder("part-2/200-countries")
+//  checkRawTasksInFolder("part-2/400-random")
+//  checkRawTasksInFolder("part-2/400-countries")
+//  
+//  checkRawTasksInFolder("part-3/100-random")
+//  checkRawTasksInFolder("part-3/100-countries")
+//  checkRawTasksInFolder("part-3/200-random")
+//  checkRawTasksInFolder("part-3/200-countries")
+//  checkRawTasksInFolder("part-3/400-countries")
+//
+//  checkRawTasksInFolder("bonus/400-random")
+//  checkRawTasksInFolder("bonus/400-countries")
+//  checkRawTasksInFolder("bonus/600-random")
 
 
   val obstaclesPath = "./src/main/resources/contest/obstacles_no_boosters"

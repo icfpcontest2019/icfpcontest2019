@@ -175,7 +175,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
   }
 
   /**
-    * Return the cells that are lit by the torch (including the )
+    * Return the cells that are lit by the torch (including the beginning)
     */
   def getTorchRange(pos: IPoint): List[IPoint] = {
     val torchCells = torch.toList.map { case (x, y) => IPoint(pos.x + x, pos.y + y) }

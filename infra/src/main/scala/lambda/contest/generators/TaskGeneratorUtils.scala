@@ -114,7 +114,7 @@ object TaskGeneratorUtils {
         
         val (dx, dy) = box.dimensions
         val numGen = math.min(100, math.min(dx, dy)) 
-        val generator = getSuitableGenerator(100, Some(box))
+        val generator = getSuitableGenerator(200, Some(box))
         generator.generate(numGen).sample match {
           case Some(res)
           if isWithinBoxAtOrigin(Some(box))(res.pol) =>
