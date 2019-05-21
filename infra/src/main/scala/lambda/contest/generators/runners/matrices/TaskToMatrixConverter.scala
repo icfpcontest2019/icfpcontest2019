@@ -2,11 +2,8 @@ package lambda.contest.generators.runners.matrices
 
 import java.io.File
 
-import lambda.contest.ContestTask
-import lambda.contest.checkers.GraderUtils
 import lambda.contest.checkers.GraderUtils.{PROBLEM_DESC_EXT, PROBLEM_MATRIX_EXT}
 import lambda.contest.checkers.TaskCreationUtils.{stringsToTaskMatrix, taskToMatrixString}
-import lambda.contest.generators.TaskGeneratorUtils.generateBoosters
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
 
