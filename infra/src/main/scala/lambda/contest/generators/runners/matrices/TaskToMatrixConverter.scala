@@ -52,7 +52,7 @@ object TaskToMatrixConverter {
       val (matrix, dx, dy, initPos) = stringsToTaskMatrix(ls)
       val t3 = System.currentTimeMillis()
 
-      println(s"Written file ${f.getName} in ${t1 - t0} ms, deserialization in ${t3 - t2} ms")
+      println(s"Written file ${f.getName} in ${t1 - t0} ms, loaded in ${t3 - t2} ms")
     }
   }
 
