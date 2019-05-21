@@ -67,7 +67,7 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
 //  checkRawTasksInFolder("bonus/600-random")
 
 
-  val obstaclesPath = "./src/main/resources/contest/obstacles_no_boosters"
+  val obstaclesPath = "./src/main/resources/contest/final"
 
   def checkTasksWithObstaclesInFolder(folder: String): Unit = {
     s"A check for rooms with obstacles in $folder" should "succeed" in {}
@@ -86,12 +86,13 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     }
   }
 
-  checkTasksWithObstaclesInFolder("genesis")
+  //checkTasksWithObstaclesInFolder("genesis")
 
   checkTasksWithObstaclesInFolder("part-1")
   checkTasksWithObstaclesInFolder("part-2")
   checkTasksWithObstaclesInFolder("part-3")
-  checkTasksWithObstaclesInFolder("bonus")
+  
+  // checkTasksWithObstaclesInFolder("bonus")
   
 
 }

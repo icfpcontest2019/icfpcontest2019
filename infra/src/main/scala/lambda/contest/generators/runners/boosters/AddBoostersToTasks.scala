@@ -2,13 +2,10 @@ package lambda.contest.generators.runners.boosters
 
 import java.io.File
 
-import lambda.contest.{Booster, ContestTask}
-import lambda.contest.checkers.ContestTaskUtils
+import lambda.contest.ContestTask
 import lambda.contest.checkers.GraderUtils.PROBLEM_DESC_EXT
-import lambda.contest.generators.TaskGeneratorUtils
 import lambda.contest.generators.TaskGeneratorUtils.generateBoosters
 import lambda.contest.parsers.ContestTaskParser
-import lambda.geometry.integer.IPoint
 import lambda.util.FileUtil
 
 /**
@@ -23,24 +20,23 @@ object AddBoostersToTasks {
     val mainDir = new File(rawPath)
     assert(mainDir.exists() && mainDir.isDirectory)
     val subdirs = mainDir.listFiles().toList.filter(_.isDirectory)
-    for (d <- subdirs) {
+    for (d <- subdirs.sortBy(_.getName)) {
       processDir(d)
     }
   }
 
-  private def processDir(d: File) = {
+  private def processDir(d: File): Unit = {
     for {
-      dd <- d.listFiles().toList.filter(_.isDirectory)
-      f <- dd.listFiles().filter(_.getName.endsWith(PROBLEM_DESC_EXT))
+      f <- d.listFiles().filter(_.getName.endsWith(PROBLEM_DESC_EXT)).sortBy(_.getName)
       line = FileUtil.readFromFileWithNewLines(f.getAbsolutePath).trim
       polyRes = ContestTaskParser(line)
       if !polyRes.isEmpty
       task@ContestTask(room, init, obstacles, Nil) = polyRes.get
     } {
-      val bst = getBoostersDependingOnPart(task, getPart(dd))
-      val newTask = task.copy(boosters = bst)
-      assert(ContestTaskUtils.checkTaskWellFormed(newTask))
-      val newPath = s"$finalPath/${dd.getName}/${f.getName}}"
+      val newTask = getBoostersDependingOnPart(task, getPart(d))
+      val newDir = new File(s"$finalPath/${d.getName}")
+      newDir.mkdirs()
+      val newPath = s"${newDir.getAbsolutePath}/${f.getName}"
       FileUtil.writeToNewFile(newPath, newTask.toString)
       println(s"Processed file ${f.getName}")
     }
@@ -52,7 +48,7 @@ object AddBoostersToTasks {
     else 3
   }
   
-  def getBoostersDependingOnPart(task: ContestTask, part: Int): List[(Booster.Value, IPoint)] = {
+  def getBoostersDependingOnPart(task: ContestTask, part: Int): ContestTask = {
     if (part == 1) 
       return generateBoosters(task, portals = false, forks = false)
     if (part == 2) 

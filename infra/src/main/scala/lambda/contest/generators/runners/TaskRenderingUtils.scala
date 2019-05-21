@@ -1,5 +1,6 @@
 package lambda.contest.generators.runners
 
+import java.awt.Color.BLACK
 import java.awt.{Color, Graphics}
 import java.io.File
 
@@ -19,20 +20,20 @@ object TaskRenderingUtils {
     val pp = PolygonToRender(room.toFPolygon)
     pp.fillWhiteBackground(g)
     pp.fillPoly(g, room.toFPolygon, Color.LIGHT_GRAY)
-    pp.drawPoly(g, room.toFPolygon, Color.BLACK)
+    pp.drawPoly(g, room.toFPolygon, BLACK)
 
     // Render obstacles
     obs match {
       case Nil =>
       case head :: tl =>
         // Dark yellow
-        val color = if (firstObst) new Color(255, 204, 0) else new Color(255, 255, 204) 
+        val color = if (firstObst) new Color(255, 204, 0) else new Color(255, 255, 204)
         pp.fillPoly(g, head.toFPolygon, color)
-        pp.drawPoly(g, head.toFPolygon, Color.BLACK)
+        pp.drawPoly(g, head.toFPolygon, BLACK)
         tl.foreach { o =>
           // Very light yellow
           pp.fillPoly(g, o.toFPolygon, new Color(255, 255, 204))
-          pp.drawPoly(g, o.toFPolygon, Color.BLACK)
+          pp.drawPoly(g, o.toFPolygon, BLACK)
         }
     }
 
@@ -45,36 +46,49 @@ object TaskRenderingUtils {
     }
 
     // Write file name
-    val text = f.getName
-    g.setColor(Color.BLACK)
-    g.drawChars(text.toCharArray, 0, text.length, 10, 10)
+
+
+    val text = (f.getName, BLACK)
     val (x, y) = room.dimensions
-    val dims = room.dimensions.toString
-    val prod = (x * y).toString
-    g.drawChars(dims.toCharArray, 0, dims.length, 10, 30)
-    g.drawChars(prod.toCharArray, 0, prod.length, 10, 50)
+    val dims = (s"Dimensions: ${x}x${y}", BLACK)
+    
+    // val prod = (x * y).toString
+    val bs = boosters.groupBy { case (b, n) => b }
+      .toList
+      .map { case (b, l) => (b, l.length) }
+      .sortBy(_._1.toString)
+      .map { case (b, n) => (s"${Booster.pp(b)}: $n", boosterToColor(b)) }
+
+    val lines = List(text, dims) ++ bs
+
+    for (i <- lines.indices) {
+      val (line, color) = lines(i)
+      g.setColor(color)
+      g.drawChars(line.toCharArray, 0, line.length, 10, 5 + (2 * i + 1) * 10)
+    }
 
   }
 
+  // Gold
+  val BATTERIES_COLOR = new Color(255, 204, 51)
+  // Brown
+  val COFFEE_COLOR = new Color(153, 102, 0)
+  // Light green
+  val DRILL_COLOR =   new Color(0, 204, 0)
+  // Purple
+  val TELEPORT_COLOR = new Color(102, 0, 153)
+  // Light blue
+  val CALL_WATCHMAN_COLOR = new Color(51, 153, 255)
+  // Blue
+  val CALL_POINT_COLOR = new Color(0, 0, 255)
+
   def boosterToColor(b: Booster.Value): Color = b match {
-    case Booster.BatteriesBooster =>
-      // Gold
-      new Color(255, 204, 51)
-    case Booster.CoffeeBooster =>
-      // Brown
-      new Color(153, 102, 0)
-    case Booster.DrillBooster =>
-      // Light green
-      new Color(0, 204, 0)
-    case Booster.TeleportBooster =>
-      // Purple
-      new Color(102, 0, 153)
-    case Booster.CallWatchmanBooster =>
-      // Light blue
-      new Color(51, 153, 255)
-    case Booster.CallPoint =>
-      // Blue
-      new Color(0, 0, 255)
+    case Booster.BatteriesBooster => BATTERIES_COLOR
+    case Booster.CoffeeBooster => COFFEE_COLOR
+    case Booster.DrillBooster => DRILL_COLOR
+    case Booster.TeleportBooster => TELEPORT_COLOR
+    case Booster.CallWatchmanBooster => CALL_WATCHMAN_COLOR
+    case Booster.CallPoint => CALL_POINT_COLOR
   }
 
 

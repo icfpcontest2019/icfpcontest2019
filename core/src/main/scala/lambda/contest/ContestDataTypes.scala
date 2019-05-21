@@ -48,6 +48,15 @@ object Booster extends Enumeration {
     case CallPoint => CALL_POINT_LETTER
   }
 
+  def pp(b: Value): String = b match {
+    case BatteriesBooster => "Batteries"
+    case CoffeeBooster => "Coffee"
+    case DrillBooster => "Drill"
+    case TeleportBooster => "Teleport"
+    case CallWatchmanBooster => "Fork"
+    case CallPoint => "CallPoint"
+  }
+  
 }
 
 /* ********************************************** */
@@ -58,7 +67,7 @@ object Booster extends Enumeration {
   * Representation of a room's cell
   *
   * @param hasSpace         true when not part of the wall
-  * @param illuminated      true when illluminated by a watchman
+  * @param illuminated      true when illuminated by a watchman
   * @param boosterToCollect contains (at most one) optional booster to collect
   * @param callPoint        true if has a call point to summon another watchman
   * @param teleport         true if has a teleport installed

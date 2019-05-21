@@ -2,9 +2,10 @@ package lambda.contest.generators
 
 import java.io.File
 
+import lambda.contest.Booster.{BatteriesBooster, CallPoint, CallWatchmanBooster, CoffeeBooster, DrillBooster, TeleportBooster}
 import lambda.contest.{Booster, ContestTask}
 import lambda.contest.checkers.ContestTaskUtils
-import lambda.contest.checkers.ContestTaskUtils.findRandomBox
+import lambda.contest.checkers.ContestTaskUtils.{findRandomBox, getVacantCellNotTouchingWalls}
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.generators.ContestGenerators.isWithinBoxAtOrigin
 import lambda.contest.parsers.ContestTaskParser
@@ -87,18 +88,18 @@ object TaskGeneratorUtils {
       println("Choosing 10x10 generator")
       return ContestGenerators.obstacles_10x10(boundOpt)
     }
-//    if (size < 30) {
-//      println("Choosing 20x20 generator")
-//      return ContestGenerators.obstacles_20x20(boundOpt)
-//    }
-//    if (size < 50) {
-//      println("Choosing 30x30 generator")
-//      return ContestGenerators.obstacles_30x30(boundOpt)
-//    }
-//    if (size < 100) {
-//      println("Choosing default generator")
-//      return ContestGenerators.obstacles_50x50(boundOpt)
-//    }
+    //    if (size < 30) {
+    //      println("Choosing 20x20 generator")
+    //      return ContestGenerators.obstacles_20x20(boundOpt)
+    //    }
+    //    if (size < 50) {
+    //      println("Choosing 30x30 generator")
+    //      return ContestGenerators.obstacles_30x30(boundOpt)
+    //    }
+    //    if (size < 100) {
+    //      println("Choosing default generator")
+    //      return ContestGenerators.obstacles_50x50(boundOpt)
+    //    }
     ContestGenerators.largeRoomGenerator(boxSize, boundOpt)
   }
 
@@ -108,23 +109,23 @@ object TaskGeneratorUtils {
   def generateNewObstacle(task: ContestTask): Either[ContestTask, String] = {
     findRandomBox(task) match {
       case Some((pt, box)) =>
-        
+
         // Check that the box is okay
         assert(ContestTaskUtils.checkTaskWellFormed(task.copy(obstacles = box :: task.obstacles)))
-        
+
         val (dx, dy) = box.dimensions
-        val numGen = math.min(100, math.min(dx, dy)) 
+        val numGen = math.min(100, math.min(dx, dy))
         val generator = getSuitableGenerator(200, Some(box))
         generator.generate(numGen).sample match {
           case Some(res)
-          if isWithinBoxAtOrigin(Some(box))(res.pol) =>
+            if isWithinBoxAtOrigin(Some(box))(res.pol) =>
             val obs = res.pol.toIPolygon.shiftToOrigin + pt
-            
+
             assert(obs.isWellFormed && obs.isRectilinear)
             assert(box.toFPolygon.contains(obs.toFPolygon))
-            
+
             assert(task.room.containsPolygonProperly(box))
-            
+
             val newTask = task.copy(obstacles = obs :: task.obstacles)
             assert(ContestTaskUtils.checkTaskWellFormed(newTask))
             Left(newTask)
@@ -132,25 +133,85 @@ object TaskGeneratorUtils {
         }
       case None => Right("Couldn't find the box large enough. :(")
     }
-    
-  }
-  
-  
-  def generateBoosters(task: ContestTask, 
-                       portals: Boolean = false, 
-                       forks: Boolean = false): List[(Booster.Value, IPoint)] = {
-    val ContestTask(room, init, obstacles, _) = task
-    // val boostersNums = getBoosterNumbers(room.dimensions)
-    
-    
-    
-    
-    ???
+
   }
 
+  def dimToCategory(dim: Int) = {
+    if (dim <= 500) 0
+    else if (dim <= 1700) 1
+    else if (dim <= 5000) 2
+    else if (dim <= 11000) 3
+    else if (dim <= 42000) 4
+    else 5
+
+  }
+
+  val boosterTable: Map[(Booster.Value, Int), Int] =
+    Map(
+      (BatteriesBooster, 0) -> 0,
+      (BatteriesBooster, 1) -> 1,
+      (BatteriesBooster, 2) -> 2,
+      (BatteriesBooster, 3) -> 3,
+      (BatteriesBooster, 4) -> 6,
+      (BatteriesBooster, 5) -> 12,
+
+      (CoffeeBooster, 0) -> 0,
+      (CoffeeBooster, 1) -> 2,
+      (CoffeeBooster, 2) -> 3,
+      (CoffeeBooster, 3) -> 5,
+      (CoffeeBooster, 4) -> 10,
+      (CoffeeBooster, 5) -> 16,
+
+      (DrillBooster, 0) -> 0,
+      (DrillBooster, 1) -> 0,
+      (DrillBooster, 2) -> 1,
+      (DrillBooster, 3) -> 2,
+      (DrillBooster, 4) -> 5,
+      (DrillBooster, 5) -> 9,
+
+      (TeleportBooster, 0) -> 0,
+      (TeleportBooster, 1) -> 0,
+      (TeleportBooster, 2) -> 0,
+      (TeleportBooster, 3) -> 1,
+      (TeleportBooster, 4) -> 1,
+      (TeleportBooster, 5) -> 2,
+
+      (CallWatchmanBooster, 0) -> 0,
+      (CallWatchmanBooster, 1) -> 0,
+      (CallWatchmanBooster, 2) -> 0,
+      (CallWatchmanBooster, 3) -> 2,
+      (CallWatchmanBooster, 4) -> 3,
+      (CallWatchmanBooster, 5) -> 4,
+
+      (CallPoint, 0) -> 0,
+      (CallPoint, 1) -> 1,
+      (CallPoint, 2) -> 1,
+      (CallPoint, 3) -> 3,
+      (CallPoint, 4) -> 4,
+      (CallPoint, 5) -> 5,
+    )
 
 
+  def generateBoosters(task: ContestTask,
+                       portals: Boolean = false,
+                       forks: Boolean = false): ContestTask = {
+    val ContestTask(room, _, _, _) = task
+    val (x, y) = room.dimensions
+    val dim = x * y
 
+    var newTask = task
+    for {
+      b <- Booster.values.toList
+      n = boosterTable((b, dimToCategory(dim)))
+      _ <- 1 to n
+    } {
+      val p = getVacantCellNotTouchingWalls(newTask)
+      val bs = newTask.boosters
+      newTask = newTask.copy(boosters = (b, p) :: bs)
+    }
+    assert (ContestTaskUtils.checkTaskWellFormed(newTask))
+    newTask
+  }
 
 
 }

@@ -1,6 +1,6 @@
 package lambda.contest.generators
 
-import java.awt.{Color, Graphics}
+import java.awt.{Color, Dimension, Graphics, Toolkit}
 
 import lambda.geometry.floating.{FPoint, FPolygon}
 
@@ -10,8 +10,11 @@ import lambda.geometry.floating.{FPoint, FPolygon}
 case class PolygonToRender(polygon: FPolygon) {
 
 
-  val MAX_FRAME_SIZE: Int = 1000
   val MARGIN_SIZE: Int = 110
+  val MAX_FRAME_SIZE: Int = {
+    val screenSize = Toolkit.getDefaultToolkit.getScreenSize
+    screenSize.height * 3 / 4 - MARGIN_SIZE
+  }
   val DOT_RADIUS: Int = 10
 
   val dimensions = getDimensions
