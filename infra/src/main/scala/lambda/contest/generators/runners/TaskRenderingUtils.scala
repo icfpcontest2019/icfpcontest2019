@@ -3,16 +3,16 @@ package lambda.contest.generators.runners
 import java.awt.{Color, Graphics}
 import java.io.File
 
-import javax.swing.JButton
-import lambda.contest.{Booster, ContestTask}
 import lambda.contest.generators.PolygonToRender
+import lambda.contest.{Booster, ContestTask}
+import lambda.geometry.floating.Direction
 
 /**
   * @author Ilya Sergey
   */
 object TaskRenderingUtils {
 
-  def renderTask(g: Graphics, t: ContestTask, f: File): Unit = {
+  def renderTask(g: Graphics, t: ContestTask, f: File, firstObst: Boolean = false): Unit = {
     val ContestTask(room, init, obs, boosters) = t
 
     // Render main polygon
@@ -26,7 +26,8 @@ object TaskRenderingUtils {
       case Nil =>
       case head :: tl =>
         // Dark yellow
-        pp.fillPoly(g, head.toFPolygon, new Color(255, 204, 0))
+        val color = if (firstObst) new Color(255, 204, 0) else new Color(255, 255, 204) 
+        pp.fillPoly(g, head.toFPolygon, color)
         pp.drawPoly(g, head.toFPolygon, Color.BLACK)
         tl.foreach { o =>
           // Very light yellow
@@ -36,17 +37,22 @@ object TaskRenderingUtils {
     }
 
     // Render initial position
-    pp.fillPoly(g, init.toSquare.toFPolygon, Color.RED)
+    pp.drawPoint(g, init.toFPoint + Direction(0.5, 0.5), Color.RED)
 
     // Draw boosters
     for ((b, bp) <- boosters) {
-      pp.fillPoly(g, bp.toSquare.toFPolygon, boosterToColor(b))
+      pp.drawPoint(g, bp.toFPoint + Direction(0.5, 0.5), boosterToColor(b))
     }
 
     // Write file name
     val text = f.getName
     g.setColor(Color.BLACK)
     g.drawChars(text.toCharArray, 0, text.length, 10, 10)
+    val (x, y) = room.dimensions
+    val dims = room.dimensions.toString
+    val prod = (x * y).toString
+    g.drawChars(dims.toCharArray, 0, dims.length, 10, 30)
+    g.drawChars(prod.toCharArray, 0, prod.length, 10, 50)
 
   }
 

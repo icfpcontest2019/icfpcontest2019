@@ -2,13 +2,13 @@ package lambda.contest.generators
 
 import java.io.File
 
-import lambda.contest.ContestTask
+import lambda.contest.{Booster, ContestTask}
 import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.ContestTaskUtils.findRandomBox
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.generators.ContestGenerators.isWithinBoxAtOrigin
 import lambda.contest.parsers.ContestTaskParser
-import lambda.geometry.integer.IPolygon
+import lambda.geometry.integer.{IPoint, IPolygon}
 import lambda.util.FileUtil
 
 /**
@@ -133,7 +133,19 @@ object TaskGeneratorUtils {
       case None => Right("Couldn't find the box large enough. :(")
     }
     
+  }
   
+  
+  def generateBoosters(task: ContestTask, 
+                       portals: Boolean = false, 
+                       forks: Boolean = false): List[(Booster.Value, IPoint)] = {
+    val ContestTask(room, init, obstacles, _) = task
+    // val boostersNums = getBoosterNumbers(room.dimensions)
+    
+    
+    
+    
+    ???
   }
 
 

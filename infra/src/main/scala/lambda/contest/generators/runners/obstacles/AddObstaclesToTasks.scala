@@ -57,7 +57,7 @@ object AddObstaclesToTasks {
           System.err.println("Nothing to paint, sorry!")
         } else {
           val (task, file) = currentTaskFile.get
-          TaskRenderingUtils.renderTask(g, task, file)
+          TaskRenderingUtils.renderTask(g, task, file, firstObst = true)
         }
       }
     }

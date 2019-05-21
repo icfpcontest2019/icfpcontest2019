@@ -7,8 +7,8 @@ import java.io.File
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
 import lambda.contest.checkers.GraderUtils._
-import lambda.contest.generators.TaskGeneratorUtils._
 import lambda.contest.generators.PolygonToRender
+import lambda.contest.generators.TaskGeneratorUtils._
 import lambda.contest.parsers.ContestTaskParser
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.{IPoint, IPolygon}

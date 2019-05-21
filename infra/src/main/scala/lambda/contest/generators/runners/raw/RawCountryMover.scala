@@ -6,8 +6,8 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.checkers.GraderUtils
-import lambda.contest.generators.TaskGeneratorUtils.{getNewFilePath, noObstacleExtension, writeRoomToFile}
 import lambda.contest.generators.PolygonToRender
+import lambda.contest.generators.TaskGeneratorUtils.{getNewFilePath, noObstacleExtension, writeRoomToFile}
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.IPolygon
 import lambda.util.FileUtil
