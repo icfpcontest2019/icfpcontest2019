@@ -31,9 +31,10 @@ object IndividualGrader extends ContestGrader {
       println("Results:")
 
       for (i <- gradeMap.keys.toList.sorted) {
-        val res = gradeMap(i)
-        val steps = if (res.isDefined) res.get else 0
-        val status = if (res.isDefined) "Ok" else "Failed"
+        val (steps, status) = gradeMap.getOrElse(i, Right("Failed")) match {
+          case Left(z) => (z, "Ok")
+          case Right(msg) => (0, "Failed")
+        }
         println(s"$i, $steps, $status")
       }
     }

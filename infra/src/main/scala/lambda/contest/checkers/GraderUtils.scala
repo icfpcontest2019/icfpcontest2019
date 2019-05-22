@@ -10,8 +10,8 @@ object GraderUtils {
   val PROBLEM_PREFIX = "prob-"
   val PROBLEM_DESC_EXT = ".desc"
   val PROBLEM_MATRIX_EXT = ".mat"
+  val MATRIX_FOLDER = "matrices"
   val SOLUTION_EXT = ".sol"
   val BOOSTERS_EXT = ".buy"
-
-
+  
 }

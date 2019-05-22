@@ -2,7 +2,7 @@ package lambda.contest.generators.runners.matrices
 
 import java.io.File
 
-import lambda.contest.checkers.GraderUtils.{PROBLEM_DESC_EXT, PROBLEM_MATRIX_EXT}
+import lambda.contest.checkers.GraderUtils.{PROBLEM_DESC_EXT, PROBLEM_MATRIX_EXT, PROBLEM_PREFIX}
 import lambda.contest.checkers.TaskCreationUtils.{stringsToTaskMatrix, taskToMatrixString}
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
@@ -10,12 +10,20 @@ import lambda.util.FileUtil
 /**
   * @author Ilya Sergey
   */
-object TaskToMatrixConverter {
+object BatchTaskMatrixConverter {
 
   private var inPath = "./infra/src/main/resources/contest/final"
   private var outPath = s"$inPath/matrices"
 
+  /*
+  The first argument, if present defines the 
+   */
   def main(args: Array[String]): Unit = {
+    if (args.length == 0) {
+      System.err.println("No folder for conversion is provided.")
+      return 
+    }
+    
     if (args.length > 0) {
       inPath = args(0)
       outPath = s"$inPath/matrices"
@@ -43,7 +51,8 @@ object TaskToMatrixConverter {
 
       val outDir = new File(s"$outPath/${d.getName}")
       outDir.mkdirs()
-      val outName = f.getName.stripSuffix(PROBLEM_DESC_EXT) + PROBLEM_MATRIX_EXT
+      val name = f.getName.stripSuffix(PROBLEM_DESC_EXT)
+      val outName = name + PROBLEM_MATRIX_EXT
       val outFile = s"${outDir.getAbsolutePath}/$outName"
       FileUtil.writeToNewFile(outFile, mString)
 
@@ -51,8 +60,11 @@ object TaskToMatrixConverter {
       val ls = FileUtil.readFromFile(outFile)
       val (matrix, dx, dy, initPos) = stringsToTaskMatrix(ls)
       val t3 = System.currentTimeMillis()
+      val vsNum = task.room.vertices.size
+      val obsNum = task.obstacles.map(_.vertices.size).sum
+      val tsec = (t1 - t0).toDouble/1000
 
-      println(s"Written file ${f.getName} in ${t1 - t0} ms, loaded in ${t3 - t2} ms")
+      println(s"$name (${dx}x$dy, $vsNum vertices, $obsNum obstacle vertices): written in $tsec sec, loaded in ${t3 - t2} ms")
     }
   }
 

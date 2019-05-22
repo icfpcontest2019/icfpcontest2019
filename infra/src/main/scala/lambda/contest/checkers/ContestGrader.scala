@@ -4,7 +4,7 @@ import java.io.File
 
 import lambda.contest.ContestConstants.Action
 import lambda.contest.ContestErrorMessages._
-import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
+import lambda.contest.checkers.TaskCreationUtils.{contestTaskToMatrix, stringsToTaskMatrix}
 import lambda.contest.parsers.{BoosterBuyingParser, ContestSolutionParser, ContestTaskParser}
 import lambda.contest.{Booster, ContestException, ContestTask}
 import lambda.geometry.integer.IPoint
@@ -63,16 +63,41 @@ trait ContestGrader {
     val dir = new File(taskPath)
     if (!dir.isDirectory)
       throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
-    for (f <- dir.listFiles();
-         fname = f.getName
-         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
-         tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
-         if solution == tNum) {
-      val line = readFromFile(f.getAbsolutePath).mkString("").trim
-      val task: ContestTask = ContestTaskParser(line).get
-      val (matrix, dx, dy) = contestTaskToMatrix(task)
-      return Some(matrix, dx, dy, task.initPos)
+    // First try to get as a matrix
+    getTaskMatrix(dir, solution) match {
+      case res@Some(_) => res
+      case None =>
+        // If not, create the matrix on the fly
+        for (f <- dir.listFiles();
+             fname = f.getName
+             if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
+             tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
+             if solution == tNum) {
+          val line = readFromFile(f.getAbsolutePath).mkString("").trim
+          val task: ContestTask = ContestTaskParser(line).get
+          val (matrix, dx, dy) = contestTaskToMatrix(task)
+          return Some(matrix, dx, dy, task.initPos)
+        }
+        None
     }
+  }
+
+
+  def getTaskMatrix(dir: File, num: Int): Option[TaskDescription] = {
+    dir.listFiles().toList.find(f => f.isDirectory && f.getName == MATRIX_FOLDER) match {
+      case None => None
+      case Some(mdir) =>
+        for (f <- mdir.listFiles();
+             fname = f.getName
+             if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_MATRIX_EXT);
+             fNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_MATRIX_EXT).toInt
+             if num == fNum) {
+          val ls = FileUtil.readFromFile(f.getAbsolutePath)
+          val td = stringsToTaskMatrix(ls)
+          return Some(td)
+        }
+    }
+
     None
   }
 
@@ -165,12 +190,19 @@ trait ContestGrader {
   def gradeSolutions(solutionFolder: String,
                      taskPath: String,
                      solutions: Map[Int, Solution],
-                     config: GraderConfig = defaultConfig): Map[Int, Option[Int]] = {
+                     config: GraderConfig = defaultConfig): Map[Int, Either[Int, String]] = {
 
-    var gradeMap = Map.empty[Int, Option[Int]]
+    var gradeMap = Map.empty[Int, Either[Int, String]]
 
     for {taskN <- solutions.keys.toList.sorted} {
-      readOneTask(taskPath, taskN) match {
+      val failMsg = s"Failure while checking the task $taskN."
+      val t0 = System.currentTimeMillis()
+      val task = try {
+        readOneTask(taskPath, taskN)
+      } catch {
+        case e : Throwable => None
+      }
+      task match {
         case Some((matrix, dx, dy, init)) =>
           val (boosters, moves) = solutions(taskN)
           val state = TaskExecution.createState(matrix, dx, dy, init, moves, boosters)
@@ -178,19 +210,26 @@ trait ContestGrader {
             if (config.verbose) {
               print(s"[$solutionFolder] Grading ${intAs3CharString(taskN)} ... ")
             }
-            state.evalSolution()
+            state.evalSolution() match {
+              case Some(value) => Left(value)
+              case None => Right(failMsg)
+            }
           } catch {
-            case _: Throwable => None
+            case ContestException(loc, _) =>
+              val msg = s"Failure in task $taskN: $loc."
+              Right(msg)
+            case _: Throwable => Right(failMsg)
           }
           if (config.verbose) {
+            val t1 = System.currentTimeMillis()
             res match {
-              case Some(value) => println(s"$value")
-              case None => println("failed")
+              case Left(value) => println(s"$value (${t1 - t0} ms)")
+              case Right(msg) => println(s"$msg (${t1 - t0} ms)")
             }
           }
           gradeMap = gradeMap + (taskN -> res)
         case None =>
-          gradeMap = gradeMap + (taskN -> None)
+          gradeMap = gradeMap + (taskN -> Right(failMsg))
       }
     }
     gradeMap
@@ -203,13 +242,13 @@ trait ContestGrader {
 
 
   def writeGradesToCSV(taskNumbers: List[Int],
-                       gradeMap: Map[Int, Option[Int]],
+                       gradeMap: Map[Int, Either[Int, String]],
                        outPath: String): Unit = {
     val lines = for (i <- taskNumbers) yield {
-
-      val res = gradeMap.getOrElse(i, None)
-      val steps = if (res.isDefined) res.get else 0
-      val status = if (res.isDefined) "Ok" else "Failed"
+      val (steps, status) = gradeMap.getOrElse(i, Right("Failed")) match {
+        case Left(z) => (z, "Ok")
+        case Right(msg) => (0, "Failed")
+      }
       s"$i, $steps, $status"
     }
     FileUtil.writeToNewFile(outPath, lines.mkString("\n"))
