@@ -1,5 +1,7 @@
 package lambda.geometry.integer
 
+import java.awt.Polygon
+
 import lambda.geometry
 import lambda.geometry.floating.{FPolygon, FPolygonUtils}
 import lambda.geometry.{GeometryException, getEdges, getTriples}
@@ -31,6 +33,11 @@ case class IPolygon(vertices: Seq[IPoint]) {
   def verticalEdges: Seq[ISegment] = edges.filter { case ISegment(a, b) => a.x == b.x }
 
   def toFPolygon: FPolygon = FPolygon(vertices.map(_.toFPoint))
+  
+  val toJPolygon: Polygon = {
+    val (xs, ys) = vertices.unzip(p => (p.x, p.y))
+    new Polygon(xs.toArray, ys.toArray, xs.size)
+  }
 
   def isRectilinear: Boolean = {
     val es = edges
@@ -83,7 +90,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     * The s square is given with it bottom-left corner
     *
     */
-  def containsCell(sq: IPoint) = {
+  def containsCellOld(sq: IPoint): Boolean = {
     val (sx, sy) = sq.toPair
     val verticalEdgesRight = verticalEdges.filter { case ISegment(a, _) => a.x > sx }
 
@@ -95,6 +102,15 @@ case class IPolygon(vertices: Seq[IPoint]) {
       math.min(ay, by).toDouble <= yProbe && yProbe <= math.max(ay, by).toDouble
     }
     intersectedCount % 2 == 1
+  }
+
+  def containsCell(sq: IPoint): Boolean = containsCellViaAWT(sq)
+  
+  private def containsCellViaAWT(sq: IPoint) = {
+    val (sx, sy) = sq.toPair
+    val xProbe: Double = sx.toDouble + 0.5 // Take a centre of the square
+    val yProbe: Double = sy.toDouble + 0.5 
+    toJPolygon.contains(xProbe, yProbe)
   }
 
 
