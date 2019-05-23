@@ -13,7 +13,6 @@ import lambda.util.FileUtil
 object BatchTaskMatrixConverter {
 
   private var inPath = "./infra/src/main/resources/contest/final"
-  private var outPath = s"$inPath/matrices"
 
   /*
   The first argument, if present defines the 
@@ -26,7 +25,6 @@ object BatchTaskMatrixConverter {
     
     if (args.length > 0) {
       inPath = args(0)
-      outPath = s"$inPath/matrices"
     }
     
     val mainDir = new File(inPath)
@@ -49,11 +47,11 @@ object BatchTaskMatrixConverter {
       val mString = taskToMatrixString(task)
       val t1 = System.currentTimeMillis()
 
-      val outDir = new File(s"$outPath/${d.getName}")
+      val outDir = new File(s"${d.getAbsolutePath}/matrices")
       outDir.mkdirs()
       val name = f.getName.stripSuffix(PROBLEM_DESC_EXT)
-      val outName = name + PROBLEM_MATRIX_EXT
-      val outFile = s"${outDir.getAbsolutePath}/$outName"
+      val outFileName = name + PROBLEM_MATRIX_EXT
+      val outFile = s"${outDir.getAbsolutePath}/$outFileName"
       FileUtil.writeToNewFile(outFile, mString)
 
       val t2 = System.currentTimeMillis()

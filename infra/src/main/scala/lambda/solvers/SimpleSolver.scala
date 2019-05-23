@@ -1,10 +1,15 @@
 package lambda.solvers
 
+import java.io.File
+
 import lambda.contest.ContestConstants.Action
+import lambda.contest.checkers.TaskCreationUtils.{contestTaskToMatrix, taskToMatrixString}
 import lambda.contest.checkers.TaskMatrix
+import lambda.contest.parsers.ContestTaskParser
 import lambda.contest.{Cell, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
+import lambda.util.FileUtil
 
 import scala.collection.mutable
 
@@ -15,7 +20,11 @@ object SimpleSolver {
 
   def main(args: Array[String]): Unit = {
     val path = args(0)
-    //val problemPath = 
+    val line = FileUtil.readFromFileWithNewLines(new File(args(0)).getAbsolutePath).trim
+    val task = ContestTaskParser(line).get
+    val (matrix, dx, dy) = contestTaskToMatrix(task)
+    val solution = solveTask(matrix, dx, dy, task.initPos)
+    println(solution)
   }
   
 
