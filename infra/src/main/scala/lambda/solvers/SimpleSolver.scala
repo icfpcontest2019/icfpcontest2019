@@ -52,7 +52,7 @@ object SimpleSolver {
 
       val (matrix1, _, _, _) = readOneTask(dPath, taskNum).get
       
-      // TODO: fix bug
+      // TODO: fix bug with dark corners
       
       val state = TaskExecution.createState(matrix1, dx, dy, init, solution, Nil)
       val checkingResult = try {
