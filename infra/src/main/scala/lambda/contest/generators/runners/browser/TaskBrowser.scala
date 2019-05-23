@@ -15,6 +15,10 @@ import lambda.util.FileUtil
 import scala.collection.mutable
 
 /**
+  * Example argument
+  * 
+  * ./infra/src/main/resources/contest/final
+  * 
   * @author Ilya Sergey
   */
 object TaskBrowser {

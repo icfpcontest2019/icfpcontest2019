@@ -52,7 +52,7 @@ object SimpleSolver {
       val solString = solveTask(matrix, dx, dy, init)
       val t1 = System.currentTimeMillis()
       val tsec1 = (t1 - t0).toDouble / 1000
-      print(s"solution size: ${solString.length} ($tsec1 sec); checking: ")
+      print(s"solution size ${solString.length} ($tsec1 sec); checking: ")
 
       val t2 = System.currentTimeMillis()
 
