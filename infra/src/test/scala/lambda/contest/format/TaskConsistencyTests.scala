@@ -70,7 +70,7 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
   val obstaclesPath = "./src/main/resources/contest/final"
 
   def checkFinalTasksWithObstacles(folder: String): Unit = {
-    s"A check for rooms with obstacles in $folder" should "succeed" in {}
+    s"A check for final tasks of $folder" should "succeed" in {}
     val dir = new File(s"$obstaclesPath/$folder/")
     assert(dir.isDirectory)
     for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
