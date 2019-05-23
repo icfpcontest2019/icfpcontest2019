@@ -3,7 +3,6 @@ package lambda.contest.generators.runners.boosters
 import java.io.File
 
 import lambda.contest.ContestTask
-import lambda.contest.checkers.GraderUtils
 import lambda.contest.checkers.GraderUtils.{PROBLEM_DESC_EXT, PROBLEM_PREFIX}
 import lambda.contest.generators.TaskGeneratorUtils.generateBoosters
 import lambda.contest.parsers.ContestTaskParser

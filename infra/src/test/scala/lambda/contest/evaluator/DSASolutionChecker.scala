@@ -3,13 +3,14 @@ package lambda.contest.evaluator
 import java.io.File
 
 import lambda.contest.ContestConstants._
+import lambda.contest.ContestTask
 import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
 import lambda.contest.checkers.TaskExecution
 import lambda.contest.parsers.ContestTaskParser
-import lambda.contest.{ContestException, ContestTask}
 import lambda.geometry.GeometryParsers
 import lambda.geometry.floating.FPolygonUtils
 import lambda.geometry.integer.IPoint
+import lambda.solvers.{SimpleSolver, SolverUtils}
 import lambda.util.FileUtil
 import lambda.util.stats.StatisticsUtils
 import org.scalatest.{FlatSpec, Matchers}
@@ -151,39 +152,10 @@ trait DSASolutions extends StatisticsUtils[Int, Unit] {
     val lines = FileUtil.readFromFile(s"$dsaSolutionPath/team$i/sol.txt")
     val trimmed = lines.filter(_.trim.nonEmpty)
     val dsaSolutions = trimmed.map(DSAParser(_).get)
-    val ls = for ((k, s) <- dsaSolutions) yield k -> convertDSASolution(s)
+    val ls = for ((k, s) <- dsaSolutions) yield k -> SolverUtils.convertPointsToMoves(s)
     ls.toMap
   }
-
-  private def convertDSASolution(sol: List[IPoint]): List[List[Action]] = {
-    val steps = getPairs(sol).toList
-    val moves = steps.map(pairToAction) //.filter(_ != Snooze)
-    List(moves)
-
-  }
-
-  def pairToAction(p: (IPoint, IPoint)): Action = p match {
-    case (IPoint(ax, ay), IPoint(bx, by)) =>
-      val dx = bx - ax
-      val dy = by - ay
-      (dx, dy) match {
-        case (1, 0) => MoveRight
-        case (-1, 0) => MoveLeft
-        case (0, 1) => MoveUp
-        case (0, -1) => MoveDown
-        case (0, 0) => Snooze
-        case _ => throw ContestException(s"Bad transition: ${(ax, ay)} to ${(bx, by)}")
-      }
-  }
-
-
-  def getPairs[T](vs: Seq[T]): Seq[(T, T)] =
-    if (vs.size <= 1) Nil
-    else {
-      val n = vs.size
-      for (i <- 1 until n) yield (vs(i - 1), vs(i))
-    }
-
+  
 }
 
 
