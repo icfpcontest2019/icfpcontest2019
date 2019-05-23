@@ -2,11 +2,12 @@ package lambda.solvers
 
 import java.io.File
 
-import lambda.contest.ContestConstants.Action
+import lambda.contest.ContestConstants.{Action, TurnLeft, TurnRight, UseBatteries}
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.checkers.{TaskExecution, TaskMatrix}
 import lambda.contest.parsers.ContestSolutionParser
-import lambda.contest.{Cell, ContestException, Watchman}
+import lambda.contest.{Booster, Cell, ContestException, Watchman}
+import lambda.geometry
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
 import lambda.util.FileUtil
@@ -16,11 +17,11 @@ import scala.collection.mutable
 
 /**
   * How to run: invoke with arguments, such as 
-  * 
+  *
   * ./infra/src/main/resources/contest/final ./infra/src/main/resources/contest/solutions
-  * 
+  *
   * The solutions will be placed to the second folder.
-  * 
+  *
   * @author Ilya Sergey
   */
 object SimpleSolver {
@@ -78,24 +79,24 @@ object SimpleSolver {
       val t3 = System.currentTimeMillis()
       val tsec2 = (t3 - t2).toDouble / 1000
       println(s"$checkingResult ($tsec2 sec)")
-      
+
       writeSolutionToFile(solutionDir, taskNum, solString)
     }
 
 
   }
-  
+
   def writeSolutionToFile(solutionDir: File, num: Int, sol: String) = {
     val fName = s"$PROBLEM_PREFIX${intAs3CharString(num)}$SOLUTION_EXT"
     val path = s"$solutionDir/$fName"
     FileUtil.writeToNewFile(path, sol)
-    
+
   }
 
   def solveTask(matrix: TaskMatrix, xmax: Int, ymax: Int, initPos: IPoint): String = {
     val problem = ContestProblem(matrix, xmax, ymax, initPos)
     // Initialize
-    problem.doStuff()
+    problem.init()
     while (problem.hasMoreDarkNeighbours) {
       problem.step()
     }
@@ -108,7 +109,7 @@ object SimpleSolver {
 
     val watchman = new Watchman()
 
-    val pathUnderConstruction: mutable.Queue[IPoint] = new mutable.Queue[IPoint]()
+    val pathUnderConstruction: mutable.Queue[Action] = new mutable.Queue[Action]()
     var darkNeighbours: collection.mutable.HashSet[IPoint] = new mutable.HashSet[IPoint]()
 
     def positionWithinBoundingBox(pos: IPoint): Boolean = {
@@ -158,7 +159,7 @@ object SimpleSolver {
       val litCells = getLightableNeighbourCells(currentPos).toSet
       val nextMoves = litCells.flatMap(c => getNextMoves(c))
       val dark = nextMoves.filter(n => !getCell(n).isIlluminated)
-      
+
       dark.foreach(darkNeighbours.add(_))
     }
 
@@ -174,11 +175,50 @@ object SimpleSolver {
       refreshDarkNeighbours()
     }
 
+
     // Initializer
-    def doStuff() {
+    def init(): Unit = {
       // Add initial position
-      pathUnderConstruction.enqueue(currentPos)
       castLight(currentPos)
+    }
+    
+    // Adding some randomness
+    def doStuff(lastPos: IPoint, currentPos: IPoint): Unit = {
+      pathUnderConstruction.enqueue(SolverUtils.pointsToMove(lastPos, currentPos))
+      castLight(currentPos)
+      insertRandomTurn()
+      val cell = getCell(currentPos)
+      if (cell.peekBooster.nonEmpty) {
+        val booster = cell.peekBooster.get
+        if (booster == Booster.BatteriesBooster) {
+          addBattery()
+          cell.collectBooster()
+        }
+      }
+    }
+    
+    def addBattery(): Unit = {
+      val torchCells = IPoint(0, 0):: watchman.getTorchRange(IPoint(0, 0))
+      val maxY = torchCells.maxBy(_.y).y
+      val minX = torchCells.filter(c => c.y == maxY).minBy(_.x).x
+      watchman.addBattery(minX, maxY + 1)
+      castLight(currentPos)
+      pathUnderConstruction.enqueue(UseBatteries(minX, maxY + 1))
+    }
+    
+    def insertRandomTurn(): Unit = {
+      val random = geometry.randomIntBetween(0, 10)
+      random match {
+        case 0 => 
+          watchman.rotateTorchLeft()
+          castLight(currentPos)
+          pathUnderConstruction.enqueue(TurnLeft)
+        case 1 => 
+          watchman.rotateTorchRight()
+          castLight(currentPos)
+          pathUnderConstruction.enqueue(TurnRight)
+        case _ =>
+      }
     }
 
     def hasMoreDarkNeighbours: Boolean = darkNeighbours.nonEmpty
@@ -231,8 +271,9 @@ object SimpleSolver {
 
       // The next move will light some new cells
       if (getLightableNeighbourCells(nextMove).exists(p => !getCell(p).isIlluminated)) {
+        val lastPos = currentPos
         currentPos = nextMove
-        doStuff()
+        doStuff(lastPos, currentPos)
         // The step is made
         return
       }
@@ -240,8 +281,9 @@ object SimpleSolver {
       // We're stuck, need find a path to a new dark location
       val newPath = searchNewPath(currentPos)
       for (p <- newPath) {
+        val lastPos = currentPos
         currentPos = p
-        doStuff()
+        doStuff(lastPos, currentPos)
       }
     }
 
@@ -289,8 +331,7 @@ object SimpleSolver {
 
     }
 
-    def getFinalPath: List[List[Action]] =
-      SolverUtils.convertPointsToMoves(pathUnderConstruction.toList)
+    def getFinalPath: List[List[Action]] = List(pathUnderConstruction.toList)
 
 
   }

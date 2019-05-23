@@ -94,7 +94,7 @@ object ContestConstants {
   // Using boosters
 
   case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster {
-    override def pp = s"${super.toString}($dx,$dy)"
+    override def pp = s"${super.pp}($dx,$dy)"
   }
 
   case object UseCoffee extends Action(COFFEE_LETTER) with UseBooster
@@ -107,7 +107,7 @@ object ContestConstants {
 
   // Teleporting
   case class DoTeleport(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER) {
-    override def pp = s"${super.toString}($x,$y)"
+    override def pp = s"${super.pp}($x,$y)"
   }
 
   /* *************************************** */

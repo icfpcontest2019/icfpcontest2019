@@ -15,8 +15,8 @@ object SolverUtils {
     List(moves)
 
   }
-
-  def pairToAction(p: (IPoint, IPoint)): Action = p match {
+  
+  def pointsToMove(p: IPoint, q: IPoint): Action = (p, q) match {
     case (IPoint(ax, ay), IPoint(bx, by)) =>
       val dx = bx - ax
       val dy = by - ay
@@ -30,7 +30,8 @@ object SolverUtils {
       }
   }
 
-
+  def pairToAction(p: (IPoint, IPoint)): Action = pointsToMove(p._1, p._2)
+  
   def getPairs[T](vs: Seq[T]): Seq[(T, T)] =
     if (vs.size <= 1) Nil
     else {
