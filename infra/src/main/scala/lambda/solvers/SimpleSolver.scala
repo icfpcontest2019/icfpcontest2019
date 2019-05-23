@@ -26,7 +26,7 @@ import scala.collection.mutable
   * @author Ilya Sergey
   */
 object SimpleSolver {
-  
+
   def main(args: Array[String]): Unit = {
     if (args.length < 2) {
       System.err.println("Noe task file provided!")
@@ -106,11 +106,12 @@ object SimpleSolver {
 
 
   case class ContestProblem(matrix: TaskMatrix, xmax: Int, ymax: Int, private var currentPos: IPoint) {
-    
+
     val watchman = new Watchman()
 
     val pathUnderConstruction: mutable.Queue[Action] = new mutable.Queue[Action]()
     var darkNeighbours: collection.mutable.HashSet[IPoint] = new mutable.HashSet[IPoint]()
+    var availableBoosters: List[Booster.Value] = Nil
 
     def positionWithinBoundingBox(pos: IPoint): Boolean = {
       val (x, y) = pos.toPair
@@ -181,52 +182,66 @@ object SimpleSolver {
       // Add initial position
       castLight(currentPos)
     }
-    
+
+    private def useDistraction() = {
+      val random = geometry.randomIntBetween(0, 5)
+      random match {
+        case 0 =>
+          availableBoosters match {
+            case booster :: t =>
+              availableBoosters = t
+              booster match {
+                case BatteriesBooster =>
+                  addBattery()
+                case Booster.DrillBooster =>
+                  useDrill()
+                case _ =>
+              }
+            case _ =>
+          }
+        case _ => insertRandomTurn()
+      }
+    }
+
     // Adding some randomness
     def doStuff(lastPos: IPoint, currentPos: IPoint, canBeDistracted: Boolean = false): Unit = {
       pathUnderConstruction.enqueue(SolverUtils.pointsToMove(lastPos, currentPos))
       castLight(currentPos)
       val cell = getCell(currentPos)
-      if (cell.peekBooster.nonEmpty && canBeDistracted) {
-        val booster = cell.peekBooster.get
-        cell.collectBooster()
-        booster match {
-          case BatteriesBooster =>
-            addBattery()
-          case Booster.DrillBooster =>
-            useDrill()
-          case _ =>
-            // If nothing else
-            insertRandomTurn()
-        }
+      if (cell.peekBooster.nonEmpty) {
+        availableBoosters = cell.collectBooster().get :: availableBoosters
+      }
+      if (canBeDistracted) {
+        useDistraction()
       }
     }
-    
+
     def useDrill() = {
       val xAllowed = math.max(math.min(30, xmax - currentPos.x - 1), 0)
       // println(s"Using drill for $xAllowed steps!")
-      val drillPath = (1 to xAllowed).map{i => IPoint(currentPos.x + i, currentPos.y)}.toList
+      val drillPath = (1 to xAllowed).map { i => IPoint(currentPos.x + i, currentPos.y) }.toList
       pathUnderConstruction.enqueue(UseDrill)
       execPath(drillPath, isDriller = true)
     }
-    
+
     def addBattery(): Unit = {
-      val torchCells = IPoint(0, 0):: watchman.getTorchRange(IPoint(0, 0))
+      val torchCells = IPoint(0, 0) :: watchman.getTorchRange(IPoint(0, 0))
       val maxY = torchCells.maxBy(_.y).y
       val minX = torchCells.filter(c => c.y == maxY).minBy(_.x).x
+      // println(s"Adding battery for ${(minX, maxY + 1)}}")
       watchman.addBattery(minX, maxY + 1)
       castLight(currentPos)
       pathUnderConstruction.enqueue(UseBatteries(minX, maxY + 1))
     }
-    
+
     def insertRandomTurn(): Unit = {
       val random = geometry.randomIntBetween(0, 10)
       random match {
-        case 0 => 
+        case 0 =>
           watchman.rotateTorchLeft()
           castLight(currentPos)
           pathUnderConstruction.enqueue(TurnLeft)
-        case 1 => 
+        case 1 =>
           watchman.rotateTorchRight()
           castLight(currentPos)
           pathUnderConstruction.enqueue(TurnRight)
