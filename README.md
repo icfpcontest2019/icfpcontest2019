@@ -40,19 +40,33 @@ To grade an individual folder with solutions against a folder with tasks and rec
 For instance, from the root of the project you can run:
 
 ```
-./checker team -p ./infra/src/test/resources/contest/toy/problems -s ./infra/src/test/resources/contest/toy/teams/hare/2019-05-11-12-03-00 -o ./results.csv -v true
+./checker team -p ./infra/src/main/resources/contest/final -s ./infra/src/main/resources/contest/solutions -o ./results.csv -v true
 ```
 
 Run `./checker team --help` for the reference.
 
-## Helper Scripts
+### Running the solver
+
+The solver is invoked as a routine of the checker as follows:
+
+```
+./checker solver <problemsPath> <solutionsPath>
+```
+
+For instance:
+
+```
+./checker solver ./infra/src/main/resources/contest/final ~/tmp/solutions
+```
+
+## Helper Scripts for Problem Generation and Checking
 
 * `TaskBrowser` -- show tasks in the folder
-* `RawRoomGenerator$` -- generate random room within a given box
+* `RawRoomGenerator` -- generate random room within a given box
 * `AddObstaclesToTasks` -- adding obstacles to rooms
 * `AddBoostersToTasks` -- adding boosters to the tasks
-* `BatchTaskMatrixConverter` -- Converting tasks to matrices
-* `CountriesToRectilinear$` -- make rectilinear countries
+* `BatchTaskMatrixConverter` -- converting tasks to matrices
+* `CountriesToRectilinear` -- make rectilinear country shapes from the geodata
 * `SimpleSolver` -- a dumb solver for the problem
 
 

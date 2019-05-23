@@ -179,9 +179,10 @@ trait ContestGrader {
           }
           if (config.verbose) {
             val t1 = System.currentTimeMillis()
+            val delta = (t1 - t0).toDouble / 1000
             res match {
-              case Left(value) => println(s"$value (${t1 - t0} ms)")
-              case Right(msg) => println(s"$msg (${t1 - t0} ms)")
+              case Left(value) => println(s"$value ($delta sec)")
+              case Right(msg) => println(s"$msg ($delta sec)")
             }
           }
           gradeMap = gradeMap + (taskN -> res)

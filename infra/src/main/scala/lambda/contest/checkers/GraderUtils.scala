@@ -37,16 +37,20 @@ object GraderUtils {
     nums.toList.sorted
   }
 
-  def readOneTask(taskPath: String, solution: Int): Option[TaskDescription] = {
-    val dir = new File(taskPath)
-    if (!dir.isDirectory)
-      throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
+  def readOneTask(mainTaskPath: String, solution: Int): Option[TaskDescription] = {
+    val mainDir = new File(mainTaskPath)
+    if (!mainDir.isDirectory)
+      throw ContestException(s"File ${mainDir.getAbsolutePath} is not a directory.")
     // First try to get as a matrix
-    getTaskMatrix(dir, solution) match {
+    
+    val subDirs = mainDir.listFiles().toList.filter(f => f.isDirectory && f.getName != MATRIX_FOLDER)
+    val allDirs = mainDir :: subDirs
+    
+    getTaskMatrix(allDirs, solution) match {
       case res@Some(_) => res
       case None =>
         // If not, create the matrix on the fly
-        for (f <- dir.listFiles();
+        for (f <- allDirs.flatMap(_.listFiles().toList);
              fname = f.getName
              if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
              tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
@@ -61,8 +65,10 @@ object GraderUtils {
   }
 
 
-  def getTaskMatrix(dir: File, num: Int): Option[TaskDescription] = {
-    dir.listFiles().toList.find(f => f.isDirectory && f.getName == MATRIX_FOLDER) match {
+  def getTaskMatrix(allDirs: List[File], num: Int): Option[TaskDescription] = {
+    allDirs
+      .flatMap(_.listFiles().toList)
+      .find(f => f.isDirectory && f.getName == MATRIX_FOLDER) match {
       case None => None
       case Some(mdir) =>
         for (f <- mdir.listFiles();

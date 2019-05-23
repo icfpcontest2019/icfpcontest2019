@@ -29,7 +29,7 @@ object SimpleSolver {
 
   def main(args: Array[String]): Unit = {
     if (args.length < 2) {
-      System.err.println("Noe task file provided!")
+      System.err.println("Please, provide the path to folder with tasks and the path to folder for solutions.")
       return
     }
     val baseDir = new File(args(0))

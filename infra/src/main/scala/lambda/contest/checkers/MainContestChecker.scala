@@ -1,5 +1,7 @@
 package lambda.contest.checkers
 
+import lambda.solvers.SimpleSolver
+
 /**
   *
   * Main checker for the contest
@@ -17,7 +19,7 @@ object MainContestChecker {
 
   object CheckerMode extends Enumeration {
     type CheckerMode = Value
-    val Team, Batch, Chain, Bad = Value
+    val Team, Solver, Batch, Chain, Bad = Value
   }
 
   private val mainParser = new scopt.OptionParser[CheckerMode.Value](SCRIPTNAME) {
@@ -27,10 +29,11 @@ object MainContestChecker {
       .action { (x, c) =>
       x match {
         case "team" => CheckerMode.Team
-        case "batch" => CheckerMode.Batch
+        case "solver" => CheckerMode.Solver
         case "chain" => CheckerMode.Chain
+        // case "batch" => CheckerMode.Batch
       }
-    }.text(s"a mode to run the checker: individual team (team), batch-grading (batch), or chain processing (chain).")
+    }.text(s"a mode to run the checker: individual team (team), solver (solver), or chain processing (chain).")
 
     help("help").text("prints this usage text")
   }
@@ -46,9 +49,10 @@ object MainContestChecker {
         }
         m match {
           case CheckerMode.Team => IndividualGrader.main(newArgs)
-          case CheckerMode.Batch => BatchGrader.main(newArgs)
+          case CheckerMode.Solver => SimpleSolver.main(newArgs)
           case CheckerMode.Chain => ChainEvaluator.main(newArgs)
-          case _ => System.err.println("Malformed checker mode.")
+          // case CheckerMode.Batch => BatchGrader(newArgs)
+          case _ => System.err.println("Uknown checker mode.")
         }
       case _ => 
         //System.err.println("Provided arguments for the checker are malformed.")
