@@ -117,7 +117,7 @@ object AddObstaclesToTasks {
         currentTaskFile = Some(queue.dequeue())
         repaint(())
         iterations = initIterations
-        // newObstacleAction(repaint)
+        newObstacleAction(repaint)
       } else {
         System.err.println("Finished with the current folder!")
       }
@@ -156,7 +156,7 @@ object AddObstaclesToTasks {
       }
       println()
       println(s"Done generating new obstacles!")
-      // recordAction(repaint)
+      recordAction(repaint)
     }
   }
 

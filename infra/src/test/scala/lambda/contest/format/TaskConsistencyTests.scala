@@ -69,7 +69,7 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
 
   val obstaclesPath = "./src/main/resources/contest/final"
 
-  def checkTasksWithObstaclesInFolder(folder: String): Unit = {
+  def checkFinalTasksWithObstacles(folder: String): Unit = {
     s"A check for rooms with obstacles in $folder" should "succeed" in {}
     val dir = new File(s"$obstaclesPath/$folder/")
     assert(dir.isDirectory)
@@ -88,9 +88,9 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
 
   //checkTasksWithObstaclesInFolder("genesis")
 
-  checkTasksWithObstaclesInFolder("part-1")
-  checkTasksWithObstaclesInFolder("part-2")
-  checkTasksWithObstaclesInFolder("part-3")
+  checkFinalTasksWithObstacles("part-1")
+  checkFinalTasksWithObstacles("part-2")
+  checkFinalTasksWithObstacles("part-3")
   
   // checkTasksWithObstaclesInFolder("bonus")
   
