@@ -58,11 +58,11 @@ prob-277 - egypt (400x400)
 prob-278 - honduras (400x400)
 prob-279 - illinois (400x400)
 prob-280 - russia (400x400)
-prob-281 - random polygon within 400x400 box
-prob-282 - random polygon within 400x400 box
-prob-283 - random polygon within 400x400 box
-prob-284 - random polygon within 400x400 box
-prob-285 - random polygon within 400x400 box
+prob-281 - afghanistan (400x400)
+prob-282 - alaska (400x400)
+prob-283 - maryland (400x400)
+prob-284 - west_virginia (400x400)
+prob-285 - massachusetts (400x400)
 prob-286 - random polygon within 400x400 box
 prob-287 - random polygon within 400x400 box
 prob-288 - random polygon within 400x400 box

@@ -105,7 +105,7 @@ object AddObstaclesToTasks {
   }
 
 
-  private def recordAction(repaint: Unit => Unit) = {
+  private def recordAction(repaint: Unit => Unit): Unit = {
     if (currentTaskFile.isEmpty) {
       System.err.println("Cannot record")
     } else {
@@ -117,6 +117,7 @@ object AddObstaclesToTasks {
         currentTaskFile = Some(queue.dequeue())
         repaint(())
         iterations = initIterations
+        // newObstacleAction(repaint)
       } else {
         System.err.println("Finished with the current folder!")
       }
@@ -131,7 +132,7 @@ object AddObstaclesToTasks {
     button
   }
 
-  private def newObstacleAction(repaint: Unit => Unit) = {
+  private def newObstacleAction(repaint: Unit => Unit): Unit = {
     if (currentTaskFile.isEmpty) {
       System.err.println("Cannot add obstacle: no task given!")
     } else {
@@ -155,6 +156,7 @@ object AddObstaclesToTasks {
       }
       println()
       println(s"Done generating new obstacles!")
+      // recordAction(repaint)
     }
   }
 
@@ -224,7 +226,7 @@ object AddObstaclesToTasks {
         val task = ContestTaskParser(content).get
         (task, f)
       })
-      .reverse
+      // .reverse
       .foreach(queue.enqueue(_))
   }
 }

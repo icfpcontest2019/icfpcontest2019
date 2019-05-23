@@ -16,5 +16,5 @@ Available boosters:
 Watchmen positions:
   W0: (5, 8)
 Active boosters:
-  W0: (DrillBooster : 10)
+  W0: (DrillBooster : 20)
 Elapsed time: 15

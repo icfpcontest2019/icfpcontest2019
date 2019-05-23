@@ -115,7 +115,7 @@ object ContestConstants {
   /* *************************************** */
 
   val COFFEE_TIME = 50
-  val DRILL_TIME = 20
+  val DRILL_TIME = 30
 
   /* *************************************** */
   //            Default torch range          //
