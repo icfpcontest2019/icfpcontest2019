@@ -53,6 +53,7 @@ Run `./checker team --help` for the reference.
 * `AddBoostersToTasks` -- adding boosters to the tasks
 * `BatchTaskMatrixConverter` -- Converting tasks to matrices
 * `CountriesToRectilinear$` -- make rectilinear countries
+* `SimpleSolver` -- a dumb solver for the problem
 
 
 ### Scala programming and related frameworks to be used

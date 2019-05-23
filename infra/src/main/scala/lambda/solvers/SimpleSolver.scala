@@ -15,6 +15,12 @@ import lambda.util.FileUtil.intAs3CharString
 import scala.collection.mutable
 
 /**
+  * How to run: invoke with arguments, such as 
+  * 
+  * ./infra/src/main/resources/contest/final ./infra/src/main/resources/contest/solutions
+  * 
+  * The solutions will be placed to the second folder.
+  * 
   * @author Ilya Sergey
   */
 object SimpleSolver {
@@ -80,7 +86,7 @@ object SimpleSolver {
   }
   
   def writeSolutionToFile(solutionDir: File, num: Int, sol: String) = {
-    val fName = s"$PROBLEM_PREFIX-${intAs3CharString(num)}${SOLUTION_EXT}"
+    val fName = s"$PROBLEM_PREFIX${intAs3CharString(num)}$SOLUTION_EXT"
     val path = s"$solutionDir/$fName"
     FileUtil.writeToNewFile(path, sol)
     
