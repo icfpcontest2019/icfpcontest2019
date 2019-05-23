@@ -2,7 +2,8 @@ package lambda.solvers
 
 import java.io.File
 
-import lambda.contest.ContestConstants.{Action, TurnLeft, TurnRight, UseBatteries}
+import lambda.contest.Booster.BatteriesBooster
+import lambda.contest.ContestConstants.{Action, TurnLeft, TurnRight, UseBatteries, UseDrill}
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.checkers.{TaskExecution, TaskMatrix}
 import lambda.contest.parsers.ContestSolutionParser
@@ -25,7 +26,7 @@ import scala.collection.mutable
   * @author Ilya Sergey
   */
 object SimpleSolver {
-
+  
   def main(args: Array[String]): Unit = {
     if (args.length < 2) {
       System.err.println("Noe task file provided!")
@@ -105,8 +106,7 @@ object SimpleSolver {
 
 
   case class ContestProblem(matrix: TaskMatrix, xmax: Int, ymax: Int, private var currentPos: IPoint) {
-
-
+    
     val watchman = new Watchman()
 
     val pathUnderConstruction: mutable.Queue[Action] = new mutable.Queue[Action]()
@@ -183,18 +183,31 @@ object SimpleSolver {
     }
     
     // Adding some randomness
-    def doStuff(lastPos: IPoint, currentPos: IPoint): Unit = {
+    def doStuff(lastPos: IPoint, currentPos: IPoint, canBeDistracted: Boolean = false): Unit = {
       pathUnderConstruction.enqueue(SolverUtils.pointsToMove(lastPos, currentPos))
       castLight(currentPos)
-      insertRandomTurn()
       val cell = getCell(currentPos)
-      if (cell.peekBooster.nonEmpty) {
+      if (cell.peekBooster.nonEmpty && canBeDistracted) {
         val booster = cell.peekBooster.get
-        if (booster == Booster.BatteriesBooster) {
-          addBattery()
-          cell.collectBooster()
+        cell.collectBooster()
+        booster match {
+          case BatteriesBooster =>
+            addBattery()
+          case Booster.DrillBooster =>
+            useDrill()
+          case _ =>
+            // If nothing else
+            insertRandomTurn()
         }
       }
+    }
+    
+    def useDrill() = {
+      val xAllowed = math.max(math.min(30, xmax - currentPos.x - 1), 0)
+      // println(s"Using drill for $xAllowed steps!")
+      val drillPath = (1 to xAllowed).map{i => IPoint(currentPos.x + i, currentPos.y)}.toList
+      pathUnderConstruction.enqueue(UseDrill)
+      execPath(drillPath, isDriller = true)
     }
     
     def addBattery(): Unit = {
@@ -273,16 +286,24 @@ object SimpleSolver {
       if (getLightableNeighbourCells(nextMove).exists(p => !getCell(p).isIlluminated)) {
         val lastPos = currentPos
         currentPos = nextMove
-        doStuff(lastPos, currentPos)
+        doStuff(lastPos, currentPos, canBeDistracted = true)
         // The step is made
         return
       }
 
       // We're stuck, need find a path to a new dark location
       val newPath = searchNewPath(currentPos)
-      for (p <- newPath) {
+      execPath(newPath)
+    }
+
+    private def execPath(newPath: List[IPoint], isDriller: Boolean = false) = {
+      for (i <- newPath.indices) {
+        val p = newPath(i)
         val lastPos = currentPos
         currentPos = p
+        if (isDriller) {
+          getCell(currentPos).clearSpace()
+        }
         doStuff(lastPos, currentPos)
       }
     }

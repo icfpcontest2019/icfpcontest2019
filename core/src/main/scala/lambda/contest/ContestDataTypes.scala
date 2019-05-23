@@ -216,7 +216,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
     val boosters = activeBoosters.toList
     activeBoosters.clear()
     boosters.foreach(_.decrementTimeLeft())
-    boosters.filter(_.getRemainingTime > 0).foreach(
+    boosters.filter(_.getRemainingTime >= 0).foreach(
       b => activeBoosters.add(b))
   }
 
