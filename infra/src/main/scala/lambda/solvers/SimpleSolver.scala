@@ -9,6 +9,8 @@ import lambda.contest.parsers.ContestSolutionParser
 import lambda.contest.{Cell, ContestException, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
+import lambda.util.FileUtil
+import lambda.util.FileUtil.intAs3CharString
 
 import scala.collection.mutable
 
@@ -37,7 +39,7 @@ object SimpleSolver {
          res = readOneTask(dPath, taskNum)
          if res.isDefined} {
       val (matrix, dx, dy, init) = res.get
-      print(s"Solving task $taskNum: ")
+      print(s"Task $taskNum (${dx}x$dy): ")
       val t0 = System.currentTimeMillis()
       val solString = solveTask(matrix, dx, dy, init)
       val t1 = System.currentTimeMillis()
@@ -47,13 +49,13 @@ object SimpleSolver {
       val t2 = System.currentTimeMillis()
 
       val solution = ContestSolutionParser(solString).get
-      
-      // Now checking
+
+      // Now checking, with a fresh matrix
 
       val (matrix1, _, _, _) = readOneTask(dPath, taskNum).get
-      
+
       // TODO: fix bug with dark corners
-      
+
       val state = TaskExecution.createState(matrix1, dx, dy, init, solution, Nil)
       val checkingResult = try {
         state.evalSolution()
@@ -69,11 +71,19 @@ object SimpleSolver {
       }
       val t3 = System.currentTimeMillis()
       val tsec2 = (t3 - t2).toDouble / 1000
-      println(s"$checkingResult ($tsec2 sec).")
-
+      println(s"$checkingResult ($tsec2 sec)")
+      
+      writeSolutionToFile(solutionDir, taskNum, solString)
     }
 
 
+  }
+  
+  def writeSolutionToFile(solutionDir: File, num: Int, sol: String) = {
+    val fName = s"$PROBLEM_PREFIX-${intAs3CharString(num)}${SOLUTION_EXT}"
+    val path = s"$solutionDir/$fName"
+    FileUtil.writeToNewFile(path, sol)
+    
   }
 
   def solveTask(matrix: TaskMatrix, xmax: Int, ymax: Int, initPos: IPoint): String = {
@@ -140,13 +150,10 @@ object SimpleSolver {
       darkNeighbours = darkNeighbours.filterNot(p => getCell(p).isIlluminated)
 
       val litCells = getLightableNeighbourCells(currentPos).toSet
-      for (c <- litCells;
-           n <- getLightableNeighbourCells(c)) {
-        val cell = getCell(n)
-        if (!cell.isIlluminated) {
-          darkNeighbours.add(n)
-        }
-      }
+      val nextMoves = litCells.flatMap(c => getNextMoves(c))
+      val dark = nextMoves.filter(n => !getCell(n).isIlluminated)
+      
+      dark.foreach(darkNeighbours.add(_))
     }
 
     private def castLight(wPos: IPoint): Unit = {
@@ -171,14 +178,18 @@ object SimpleSolver {
     def hasMoreDarkNeighbours: Boolean = darkNeighbours.nonEmpty
 
     // Directions and preference
-    private def getNextMoves(p: IPoint): List[(IPoint, Int)] = {
-      val IPoint(x, y) = p
-      List((IPoint(x + 1, y), 1),
-        (IPoint(x, y + 1), 2),
-        (IPoint(x - 1, y), 3),
-        (IPoint(x, y - 1), 4))
-        .filter(p => canStepToPosition(p._1))
+    private def getNextMovesWithPriorities(p: IPoint): List[(IPoint, Int)] = {
+      getNextMoves(p).zipWithIndex
     }
+
+    private def getNextMoves(p: IPoint) = {
+      val IPoint(x, y) = p
+      List(IPoint(x + 1, y),
+        IPoint(x, y + 1),
+        IPoint(x - 1, y),
+        IPoint(x, y - 1)).filter(canStepToPosition)
+    }
+
 
     // count the number of new squares lit by moving to point p
     private def countNewLitSquares(p: IPoint) = {
@@ -205,7 +216,7 @@ object SimpleSolver {
       }
 
       // Decide on the next best move
-      val nextMove: IPoint = getNextMoves(currentPos)
+      val nextMove: IPoint = getNextMovesWithPriorities(currentPos)
         .groupBy { case (move, pref) => countNewLitSquares(move) }
         .maxBy(_._1)
         ._2
@@ -240,7 +251,7 @@ object SimpleSolver {
       // Do while didn't find one of the dark neighbours
       while (queue.nonEmpty && !darkNeighbours.forall(n => marked.contains(n))) {
         val pos = queue.dequeue()
-        for (n <- getNextMoves(pos).map(_._1)
+        for (n <- getNextMoves(pos)
              if !marked.contains(n)) {
           parentMap.put(n, pos)
           queue.enqueue(n)
