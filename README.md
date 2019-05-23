@@ -45,6 +45,16 @@ For instance, from the root of the project you can run:
 
 Run `./checker team --help` for the reference.
 
+## Helper Scripts
+
+* `TaskBrowser` -- show tasks in the folder
+* `RawRoomGenerator$` -- generate random room within a given box
+* `AddObstaclesToTasks` -- adding obstacles to rooms
+* `AddBoostersToTasks` -- adding boosters to the tasks
+* `BatchTaskMatrixConverter` -- Converting tasks to matrices
+* `CountriesToRectilinear$` -- make rectilinear countries
+
+
 ### Scala programming and related frameworks to be used
 
 * [Scala Programming Language](http://www.scala-lang.org/)

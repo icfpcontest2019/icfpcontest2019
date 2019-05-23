@@ -32,10 +32,10 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
   def verticalEdges: Seq[ISegment] = edges.filter { case ISegment(a, b) => a.x == b.x }
 
-  def toFPolygon: FPolygon = FPolygon(vertices.map(_.toFPoint))
+  lazy val toFPolygon: FPolygon = FPolygon(vertices.map(_.toFPoint))
   
-  val toJPolygon: Polygon = {
-    val (xs, ys) = vertices.unzip(p => (p.x, p.y))
+  lazy val toJPolygon: Polygon = {
+    val (xs, ys) = vertices.unzip(_.toPair)
     new Polygon(xs.toArray, ys.toArray, xs.size)
   }
 
@@ -241,6 +241,12 @@ case class IPolygon(vertices: Seq[IPoint]) {
     val res = IPoint(x, y)
     assert(this.containsCell(res))
     res
+  }
+  
+  def leftMostBottomCell: IPoint = {
+    val IPoint(minx, _) = getMinXY
+    val minLeft = vertices.filter(_.x == minx).minBy(_.y)
+    minLeft
   }
 
 

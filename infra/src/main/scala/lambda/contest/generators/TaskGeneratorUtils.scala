@@ -65,7 +65,7 @@ object TaskGeneratorUtils {
 
   def writeRoomToFile(newFile: String, poly: IPolygon) = {
     val goodPoly = poly.shiftToOrigin
-    val task = ContestTask(goodPoly, goodPoly.randomCellWithin, Nil, Nil)
+    val task = ContestTask(goodPoly, goodPoly.leftMostBottomCell, Nil, Nil)
     assert(!ContestTaskParser(task.toString).isEmpty)
     FileUtil.writeToNewFile(newFile, task.toString)
   }
@@ -163,7 +163,7 @@ object TaskGeneratorUtils {
       (CoffeeBooster, 5) -> 16,
 
       (DrillBooster, 0) -> 0,
-      (DrillBooster, 1) -> 0,
+      (DrillBooster, 1) -> 1,
       (DrillBooster, 2) -> 1,
       (DrillBooster, 3) -> 2,
       (DrillBooster, 4) -> 5,
@@ -188,7 +188,7 @@ object TaskGeneratorUtils {
       (CallPoint, 2) -> 1,
       (CallPoint, 3) -> 3,
       (CallPoint, 4) -> 4,
-      (CallPoint, 5) -> 5,
+      (CallPoint, 5) -> 6,
     )
 
 
@@ -205,11 +205,15 @@ object TaskGeneratorUtils {
       n = boosterTable((b, dimToCategory(dim)))
       _ <- 1 to n
     } {
-      val p = getVacantCellNotTouchingWalls(newTask)
-      val bs = newTask.boosters
-      newTask = newTask.copy(boosters = (b, p) :: bs)
+      if (b == Booster.TeleportBooster && !portals) {}
+      else if (b == Booster.CallWatchmanBooster && !forks) {}
+      else {
+        val p = getVacantCellNotTouchingWalls(newTask)
+        val bs = newTask.boosters
+        newTask = newTask.copy(boosters = (b, p) :: bs)
+      }
     }
-    assert (ContestTaskUtils.checkTaskWellFormed(newTask))
+    assert(ContestTaskUtils.checkTaskWellFormed(newTask))
     newTask
   }
 
