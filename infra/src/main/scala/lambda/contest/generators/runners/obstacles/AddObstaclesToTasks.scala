@@ -15,6 +15,12 @@ import lambda.util.FileUtil
 import scala.collection.mutable
 
 /**
+  * How to use, example:
+  * 
+  * part-3 80
+  * 
+  * Generate obstacles for rooms from part-3 starting with 80.
+  * 
   * @author Ilya Sergey
   */
 object AddObstaclesToTasks {
@@ -90,39 +96,67 @@ object AddObstaclesToTasks {
 
   }
 
-  private def newObstacleButton(repaint: Unit => Unit): JButton = {
-    val button = new JButton("Add more obstacles")
+  private def recordButton(repaint: Unit => Unit): JButton = {
+    val button = new JButton("Good!")
     button.addActionListener((e: ActionEvent) => {
-      button.setEnabled(false)
-      if (currentTaskFile.isEmpty) {
-        System.err.println("Cannot add obstacle: no task given!")
-      } else {
-        var continue = true
-        for (_ <- 1 to iterations if continue) {
-          val (task, file) = currentTaskFile.get
-          println(s"Generating obstacle ${task.obstacles.size + 1} for task ${file.getName}")
-          TaskGeneratorUtils.generateNewObstacle(task) match {
-            case Left(newTask) =>
-              currentTaskFile = Some(newTask, file)
-              repaint(())
-            case Right(msg) =>
-              System.err.println(msg)
-              if (msg.endsWith(":(")) {
-                continue = false
-              }
-          }
-        }
-        if (iterations >= 20) {
-          iterations = iterations / 2
-        }
-        println()
-        println(s"Done generating new obstacles!")
-      }
-      button.setEnabled(true)
+      recordAction(repaint)
     })
     button
   }
 
+
+  private def recordAction(repaint: Unit => Unit) = {
+    if (currentTaskFile.isEmpty) {
+      System.err.println("Cannot record")
+    } else {
+      val (task, file) = currentTaskFile.get
+      val outFile = s"$obstaclesPath/${file.getName}"
+      FileUtil.writeToNewFile(outFile, task.toString)
+      println(s"Written result to ${new File(outFile).getAbsolutePath}")
+      if (queue.nonEmpty) {
+        currentTaskFile = Some(queue.dequeue())
+        repaint(())
+        iterations = initIterations
+      } else {
+        System.err.println("Finished with the current folder!")
+      }
+    }
+  }
+
+  private def newObstacleButton(repaint: Unit => Unit): JButton = {
+    val button = new JButton("Add more obstacles")
+    button.addActionListener((e: ActionEvent) => {
+      newObstacleAction(repaint)
+    })
+    button
+  }
+
+  private def newObstacleAction(repaint: Unit => Unit) = {
+    if (currentTaskFile.isEmpty) {
+      System.err.println("Cannot add obstacle: no task given!")
+    } else {
+      var continue = true
+      for (_ <- 1 to iterations if continue) {
+        val (task, file) = currentTaskFile.get
+        println(s"Generating obstacle ${task.obstacles.size + 1} for task ${file.getName}")
+        TaskGeneratorUtils.generateNewObstacle(task) match {
+          case Left(newTask) =>
+            currentTaskFile = Some(newTask, file)
+            repaint(())
+          case Right(msg) =>
+            System.err.println(msg)
+            if (msg.endsWith(":(")) {
+              continue = false
+            }
+        }
+      }
+      if (iterations >= 20) {
+        iterations = iterations / 2
+      }
+      println()
+      println(s"Done generating new obstacles!")
+    }
+  }
 
   private def removeObstacleButton(repaint: Unit => Unit): JButton = {
     val button = new JButton("Remove last obstacle")
@@ -157,28 +191,6 @@ object AddObstaclesToTasks {
         } else {
           System.err.println("Finished with the current folder.")
         }
-      }
-    })
-    button
-  }
-
-  private def recordButton(repaint: Unit => Unit): JButton = {
-    val button = new JButton("Good!")
-    button.addActionListener((e: ActionEvent) => {
-      if (currentTaskFile.isEmpty) {
-        System.err.println("Cannot record")
-      } else {
-          val (task, file) = currentTaskFile.get
-          val outFile = s"$obstaclesPath/${file.getName}"
-          FileUtil.writeToNewFile(outFile, task.toString)
-          println(s"Written result to ${new File(outFile).getAbsolutePath}")
-          if (queue.nonEmpty) {
-            currentTaskFile = Some(queue.dequeue())
-            repaint(())
-            iterations = initIterations
-          } else {
-            System.err.println("Finished with the current folder!")
-          }
       }
     })
     button

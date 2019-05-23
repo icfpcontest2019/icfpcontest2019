@@ -3,7 +3,8 @@ package lambda.contest.generators.runners.boosters
 import java.io.File
 
 import lambda.contest.ContestTask
-import lambda.contest.checkers.GraderUtils.PROBLEM_DESC_EXT
+import lambda.contest.checkers.GraderUtils
+import lambda.contest.checkers.GraderUtils.{PROBLEM_DESC_EXT, PROBLEM_PREFIX}
 import lambda.contest.generators.TaskGeneratorUtils.generateBoosters
 import lambda.contest.parsers.ContestTaskParser
 import lambda.util.FileUtil
@@ -32,8 +33,9 @@ object AddBoostersToTasks {
       polyRes = ContestTaskParser(line)
       if !polyRes.isEmpty
       task@ContestTask(room, init, obstacles, Nil) = polyRes.get
+      fNum = f.getName.stripSuffix(PROBLEM_DESC_EXT).stripPrefix(PROBLEM_PREFIX).toInt
     } {
-      val newTask = getBoostersDependingOnPart(task, getPart(d))
+      val newTask = getBoostersDependingOnPart(task, getPart(d), fNum)
       val newDir = new File(s"$finalPath/${d.getName}")
       newDir.mkdirs()
       val newPath = s"${newDir.getAbsolutePath}/${f.getName}"
@@ -41,19 +43,23 @@ object AddBoostersToTasks {
       println(s"Processed file ${f.getName}")
     }
   }
-  
+
   def getPart(dd: File) = {
     if (dd.getName.contains("part-1")) 1
     else if (dd.getName.contains("part-2")) 2
     else 3
   }
-  
-  def getBoostersDependingOnPart(task: ContestTask, part: Int): ContestTask = {
-    if (part == 1) 
+
+  def getBoostersDependingOnPart(task: ContestTask, part: Int, fNum: Int): ContestTask = {
+    if (part == 1)
       return generateBoosters(task, portals = false, forks = false)
-    if (part == 2) 
+    if (part == 2)
       return generateBoosters(task, portals = true, forks = false)
-    generateBoosters(task, portals = true, forks = true)
+    if (fNum < 281) {
+      generateBoosters(task, portals = true, forks = true, superLarge = false)
+    } else {
+      generateBoosters(task, portals = true, forks = true, superLarge = true)
+    }
   }
 
 

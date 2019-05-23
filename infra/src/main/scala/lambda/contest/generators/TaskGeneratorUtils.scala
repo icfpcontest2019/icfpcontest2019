@@ -136,7 +136,8 @@ object TaskGeneratorUtils {
 
   }
 
-  def dimToCategory(dim: Int) = {
+  def dimToCategory(dim: Int, superLarge: Boolean = false): Int = {
+    if (superLarge) return 6
     if (dim <= 500) 0
     else if (dim <= 1700) 1
     else if (dim <= 5000) 2
@@ -154,6 +155,7 @@ object TaskGeneratorUtils {
       (BatteriesBooster, 3) -> 3,
       (BatteriesBooster, 4) -> 6,
       (BatteriesBooster, 5) -> 12,
+      (BatteriesBooster, 6) -> 15,
 
       (CoffeeBooster, 0) -> 0,
       (CoffeeBooster, 1) -> 2,
@@ -161,6 +163,7 @@ object TaskGeneratorUtils {
       (CoffeeBooster, 3) -> 5,
       (CoffeeBooster, 4) -> 10,
       (CoffeeBooster, 5) -> 16,
+      (CoffeeBooster, 6) -> 18,
 
       (DrillBooster, 0) -> 0,
       (DrillBooster, 1) -> 1,
@@ -168,6 +171,7 @@ object TaskGeneratorUtils {
       (DrillBooster, 3) -> 2,
       (DrillBooster, 4) -> 5,
       (DrillBooster, 5) -> 9,
+      (DrillBooster, 6) -> 11,
 
       (TeleportBooster, 0) -> 0,
       (TeleportBooster, 1) -> 0,
@@ -175,6 +179,7 @@ object TaskGeneratorUtils {
       (TeleportBooster, 3) -> 1,
       (TeleportBooster, 4) -> 1,
       (TeleportBooster, 5) -> 2,
+      (TeleportBooster, 6) -> 3,
 
       (CallWatchmanBooster, 0) -> 0,
       (CallWatchmanBooster, 1) -> 0,
@@ -182,6 +187,7 @@ object TaskGeneratorUtils {
       (CallWatchmanBooster, 3) -> 2,
       (CallWatchmanBooster, 4) -> 3,
       (CallWatchmanBooster, 5) -> 4,
+      (CallWatchmanBooster, 6) -> 5,
 
       (CallPoint, 0) -> 0,
       (CallPoint, 1) -> 1,
@@ -189,12 +195,14 @@ object TaskGeneratorUtils {
       (CallPoint, 3) -> 3,
       (CallPoint, 4) -> 4,
       (CallPoint, 5) -> 6,
+      (CallPoint, 6) -> 6,
     )
 
 
   def generateBoosters(task: ContestTask,
                        portals: Boolean = false,
-                       forks: Boolean = false): ContestTask = {
+                       forks: Boolean = false,
+                       superLarge: Boolean = false): ContestTask = {
     val ContestTask(room, _, _, _) = task
     val (x, y) = room.dimensions
     val dim = x * y
@@ -202,7 +210,7 @@ object TaskGeneratorUtils {
     var newTask = task
     for {
       b <- Booster.values.toList
-      n = boosterTable((b, dimToCategory(dim)))
+      n = boosterTable((b, dimToCategory(dim, superLarge)))
       _ <- 1 to n
     } {
       if (b == Booster.TeleportBooster && !portals) {}
