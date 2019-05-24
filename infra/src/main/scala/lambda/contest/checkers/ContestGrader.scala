@@ -50,37 +50,15 @@ trait ContestGrader {
     if (!dir.isDirectory)
       throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
 
-    val nums = for (f <- dir.listFiles();
+    val subDirs = dir.listFiles().toList.filter(f => f.isDirectory && f.getName != MATRIX_FOLDER)
+    val allDirs = dir :: subDirs
+
+    val nums = for (f <- allDirs.flatMap(_.listFiles().toList);
                     fname = f.getName
                     if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
                     tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt)
       yield tNum
-    nums.toList.sorted
-  }
-
-  /**
-    * @param taskPath  path for the tasks
-    * @param solutions numbers of provided solutions
-    * @return a map from task number to the matrix that describes it  
-    */
-  def readTasks(taskPath: String, solutions: Set[Int]): Map[Int, TaskDescription] = {
-    val dir = new File(taskPath)
-    if (!dir.isDirectory)
-      throw ContestException(s"File ${dir.getAbsolutePath} is not a directory.")
-
-    var m = Map.empty[Int, TaskDescription]
-
-    for (f <- dir.listFiles();
-         fname = f.getName
-         if fname.startsWith(PROBLEM_PREFIX) && fname.endsWith(PROBLEM_DESC_EXT);
-         tNum = fname.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
-         if solutions.contains(tNum)) {
-      val line = readFromFile(f.getAbsolutePath).mkString("").trim
-      val task: ContestTask = ContestTaskParser(line).get
-      val (matrix, dx, dy) = contestTaskToMatrix(task)
-      m = m + (tNum -> (matrix, dx, dy, task.initPos))
-    }
-    m
+    nums.sorted
   }
 
   /* --------------------------------------------------------- */
