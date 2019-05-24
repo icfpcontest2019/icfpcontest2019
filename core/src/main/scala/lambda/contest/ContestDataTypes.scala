@@ -37,14 +37,14 @@ object Booster extends Enumeration {
   type Booster = Value
 
   val BatteriesBooster, CoffeeBooster, DrillBooster,
-  TeleBooster, CallWatchmanBooster, CallPoint = Value
+  TeleBooster, CallBooster, CallPoint = Value
 
   def toChar(b: Value): Char = b match {
     case BatteriesBooster => BATTERIES_LETTER
     case CoffeeBooster => COFFEE_LETTER
     case DrillBooster => DRILL_LETTER
     case TeleBooster => INSTALL_TELEPORT_LETTER
-    case CallWatchmanBooster => CALL_FRIEND_LETTER
+    case CallBooster => CALL_FRIEND_LETTER
     case CallPoint => CALL_POINT_LETTER
   }
 
@@ -53,7 +53,7 @@ object Booster extends Enumeration {
     case CoffeeBooster => "Coffee"
     case DrillBooster => "Drill"
     case TeleBooster => "Teleport"
-    case CallWatchmanBooster => "Fork"
+    case CallBooster => "Fork"
     case CallPoint => "CallPoint"
   }
   

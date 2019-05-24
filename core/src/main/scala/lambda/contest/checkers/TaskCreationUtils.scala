@@ -139,7 +139,7 @@ object TaskCreationUtils {
             cell.setBooster(Booster.TeleBooster)
           case CALL_FRIEND_LETTER =>
             cell.clearSpace()
-            cell.setBooster(Booster.CallWatchmanBooster)
+            cell.setBooster(Booster.CallBooster)
           case _ => throw ContestException(BAD_TASK_MATRIX)
         } 
       }

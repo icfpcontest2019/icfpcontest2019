@@ -49,7 +49,7 @@ object ContestConstants {
     case COFFEE_LETTER => CoffeeBooster
     case DRILL_LETTER => DrillBooster
     case INSTALL_TELEPORT_LETTER => TeleBooster
-    case CALL_FRIEND_LETTER => CallWatchmanBooster
+    case CALL_FRIEND_LETTER => CallBooster
     case CALL_POINT_LETTER => CallPoint
   }
 
@@ -101,12 +101,12 @@ object ContestConstants {
 
   case object UseDrill extends Action(DRILL_LETTER) with UseBooster
 
-  case object InstallTeleport extends Action(INSTALL_TELEPORT_LETTER) with UseBooster
+  case object InstallTele extends Action(INSTALL_TELEPORT_LETTER) with UseBooster
 
-  case object UseCallFriend extends Action(CALL_FRIEND_LETTER) with UseBooster
+  case object UseCall extends Action(CALL_FRIEND_LETTER) with UseBooster
 
   // Teleporting
-  case class DoTeleport(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER) {
+  case class DoTele(x: Int, y: Int) extends Action(DO_TELEPORT_LETTER) {
     override def pp = s"${super.pp}($x,$y)"
   }
 

@@ -163,7 +163,7 @@ class TaskExecution(private val matrix: TaskMatrix,
         w.addActiveBooster(new ActiveDrillBooster)
         wPosOld
 
-      case InstallTeleport =>
+      case InstallTele =>
         val cell = getCell(wPosOld)
         try {
           cell.installNewTeleport()
@@ -173,7 +173,7 @@ class TaskExecution(private val matrix: TaskMatrix,
         }
         wPosOld
 
-      case UseCallFriend =>
+      case UseCall =>
         val cell = getCell(wPosOld)
         if (cell.hasCallPoint) {
           val newWatchman = new Watchman()
@@ -198,8 +198,8 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseBatteries(dx, dy) => Booster.BatteriesBooster
       case UseCoffee => Booster.CoffeeBooster
       case UseDrill => Booster.DrillBooster
-      case InstallTeleport => Booster.TeleBooster
-      case UseCallFriend => Booster.CallWatchmanBooster
+      case InstallTele => Booster.TeleBooster
+      case UseCall => Booster.CallBooster
       case _ => throw ContestException(BAD_BOOSTER, wPosOld)
     }
 
@@ -262,10 +262,10 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseBatteries(_, _) => tryUseBooster(act, watchNum, wPosOld)
       case UseCoffee => tryUseBooster(act, watchNum, wPosOld)
       case UseDrill => tryUseBooster(act, watchNum, wPosOld)
-      case InstallTeleport => tryUseBooster(act, watchNum, wPosOld)
-      case UseCallFriend => tryUseBooster(act, watchNum, wPosOld)
+      case InstallTele => tryUseBooster(act, watchNum, wPosOld)
+      case UseCall => tryUseBooster(act, watchNum, wPosOld)
 
-      case DoTeleport(x, y) => doTeleport(watchNum, IPoint(x, y))
+      case DoTele(x, y) => doTeleport(watchNum, IPoint(x, y))
 
     }
 
