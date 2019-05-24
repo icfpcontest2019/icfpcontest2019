@@ -48,7 +48,7 @@ object ContestConstants {
     case BATTERIES_LETTER => BatteriesBooster
     case COFFEE_LETTER => CoffeeBooster
     case DRILL_LETTER => DrillBooster
-    case INSTALL_TELEPORT_LETTER => TeleportBooster
+    case INSTALL_TELEPORT_LETTER => TeleBooster
     case CALL_FRIEND_LETTER => CallWatchmanBooster
     case CALL_POINT_LETTER => CallPoint
   }

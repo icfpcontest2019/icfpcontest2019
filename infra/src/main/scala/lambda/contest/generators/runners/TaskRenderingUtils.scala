@@ -86,7 +86,7 @@ object TaskRenderingUtils {
     case Booster.BatteriesBooster => BATTERIES_COLOR
     case Booster.CoffeeBooster => COFFEE_COLOR
     case Booster.DrillBooster => DRILL_COLOR
-    case Booster.TeleportBooster => TELEPORT_COLOR
+    case Booster.TeleBooster => TELEPORT_COLOR
     case Booster.CallWatchmanBooster => CALL_WATCHMAN_COLOR
     case Booster.CallPoint => CALL_POINT_COLOR
   }

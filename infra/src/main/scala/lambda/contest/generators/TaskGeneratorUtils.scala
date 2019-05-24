@@ -2,7 +2,7 @@ package lambda.contest.generators
 
 import java.io.File
 
-import lambda.contest.Booster.{BatteriesBooster, CallPoint, CallWatchmanBooster, CoffeeBooster, DrillBooster, TeleportBooster}
+import lambda.contest.Booster.{BatteriesBooster, CallPoint, CallWatchmanBooster, CoffeeBooster, DrillBooster, TeleBooster}
 import lambda.contest.{Booster, ContestTask}
 import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.ContestTaskUtils.{findRandomBox, getVacantCellNotTouchingWalls}
@@ -173,13 +173,13 @@ object TaskGeneratorUtils {
       (DrillBooster, 5) -> 9,
       (DrillBooster, 6) -> 11,
 
-      (TeleportBooster, 0) -> 0,
-      (TeleportBooster, 1) -> 0,
-      (TeleportBooster, 2) -> 0,
-      (TeleportBooster, 3) -> 1,
-      (TeleportBooster, 4) -> 1,
-      (TeleportBooster, 5) -> 2,
-      (TeleportBooster, 6) -> 3,
+      (TeleBooster, 0) -> 0,
+      (TeleBooster, 1) -> 0,
+      (TeleBooster, 2) -> 0,
+      (TeleBooster, 3) -> 1,
+      (TeleBooster, 4) -> 1,
+      (TeleBooster, 5) -> 2,
+      (TeleBooster, 6) -> 3,
 
       (CallWatchmanBooster, 0) -> 0,
       (CallWatchmanBooster, 1) -> 0,
@@ -213,7 +213,7 @@ object TaskGeneratorUtils {
       n = boosterTable((b, dimToCategory(dim, superLarge)))
       _ <- 1 to n
     } {
-      if (b == Booster.TeleportBooster && !portals) {}
+      if (b == Booster.TeleBooster && !portals) {}
       else if (b == Booster.CallWatchmanBooster && !forks) {}
       else {
         val p = getVacantCellNotTouchingWalls(newTask)

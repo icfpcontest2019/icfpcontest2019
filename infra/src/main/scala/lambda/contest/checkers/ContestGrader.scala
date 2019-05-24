@@ -134,7 +134,7 @@ trait ContestGrader {
         case ContestSolutionParser.Success(solution, next) =>
           solMap = solMap + (solNum -> (boosters, solution))
         case _ =>
-          throw ContestException(s"$BAD_BOOSTER_FORMAT: file $fname")
+          throw ContestException(s"$BAD_SOLUTION_FORMAT: file $fname")
       }
     }
     solMap

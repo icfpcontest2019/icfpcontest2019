@@ -136,7 +136,7 @@ object TaskCreationUtils {
             cell.setBooster(Booster.DrillBooster)
           case INSTALL_TELEPORT_LETTER =>
             cell.clearSpace()
-            cell.setBooster(Booster.TeleportBooster)
+            cell.setBooster(Booster.TeleBooster)
           case CALL_FRIEND_LETTER =>
             cell.clearSpace()
             cell.setBooster(Booster.CallWatchmanBooster)

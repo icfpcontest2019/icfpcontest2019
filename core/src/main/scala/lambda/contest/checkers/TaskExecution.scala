@@ -198,7 +198,7 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseBatteries(dx, dy) => Booster.BatteriesBooster
       case UseCoffee => Booster.CoffeeBooster
       case UseDrill => Booster.DrillBooster
-      case InstallTeleport => Booster.TeleportBooster
+      case InstallTeleport => Booster.TeleBooster
       case UseCallFriend => Booster.CallWatchmanBooster
       case _ => throw ContestException(BAD_BOOSTER, wPosOld)
     }

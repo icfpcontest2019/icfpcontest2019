@@ -50,7 +50,9 @@ lazy val graphics = project
     settings,
     libraryDependencies ++= commonDependencies,
     libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.0.0-M7",
-    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7"
+    libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
+    libraryDependencies += "org.scala-lang.modules" %%% "scala-parser-combinators" % "1.1.2",
+    //libraryDependencies += "com.lihaoyi" %%% "fastparse" % "2.1.0"
   )
   .dependsOn(
     core
