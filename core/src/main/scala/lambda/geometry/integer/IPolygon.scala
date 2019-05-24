@@ -1,11 +1,9 @@
 package lambda.geometry.integer
 
-import java.awt.Polygon
-
 import lambda.geometry
 import lambda.geometry.floating.{FPolygon, FPolygonUtils}
-import lambda.geometry.{GeometryException, getEdges, getTriples}
 import lambda.geometry.integer.IPointUtils.direction
+import lambda.geometry.{GeometryException, getEdges, getTriples}
 
 import scala.util.Random
 
@@ -33,11 +31,19 @@ case class IPolygon(vertices: Seq[IPoint]) {
   def verticalEdges: Seq[ISegment] = edges.filter { case ISegment(a, b) => a.x == b.x }
 
   lazy val toFPolygon: FPolygon = FPolygon(vertices.map(_.toFPoint))
-  
-  lazy val toJPolygon: Polygon = {
+
+
+  lazy val toJPolygon: JPolygon = {
     val (xs, ys) = vertices.unzip(_.toPair)
-    new Polygon(xs.toArray, ys.toArray, xs.size)
-  }
+    val ((xl, yl), (xr, yr)) = boundingBox
+    val box = JRectangle(xl, yl, xr - xl, yr - yl)    
+    JPolygon(xs.toArray, ys.toArray, xs.size, box)
+  }  
+
+//  lazy val toJPolygon: Polygon = {
+//    val (xs, ys) = vertices.unzip(_.toPair)
+//    new Polygon(xs.toArray, ys.toArray, xs.size)
+//  }
 
   def isRectilinear: Boolean = {
     val es = edges
@@ -105,11 +111,11 @@ case class IPolygon(vertices: Seq[IPoint]) {
   }
 
   def containsCell(sq: IPoint): Boolean = containsCellViaAWT(sq)
-  
+
   private def containsCellViaAWT(sq: IPoint) = {
     val (sx, sy) = sq.toPair
     val xProbe: Double = sx.toDouble + 0.5 // Take a centre of the square
-    val yProbe: Double = sy.toDouble + 0.5 
+    val yProbe: Double = sy.toDouble + 0.5
     toJPolygon.contains(xProbe, yProbe)
   }
 
@@ -128,7 +134,9 @@ case class IPolygon(vertices: Seq[IPoint]) {
     IPolygon(vertices.map { v => v - mp })
   }
 
-  def +(p: IPoint) = IPolygon(vertices.map { _ + p })
+  def +(p: IPoint) = IPolygon(vertices.map {
+    _ + p
+  })
 
 
   /**
@@ -242,7 +250,7 @@ case class IPolygon(vertices: Seq[IPoint]) {
     assert(this.containsCell(res))
     res
   }
-  
+
   def leftMostBottomCell: IPoint = {
     val IPoint(minx, _) = getMinXY
     val minLeft = vertices.filter(_.x == minx).minBy(_.y)
@@ -251,3 +259,5 @@ case class IPolygon(vertices: Seq[IPoint]) {
 
 
 }
+
+
