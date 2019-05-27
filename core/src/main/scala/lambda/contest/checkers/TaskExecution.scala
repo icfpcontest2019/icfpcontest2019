@@ -3,6 +3,7 @@ package lambda.contest.checkers
 import lambda.MStack
 import lambda.contest.ContestConstants._
 import lambda.contest.ContestErrorMessages._
+import lambda.contest.checkers.TaskExecution.{CallBack, dummyCallback}
 import lambda.contest.{ActiveCoffeeBooster, ActiveDrillBooster, Booster, Cell, ContestConstants, ContestException, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils._
@@ -40,7 +41,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
   private def assertCondition(cond: => Boolean, pos: IPoint): Unit = {
-    if (!cond) throw ContestException(BAD_ACTION, s"position $pos")
+    if (!cond) throw ContestException(BAD_ACTION, pos)
   }
 
 
@@ -311,15 +312,14 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   }
 
-  def evalRound(): Unit = {
+  def evalRound(callback : CallBack = dummyCallback): Unit = {
     val wNums = watchmen.keys.toList.sorted
     for (wNum <- wNums) {
       step(wNum)
     }
     tick()
 
-    // TODO: Provide a callback (taking the updated room,
-    //       the old and the new watchmen positions) for rendering
+    callback(matrix, xmax, ymax, watchmen.toMap, watchmenPositions.toMap)
   }
   
   def getElapsedTime = timeElapsed
@@ -338,7 +338,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     else
       None
   }
-
+  
   /* --------------------------------------------------- */
   /*              Evaluation utilities                   */
   /* --------------------------------------------------- */
@@ -422,6 +422,11 @@ class TaskExecution(private val matrix: TaskMatrix,
 
 // Companion object for creating an execution instance
 object TaskExecution {
+  
+  type CallBack = (TaskMatrix, Int, Int, Map[Int, Watchman], Map[Int, IPoint]) => Unit
+  
+  def dummyCallback(m: TaskMatrix, dx: Int, dy: Int,
+                    ws: Map[Int, Watchman], wpos: Map[Int, IPoint]) {}
 
   /**
     *

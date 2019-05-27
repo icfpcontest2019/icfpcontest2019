@@ -19,6 +19,7 @@ trait JSGrading {
   val mainSectionID = "main_section"
   val outTextFieldId = "output"
   val checkButtonId = "check_solution"
+  val execButtonId = "execute_solution"
   val submitTaskId = "submit_task"
   val submitSolutionId = "submit_solution"
 
@@ -29,6 +30,7 @@ trait JSGrading {
   val SUBMIT_SOLUTION_TEXT = "Solution file"
   val CHECK_TEXT = "Check"
   val CHECK_AND_RENDER_TEXT = "Upload files"
+  val EXECUTE_TEXT = "Execute"
   
   val PREPROCESSING_TEXT = "Validating and pre-processing the task..."
   val CHECKING_TEXT = "Checking the solution..."
@@ -37,8 +39,10 @@ trait JSGrading {
   val UPLOAD_FILES = "Upload the task and solution files"
   val NO_TASK_FILE = "No task file provided"
   val NO_SOLUTION_FILE = "No solution file provided"
+  val UPLOADING_TASK = "Uploading task description"
   val UPLOADED_TASK = "Uploaded task description"
-  val UPLOADED_ALL = "Uploaded task and solution"
+  val UPLOADING_SOLUTION = "Uploading solution"
+  val UPLOADED_SOLUTION = "Uploaded solution"
 
 
   val taskFileInput : HTMLInputElement
@@ -61,40 +65,6 @@ trait JSGrading {
     if (res.successful) return res.get
     throw ContestException(s"$BAD_SOLUTION_FORMAT", "")
   }
-
-  /* ---------------------------------------------------------------- */
-  /*                          A number of callbacks                   */
-  /* ---------------------------------------------------------------- */
-
-  def processTaskAndSolution(): Unit = {
-    if (!taskFileInput.files(0).isInstanceOf[Blob]) {
-      setText(NO_TASK_FILE)
-      return 
-    }
-    
-    val taskReader = new FileReader()
-    taskReader.onloadend = event => {
-      val text = taskReader.result.toString
-      processSolution(text)
-    }
-    taskReader.readAsText(taskFileInput.files(0))
-  }
-
-  def processSolution(taskText: String): Unit = {
-    if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
-      setText(NO_SOLUTION_FILE)
-      return
-    }
-
-    val solutionReader = new FileReader()
-    solutionReader.onloadend = event => {
-      val solText = solutionReader.result.toString
-      runSolution(taskText, solText)
-    }
-    solutionReader.readAsText(solutionFileInput.files(0))
-  }
-
-  def runSolution(taskText: String, solutionText: String): Unit
 
   /* ---------------------------------------------------------------- */
   /*                          Various DOM elements                    */

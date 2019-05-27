@@ -4,6 +4,7 @@ package lambda.js
 import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
 import lambda.contest.checkers.TaskExecution
 import lambda.contest.{ContestException, ContestTask}
+import lambda.geometry.integer.IPoint
 import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.raw._
@@ -44,6 +45,37 @@ object GraderNoGraphics extends JSGrading {
   /*                          Solution checking                       */
   /* ---------------------------------------------------------------- */
 
+
+  def processTaskAndSolution(): Unit = {
+    if (!taskFileInput.files(0).isInstanceOf[Blob]) {
+      setText(NO_TASK_FILE)
+      return
+    }
+
+    val taskReader = new FileReader()
+    taskReader.onloadend = event => {
+      val text = taskReader.result.toString
+      processSolution(text)
+    }
+    taskReader.readAsText(taskFileInput.files(0))
+  }
+
+  def processSolution(taskText: String): Unit = {
+    if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
+      setText(NO_SOLUTION_FILE)
+      return
+    }
+
+    val solutionReader = new FileReader()
+    solutionReader.onloadend = event => {
+      val solText = solutionReader.result.toString
+      runSolution(taskText, solText)
+    }
+    solutionReader.readAsText(solutionFileInput.files(0))
+  }
+
+
+
   def setText(text: String): Unit = {
     textArea.textContent = text
   }
@@ -74,7 +106,11 @@ object GraderNoGraphics extends JSGrading {
       setText(resultText)
     } catch {
       case ContestException(msg, data) =>
-        val text = if (data.toString.isEmpty) msg else s"$msg (${data.toString})"
+        val dataText = data match {
+          case p : IPoint => s"position $p"
+          case _ => data.toString 
+        }
+        val text = if (data.toString.isEmpty) msg else s"$msg ($dataText)"
         val errorText = s"Failed: $text"
         setText(errorText)
     }
