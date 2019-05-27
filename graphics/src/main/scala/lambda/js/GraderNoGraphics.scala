@@ -69,7 +69,9 @@ object GraderNoGraphics extends JSGrading {
     val solutionReader = new FileReader()
     solutionReader.onloadend = event => {
       val solText = solutionReader.result.toString
-      runSolution(taskText, solText)
+      setText(PREPROCESSING_TEXT)
+      val act = () => runSolution(taskText, solText)
+      dom.window.setTimeout(act, 50)
     }
     solutionReader.readAsText(solutionFileInput.files(0))
   }
@@ -86,7 +88,6 @@ object GraderNoGraphics extends JSGrading {
     try {
       val task@ContestTask(_, init, _, _) = parseTask(taskText)
       val moves = parseSolution(solutionText)
-      setText(PREPROCESSING_TEXT)
       val t0 = new Date().getTime()
       val (matrix, dx, dy) = contestTaskToMatrix(task)
       val t1 = new Date().getTime()
@@ -100,18 +101,14 @@ object GraderNoGraphics extends JSGrading {
           val tMain = (t2 - t1) / 1000
           val s1 = "Success! \n"
           val s2 = s"Your solution took $steps time units. \n"
-          val s3 = s"Pre-processing: $tPre sec, checking: $tMain sec."
-          s1 + s2 + s3
+          // val s3 = s"Pre-processing: $tPre sec, checking: $tMain sec."
+          s1 + s2 
         case None => FAILED_TEXT
       }
       setText(resultText)
     } catch {
       case ContestException(msg, data) =>
-        val dataText = data match {
-          case Some(p) => s"position $p"
-          case _ => data.toString 
-        }
-        val text = if (data.toString.isEmpty) msg else s"$msg ($dataText)"
+        val text = if (data.isEmpty) msg else s"$msg ${data.get.toString}"
         val errorText = s"Failed: $text"
         setText(errorText)
     }

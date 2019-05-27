@@ -32,7 +32,7 @@ trait JSGrading {
   val CHECK_AND_RENDER_TEXT = "Upload files"
   val EXECUTE_TEXT = "Execute"
   
-  val PREPROCESSING_TEXT = "Validating and pre-processing the task..."
+  val PREPROCESSING_TEXT = "Pre-processing and validating the task..."
   val RUNNING_TEXT = "Running"
   val CHECKING_TEXT = "Checking the solution..."
   val FAILED_TEXT = "Failed to cover the full task"

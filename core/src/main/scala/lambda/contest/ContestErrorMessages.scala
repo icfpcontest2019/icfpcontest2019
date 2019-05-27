@@ -19,18 +19,18 @@ object ContestErrorMessages {
   val BOOSTER_CLASH = "Two or more boosters in the same position."
 
 
-  val CELL_DOES_NOT_HAVE_SPACE  = "Cell is not a part of the room interior."
+  val CELL_DOES_NOT_HAVE_SPACE  = "Cell is not a part of the block interior."
   val CANNOT_COLLECT_BOOSTER = "Cannot collect booster from the non-free cell."
   val CALL_POINT_INSTALLED = "Cannot perform this operation in this location."
   val TELEPORT_INSTALLED = "Cannot perform this operation in this location."
 
   val WATCHMAN_NOT_FOUND = "Typer not found."
-  val BAD_ACTION = "Bad route action taken:"
-  val BAD_BOOSTER = "No such booster exists:"
-  val NO_BOOSTER = "No such booster available:"
-  val BAD_TELEPORT_LOCATION = "Cannot move to this location"
-  val CANNOT_CALL_FRIEND = "Cannot perform this operation in this location"
-  val BAD_BATTERY_POSITION = "Cannot attach battery at this position"
+  val BAD_ACTION = "Non-allowed action performed at location"
+  val BAD_BOOSTER = "No such booster exists, tried at location"
+  val NO_BOOSTER = "No such booster available, tried at location"
+  val BAD_TELEPORT_LOCATION = "Cannot move to this location:"
+  val CANNOT_CALL_FRIEND = "Cannot perform this operation in location"
+  val BAD_BATTERY_POSITION = "Cannot use this boosters with arguments"
 
 
   val BAD_BOOSTER_FORMAT = "Booster descriptor is malformed"

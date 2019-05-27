@@ -245,7 +245,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
     val squares = getTorchRange(IPoint(0, 0)).map(_.toSquare)
     val newSquare = IPoint(dx, dy).toSquare
     if (!squareTouchesOtherSquares(newSquare, squares)) {
-      throw ContestException(BAD_BATTERY_POSITION)
+      throw ContestException(BAD_BATTERY_POSITION, Some(IPoint(dx, dy)))
     }
     torch.add((dx, dy))
   }
