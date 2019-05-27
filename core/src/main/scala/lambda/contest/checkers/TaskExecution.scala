@@ -40,7 +40,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
   private def assertCondition(cond: => Boolean, pos: IPoint): Unit = {
-    if (!cond) throw ContestException(BAD_ACTION, pos)
+    if (!cond) throw ContestException(BAD_ACTION, s"position $pos")
   }
 
 
@@ -205,7 +205,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
     if (!availableBoosters.isDefinedAt(booster) ||
       availableBoosters(booster) <= 0) {
-      throw ContestException(NO_BOOSTER, wPosOld)
+      throw ContestException(NO_BOOSTER, s"position $wPosOld")
     }
 
     val quantity = availableBoosters(booster)

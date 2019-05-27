@@ -1,4 +1,4 @@
-package example
+package examples
 
 import lambda.geometry.integer.IPoint
 import org.scalajs.dom

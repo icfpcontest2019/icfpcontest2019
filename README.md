@@ -59,6 +59,16 @@ For instance:
 ./checker solver ./infra/src/main/resources/contest/final ~/tmp/solutions
 ```
 
+## Compiling the JavaScript checker
+
+First, run from terminal:
+
+```
+sbt fullOptJS
+``` 
+
+Then open the web-page `./graphics/src/main/resources/validate.html` which contains the testing snippet.
+
 ## Helper Scripts for Problem Generation and Checking
 
 * `TaskBrowser` -- show tasks in the folder

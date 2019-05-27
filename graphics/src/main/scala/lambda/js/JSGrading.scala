@@ -1,36 +1,24 @@
+package lambda.js
 
-import lambda.contest.ContestErrorMessages._
+import lambda.contest.ContestErrorMessages.{BAD_SOLUTION_FORMAT, MALFORMED_TASK}
 import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
 import lambda.contest.checkers.TaskExecution
 import lambda.contest.parsers.{ContestSolutionParser, ContestTaskParser}
 import lambda.contest.{ContestConstants, ContestException, ContestTask}
-import lambda.geometry.integer.{IPoint, IPolygon}
 import org.scalajs.dom
-import org.scalajs.dom._
+import org.scalajs.dom.document
 import org.scalajs.dom.raw._
 
 import scala.scalajs.js
 import scala.scalajs.js.Date
-import scala.scalajs.js.annotation.JSExportTopLevel
-import scala.util.parsing.combinator.JavaTokenParsers
-
 
 /**
-  * This file allows for client-side grading of contest applications 
-  * using Scala.JS compilation
-  *
   * @author Ilya Sergey
   */
-
-object ContestGraderJS {
+trait JSGrading {
 
   type ButtonHandler = js.Function1[MouseEvent, _]
-
-  val outTextField = "output"
-  val checkButton = "check_solution"
-  val submitTask = "submit_task"
-  val submitSolution = "submit_solution"
-
+  
   val DEFAULT_BUTTON_TEXT = "Booya!"
   val SUBMIT_TASK_TEXT = "Task file"
   val SUBMIT_SOLUTION_TEXT = "Solution file"
@@ -40,47 +28,43 @@ object ContestGraderJS {
   val FAILED_TEXT = "Failed to cover the full task"
   val LOADING_TEXT = s"Processing your solution..."
 
-  lazy val textArea = document.getElementById(outTextField).asInstanceOf[HTMLTextAreaElement]
-  lazy val taskFileInput = document.getElementById(submitTask).asInstanceOf[HTMLInputElement]
-  lazy val solutionFileInput = document.getElementById(submitSolution).asInstanceOf[HTMLInputElement]
 
-  @JSExportTopLevel("graderNoGraphics")
-  def main(canvas: html.Canvas): Unit = {
-    val centered = document.createElement("center")
-    document.body.appendChild(centered)
+  val taskFileInput : HTMLInputElement
+  val solutionFileInput : HTMLInputElement
+  def setText(s: String) : Unit
+
+  /* ---------------------------------------------------------------- */
+  /*                          Parsing submissions                     */
+  /* ---------------------------------------------------------------- */
+
+  def parseTask(taskText: String): ContestTask = {
+    val res = ContestTaskParser(taskText)
+    if (res.successful) return res.get
+    throw ContestException(MALFORMED_TASK, "")
+  }
 
 
-    // Just testing here
-    val poly = IPolygon(List(IPoint(0, 0), IPoint(1, 0), IPoint(1, 1), IPoint(0, 1)))
-
-    // What to do for checking solutions
-    val checkHandler = (e: Event) => {
-      setText(LOADING_TEXT)
-      getTaskAndSolutionText()
-    }
-
-    mkFileInput(centered, submitTask, SUBMIT_TASK_TEXT)
-    mkFileInput(centered, submitSolution, SUBMIT_SOLUTION_TEXT)
-    mkButton(centered, checkButton, SUBMIT_TEXT, checkHandler)
-    mkTextField(centered, outTextField)
-
+  def parseSolution(solText: String): List[List[ContestConstants.Action]] = {
+    val res = ContestSolutionParser(solText)
+    if (res.successful) return res.get
+    throw ContestException(s"$BAD_SOLUTION_FORMAT", "")
   }
 
   /* ---------------------------------------------------------------- */
   /*                          A number of callbacks                   */
   /* ---------------------------------------------------------------- */
 
-  def getTaskAndSolutionText(): Unit = {
+  def processTaskAndSolution(): Unit = {
     val taskReader = new FileReader()
     taskReader.onloadend = event => {
       val text = taskReader.result.toString
-      getSolutionText(text)
+      processSolution(text)
     }
     taskReader.readAsText(taskFileInput.files(0))
   }
 
 
-  def getSolutionText(taskText: String): Unit = {
+  def processSolution(taskText: String): Unit = {
     val solutionReader = new FileReader()
     solutionReader.onloadend = event => {
       val solText = solutionReader.result.toString
@@ -88,7 +72,6 @@ object ContestGraderJS {
     }
     solutionReader.readAsText(solutionFileInput.files(0))
   }
-
 
   /* ---------------------------------------------------------------- */
   /*                          Solution checking                       */
@@ -119,27 +102,11 @@ object ContestGraderJS {
       setText(resultText)
     } catch {
       case ContestException(msg, data) =>
-        val text = if (data.toString.isEmpty) msg else s"$msg (Details: ${data.toString})"
+        val text = if (data.toString.isEmpty) msg else s"$msg (${data.toString})"
         val errorText = s"Failed: $text"
         setText(errorText)
     }
   }
-
-  ////////////////////////////////////////////////////////
-
-  def parseTask(taskText: String): ContestTask = {
-    val res = ContestTaskParser(taskText)
-    if (res.successful) return res.get
-    throw ContestException(MALFORMED_TASK, "")
-  }
-
-  
-  def parseSolution(solText: String): List[List[ContestConstants.Action]] = {
-    val res = ContestSolutionParser(solText)
-    if (res.successful) return res.get
-    throw ContestException(s"$BAD_SOLUTION_FORMAT", "")
-  }
-
 
   /* ---------------------------------------------------------------- */
   /*                          Various DOM elements                    */
@@ -185,12 +152,9 @@ object ContestGraderJS {
   }
 
 
-  def setText(text: String): Unit = {
-    textArea.textContent = text
-  }
-
-  private def getCurrentTime() = {
+  protected def getCurrentTime() = {
     val date = new Date()
     s"${date.toDateString()} ${date.toTimeString()}"
   }
+
 }

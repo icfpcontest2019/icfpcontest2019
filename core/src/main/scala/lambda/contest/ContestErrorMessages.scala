@@ -25,12 +25,12 @@ object ContestErrorMessages {
   val TELEPORT_INSTALLED = "Cannot perform this operation in this location."
 
   val WATCHMAN_NOT_FOUND = "Typer not found."
-  val BAD_ACTION = "Bad route action taken; interrupting validation."
-  val BAD_BOOSTER = "No such booster exists; interrupting validation."
-  val NO_BOOSTER = "No such booster available; interrupting validation."
-  val BAD_TELEPORT_LOCATION = "Cannot move to this location."
-  val CANNOT_CALL_FRIEND = "Cannot perform this operation in this location."
-  val BAD_BATTERY_POSITION = "Cannot attach battery at this position."
+  val BAD_ACTION = "Bad route action taken; interrupting validation"
+  val BAD_BOOSTER = "No such booster exists; interrupting validation"
+  val NO_BOOSTER = "No such booster available; interrupting validation"
+  val BAD_TELEPORT_LOCATION = "Cannot move to this location"
+  val CANNOT_CALL_FRIEND = "Cannot perform this operation in this location"
+  val BAD_BATTERY_POSITION = "Cannot attach battery at this position"
 
 
   val BAD_BOOSTER_FORMAT = "Booster descriptor is malformed"
