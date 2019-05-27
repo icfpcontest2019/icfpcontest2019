@@ -2,7 +2,7 @@ package lambda.js
 
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
 import lambda.geometry.integer.{IPoint, IPolygon}
-import lambda.js.JSColors.DARK_GRAY
+import lambda.js.JSColors.{BLACK, DARK_GRAY}
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
 
@@ -34,8 +34,8 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
     shift
   }
 
-  def movePoint(p: IPoint) = p match {
-    case IPoint(x, y) =>
+  def movePoint(p: FPoint) = p match {
+    case FPoint(x, y) =>
       val k = scalingCoefficient
       val x1 = x * k + shift.x
       val y1 = ySize - (y * k + shift.y) + upperBoundary
@@ -46,16 +46,18 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
 
   def drawCirclePoint(p: IPoint, c: Color): Unit = {
     ctx.fillStyle = c.toHex
-    val pos = movePoint(p) + FPoint(0.5, 0.5)
+    val pos = movePoint(p.toFPoint + FPoint(0.5, 0.5)) 
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, defaultRadius, 0, 2 * scala.math.Pi)
     ctx.fill()
+    ctx.fillStyle = BLACK.toHex
+    ctx.stroke()
     ctx.fillStyle = DARK_GRAY.toHex
   }
 
   def drawPoly(poly: IPolygon, c: Color, stroke: Boolean = false): Unit = {
     val k = scalingCoefficient
-    val scaledVerties = poly.vertices.map(movePoint)
+    val scaledVerties = poly.vertices.map(p => movePoint(p.toFPoint))
     if (scaledVerties.size < 3) return
     val h :: t = scaledVerties
     ctx.fillStyle = c.toHex

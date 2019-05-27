@@ -1,6 +1,8 @@
 package lambda.js
 
 import lambda.contest.ContestConstants.Action
+import lambda.contest.checkers.TaskCreationUtils.matrixCopy
+import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
@@ -36,7 +38,7 @@ object GraderWithGraphics extends JSGrading {
 
   private val scaleFactorX: Double = 4.0 / 5
   private val scaleFactorY: Double = 4.6 / 5
-  private val upperBorder = 30
+  private val upperBorder = 28
   lazy val dims: (Int, Int) = {
     val myWidth = dom.window.innerWidth.toInt
     val myHeight = dom.window.innerHeight.toInt
@@ -59,8 +61,11 @@ object GraderWithGraphics extends JSGrading {
   var currentSolutionText: String = ""
   var currentPainter: Option[JSCanvasPainter] = None
   var currentTask: Option[ContestTask] = None
+
   var currentSolution: Option[TaskSolution] = None
   var currentState: Option[TaskExecution] = None
+  var currentMatrix: Option[ProcessedTask] = None
+
   var execIntervalHandle: Option[Int] = None
 
   private def drawTask(task: ContestTask, painter: JSCanvasPainter) = {
@@ -80,7 +85,8 @@ object GraderWithGraphics extends JSGrading {
   private def callback(painter: JSCanvasPainter)
                       (m: TaskMatrix, dx: Int, dy: Int,
                        watchmen: Map[Int, Watchman],
-                       watchPos: Map[Int, IPoint]): Unit = {
+                       watchPos: Map[Int, IPoint],
+                       timeElapsed: Int): Unit = {
     // TODO: This is supeer-slow, draw it more efficiently using only the changing bits around watchmen! 
     //    for {
     //      i <- 0 until dx
@@ -90,6 +96,8 @@ object GraderWithGraphics extends JSGrading {
     //    } {
     //      painter.drawPoly(sq, if (c.canStep) LIGHT_GRAY else DARK_GRAY)
     //    }
+
+    setText(s"$RUNNING_TEXT: $timeElapsed rounds.")
 
     for (w <- watchmen.keySet.toList; wp = watchPos(w)) {
       painter.drawCirclePoint(wp, RED)
@@ -106,10 +114,12 @@ object GraderWithGraphics extends JSGrading {
         } catch {
           case ContestException(msg, data) =>
             stopExecution
-            val text = if (data.toString.isEmpty) msg else s"$msg (${data.toString})"
+            val text = if (data.isEmpty) msg else s"$msg location ${data.get.toString}"
             val errorText = s"Failed: $text"
             setText(errorText)
             refreshExecButton
+            currentState = None
+            enableFileInputs
         }
       } else {
         stopExecution
@@ -120,13 +130,11 @@ object GraderWithGraphics extends JSGrading {
           setText("Not all parts of the task were covered.")
         }
         refreshExecButton
+        enableFileInputs
+        currentState = None
       }
     }
   }
-
-  /* ------------------------------------------------------------------------ */
-  /*                                Rendering                                 */
-  /* ------------------------------------------------------------------------ */
 
   private def stopExecution = {
     if (execIntervalHandle.isDefined) {
@@ -135,7 +143,11 @@ object GraderWithGraphics extends JSGrading {
     }
   }
 
-  def setText(text: String): Unit = {
+  /* ------------------------------------------------------------------------ */
+  /*                                Rendering                                 */
+  /* ------------------------------------------------------------------------ */
+
+  def setText(text: String): Boolean = {
     clearCaption
     ctx.font = s"${getFontSize(text)}px sans-serif"
     ctx.textAlign = "center"
@@ -143,6 +155,7 @@ object GraderWithGraphics extends JSGrading {
     ctx.fillStyle = "white"
     ctx.fillText(text, canvas.width / 2, 15)
     ctx.fillStyle = DARK_GRAY.toHex
+    true
   }
 
   private def clearCaption: Unit = {
@@ -155,103 +168,28 @@ object GraderWithGraphics extends JSGrading {
     ctx.fillRect(0, 0, canvas.width, canvas.height - upperBorder)
   }
 
-  /* ------------------------------------------------------------------------ */
-  /*                               Handlers                                   */
-  /* ------------------------------------------------------------------------ */
-
-
-  private val taskHandler: Function1[Event, Unit] = event => {
-    if (!taskFileInput.files(0).isInstanceOf[Blob]) {
-      clearMain
-      setText(NO_TASK_FILE)
-      clearTask
-      refreshExecButton
-    } else {
-      val taskReader = new FileReader()
-      taskReader.onloadend = _ => {
-        val text = taskReader.result.toString
-        if (text == currentTaskText) {
-        } else {
-          try {
-            clearMain
-            setText(UPLOADING_TASK)
-            val task@ContestTask(room, init, _, _) = parseTask(text)
-            val painter = new JSCanvasPainter(ctx, room, dims._1, dims._2, upperBorder)
-            currentTaskText = text
-            currentTask = Some(task)
-            currentPainter = Some(painter)
-            setText(UPLOADED_TASK)
-            drawTask(task, painter)
-            refreshExecButton
-          } catch {
-            case ContestException(msg, data) =>
-              clearTask
-              val text = if (data.toString.isEmpty) msg else s"$msg (${data.toString})"
-              val errorText = s"Failed: $text"
-              setText(errorText)
-              refreshExecButton
-          }
-        }
-      }
-      taskReader.readAsText(taskFileInput.files(0))
-    }
-  }
-
-  val solutionHandler: Function1[Event, Unit] = event => {
-    if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
-      setText(NO_SOLUTION_FILE)
-      refreshExecButton
-    } else {
-      val solutionReader = new FileReader()
-      solutionReader.onloadend = _ => {
-        val text = solutionReader.result.toString
-        if (text == currentSolutionText) {}
-        else {
-          try {
-            setText(UPLOADING_SOLUTION)
-            val moves = parseSolution(text)
-            currentSolution = Some(moves)
-            setText(UPLOADED_SOLUTION)
-            refreshExecButton
-          } catch {
-            case ContestException(msg, data) =>
-              clearSolution
-              val text = if (data.toString.isEmpty) msg else s"$msg, ${data.toString}"
-              val errorText = s"Failed: $text"
-              setText(errorText)
-              refreshExecButton
-          }
-        }
-      }
-      solutionReader.readAsText(solutionFileInput.files(0))
-    }
-  }
-
-  val execHandler: Function1[Event, Unit] = event => {
-    if (currentTask.isDefined && currentSolution.isDefined) {
-      val task = currentTask.get
-      // TODO: Use asyncs/futures to inform about this processing
-      val z@(matrix, dx, dy) = TaskCreationUtils.contestTaskToMatrix(task)
-      currentState = Some(TaskExecution.createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil))
-      val handle = dom.window.setInterval(() => {
-        runSolution()
-      }, 20)
-      execIntervalHandle = Some(handle)
-      execButton.disabled = true
-    }
-  }
-
   private def clearTask = {
     currentTaskText = ""
     currentTask = None
     currentPainter = None
     currentState = None
+    currentMatrix = None
   }
 
   private def clearSolution = {
     currentSolutionText = ""
     currentSolution = None
     currentState = None
+  }
+
+  private def disableFileInputs: Unit = {
+    taskFileInput.disabled = true
+    solutionFileInput.disabled = true
+  }
+
+  private def enableFileInputs: Unit = {
+    taskFileInput.disabled = false
+    solutionFileInput.disabled = false
   }
 
   private def refreshExecButton: Unit = {
@@ -279,6 +217,118 @@ object GraderWithGraphics extends JSGrading {
     taskFileInput.onchange = taskHandler
     solutionFileInput.onchange = solutionHandler
     execButton.onclick = execHandler
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /*                               Handlers                                   */
+  /* ------------------------------------------------------------------------ */
+
+
+  val execHandler: Function1[Event, Unit] = event => {
+    if (currentTask.isDefined && currentSolution.isDefined) {
+      setText(PREPROCESSING_TEXT)
+      window.requestAnimationFrame(_ => setText(PREPROCESSING_TEXT))
+
+      val act = () => {
+        val task = currentTask.get
+        clearMain
+        drawTask(task, currentPainter.get)
+        val z@(matrix, dx, dy) = currentMatrix match {
+          case Some((m, xmax, ymax)) => (matrixCopy(m, xmax, ymax), xmax, ymax)
+          case None =>
+            val t@(m, xmax, ymax) = TaskCreationUtils.contestTaskToMatrix(task)
+            currentMatrix = Some(t)
+            (matrixCopy(m, xmax, ymax), xmax, ymax)
+        }
+        currentState = Some(createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil))
+        disableFileInputs
+        val handle = dom.window.setInterval(() => {
+          runSolution()
+        }, 20)
+        execIntervalHandle = Some(handle)
+        execButton.disabled = true
+      }
+
+      // Oh, this is nasty...
+      dom.window.setTimeout(act, 50)
+
+    }
+  }
+
+  private val taskHandler: Function1[Event, Unit] = event => {
+    if (!taskFileInput.files(0).isInstanceOf[Blob]) {
+      clearMain
+      setText(NO_TASK_FILE)
+      clearTask
+      refreshExecButton
+    } else {
+      val taskReader = new FileReader()
+      taskReader.onloadend = _ => {
+        val text = taskReader.result.toString
+        if (text == currentTaskText) {
+        } else {
+          setText(UPLOADING_TASK)
+          val act = () => {
+            try {
+              clearMain
+              clearTask
+              val task@ContestTask(room, init, _, _) = parseTask(text)
+              val painter = new JSCanvasPainter(ctx, room, dims._1, dims._2, upperBorder)
+              currentTaskText = text
+              currentTask = Some(task)
+              currentPainter = Some(painter)
+              setText(UPLOADED_TASK)
+              drawTask(task, painter)
+              refreshExecButton
+            } catch {
+              case ContestException(msg, data) =>
+                clearTask
+                val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
+                val errorText = s"Failed: $text"
+                setText(errorText)
+                refreshExecButton
+            }
+          }
+          dom.window.setTimeout(act, 50)
+        }
+      }
+      taskReader.readAsText(taskFileInput.files(0))
+    }
+  }
+
+  val solutionHandler: Function1[Event, Unit] = event => {
+    if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
+      setText(NO_SOLUTION_FILE)
+      clearSolution
+      refreshExecButton
+    } else {
+      val solutionReader = new FileReader()
+      solutionReader.onloadend = _ => {
+        val text = solutionReader.result.toString
+        if (text == currentSolutionText) {}
+        else {
+          setText(UPLOADING_SOLUTION)
+          val act = () => {
+            try {
+              clearSolution
+              val moves = parseSolution(text)
+              currentSolution = Some(moves)
+              setText(UPLOADED_SOLUTION)
+              refreshExecButton
+            } catch {
+              case ContestException(msg, data) =>
+                clearSolution
+                val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
+                val errorText = s"Failed: $text"
+                setText(errorText)
+                refreshExecButton
+            }
+          }
+          dom.window.setTimeout(act, 50)
+        }
+      }
+      solutionReader.readAsText(solutionFileInput.files(0))
+    }
   }
 
 

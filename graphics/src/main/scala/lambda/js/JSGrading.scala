@@ -33,21 +33,22 @@ trait JSGrading {
   val EXECUTE_TEXT = "Execute"
   
   val PREPROCESSING_TEXT = "Validating and pre-processing the task..."
+  val RUNNING_TEXT = "Running"
   val CHECKING_TEXT = "Checking the solution..."
   val FAILED_TEXT = "Failed to cover the full task"
   val LOADING_TEXT = s"Processing your solution..."
   val UPLOAD_FILES = "Upload the task and solution files"
   val NO_TASK_FILE = "No task file provided"
   val NO_SOLUTION_FILE = "No solution file provided"
-  val UPLOADING_TASK = "Uploading task description"
+  val UPLOADING_TASK = "Uploading task description..."
   val UPLOADED_TASK = "Uploaded task description"
-  val UPLOADING_SOLUTION = "Uploading solution"
+  val UPLOADING_SOLUTION = "Uploading solution file..."
   val UPLOADED_SOLUTION = "Uploaded solution"
 
 
   val taskFileInput : HTMLInputElement
   val solutionFileInput : HTMLInputElement
-  def setText(s: String) : Unit
+  def setText(s: String) : Boolean
 
   /* ---------------------------------------------------------------- */
   /*                          Parsing submissions                     */
@@ -56,21 +57,21 @@ trait JSGrading {
   def parseTask(taskText: String): ContestTask = {
     val res = ContestTaskParser(taskText)
     if (res.successful) return res.get
-    throw ContestException(MALFORMED_TASK, "")
+    throw ContestException(MALFORMED_TASK)
   }
 
 
   def parseSolution(solText: String): List[List[ContestConstants.Action]] = {
     val res = ContestSolutionParser(solText)
     if (res.successful) return res.get
-    throw ContestException(s"$BAD_SOLUTION_FORMAT", "")
+    throw ContestException(BAD_SOLUTION_FORMAT)
   }
 
   /* ---------------------------------------------------------------- */
   /*                          Various DOM elements                    */
   /* ---------------------------------------------------------------- */
 
-  // Use this for indicating the output
+  // Use this for indicating the output 
   def mkTextField(targetNode: dom.Node, id: String,
                   text: String = ""): Unit = {
     val textField = document.createElement("text").asInstanceOf[HTMLTextAreaElement]

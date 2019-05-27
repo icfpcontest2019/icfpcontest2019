@@ -25,6 +25,15 @@ object TaskCreationUtils {
     result.get
   }
 
+  def matrixCopy(m: TaskMatrix, xr: Int, yr: Int): TaskMatrix = {
+    val matrix = Array.fill(xr)(Array.fill(yr)(Cell()))
+    for {i <- 0 until xr
+         j <- 0 until yr} {
+      matrix(i)(j) = m(i)(j).copy()
+    }
+    matrix
+  }
+
   /**
     * Create the task matrix
     *
@@ -120,9 +129,9 @@ object TaskCreationUtils {
       for (i <- line.indices) {
         val cell = matrix(i)(j)
         line.charAt(i) match {
-          case `SOLID_WALL_CHAR` =>  
+          case `SOLID_WALL_CHAR` =>
           case NOTHING_CHAR => cell.clearSpace()
-          case CALL_POINT_LETTER => 
+          case CALL_POINT_LETTER =>
             cell.clearSpace()
             cell.setCallPoint()
           case COFFEE_LETTER =>
@@ -141,7 +150,7 @@ object TaskCreationUtils {
             cell.clearSpace()
             cell.setBooster(Booster.CallBooster)
           case _ => throw ContestException(BAD_TASK_MATRIX)
-        } 
+        }
       }
     }
     (matrix, dx, dy, initPos)

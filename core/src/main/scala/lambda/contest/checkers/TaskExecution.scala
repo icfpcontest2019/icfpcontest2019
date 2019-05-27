@@ -41,7 +41,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
   private def assertCondition(cond: => Boolean, pos: IPoint): Unit = {
-    if (!cond) throw ContestException(BAD_ACTION, pos)
+    if (!cond) throw ContestException(BAD_ACTION, Some(pos))
   }
 
 
@@ -98,7 +98,7 @@ class TaskExecution(private val matrix: TaskMatrix,
       case MoveDown => IPoint(x, y - 1)
       case MoveLeft => IPoint(x - 1, y)
       case MoveRight => IPoint(x + 1, y)
-      case _ => throw ContestException(BAD_ACTION, wPosOld)
+      case _ => throw ContestException(BAD_ACTION, Some(wPosOld))
     }
   }
 
@@ -117,7 +117,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     act match {
       case MoveUp | MoveDown | MoveLeft | MoveRight =>
         moveToNewPosWithDrill(wPosNew)
-      case _ => throw ContestException(BAD_ACTION, wPosOld)
+      case _ => throw ContestException(BAD_ACTION, Some(wPosOld))
     }
   }
 
@@ -143,7 +143,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     act match {
       case MoveUp | MoveDown | MoveLeft | MoveRight =>
         moveToNewPosWithCoffee(wPosOld, wPosNew)
-      case _ => throw ContestException(BAD_ACTION, wPosOld)
+      case _ => throw ContestException(BAD_ACTION, Some(wPosOld))
     }
   }
 
@@ -167,10 +167,10 @@ class TaskExecution(private val matrix: TaskMatrix,
       case InstallTele =>
         val cell = getCell(wPosOld)
         try {
-          cell.installNewTeleport()
+          cell.installNewTeleport(wPosOld)
         } catch {
           case ContestException(msg, _) =>
-            throw ContestException(msg, wPosOld)
+            throw ContestException(msg, Some(wPosOld))
         }
         wPosOld
 
@@ -183,7 +183,7 @@ class TaskExecution(private val matrix: TaskMatrix,
           watchmenPositions.update(newWNum, wPosOld)
           wPosOld
         } else {
-          throw ContestException(CANNOT_CALL_FRIEND, wPosOld)
+          throw ContestException(CANNOT_CALL_FRIEND, Some(wPosOld))
         }
     }
   }
@@ -192,7 +192,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   // Use booster if it's available
   private def tryUseBooster(act: Action, wNum: Int, wPosOld: IPoint): IPoint = {
     if (!act.isInstanceOf[UseBooster]) {
-      throw ContestException(BAD_BOOSTER, wPosOld)
+      throw ContestException(BAD_BOOSTER, Some(wPosOld))
     }
 
     val booster: Booster.Value = act match {
@@ -201,12 +201,12 @@ class TaskExecution(private val matrix: TaskMatrix,
       case UseDrill => Booster.DrillBooster
       case InstallTele => Booster.TeleBooster
       case UseCall => Booster.CallBooster
-      case _ => throw ContestException(BAD_BOOSTER, wPosOld)
+      case _ => throw ContestException(BAD_BOOSTER, Some(wPosOld))
     }
 
     if (!availableBoosters.isDefinedAt(booster) ||
       availableBoosters(booster) <= 0) {
-      throw ContestException(NO_BOOSTER, s"position $wPosOld")
+      throw ContestException(NO_BOOSTER, Some(wPosOld))
     }
 
     val quantity = availableBoosters(booster)
@@ -223,12 +223,12 @@ class TaskExecution(private val matrix: TaskMatrix,
     if (canStepToPosition(wPosNew)) {
       val cell = getCell(wPosNew)
       if (!cell.hasTeleport) {
-        throw ContestException(BAD_TELEPORT_LOCATION, wPosNew)
+        throw ContestException(BAD_TELEPORT_LOCATION, Some(wPosNew))
       }
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     } else {
-      throw ContestException(BAD_TELEPORT_LOCATION, wPosNew)
+      throw ContestException(BAD_TELEPORT_LOCATION, Some(wPosNew))
     }
 
   }
@@ -319,7 +319,9 @@ class TaskExecution(private val matrix: TaskMatrix,
     }
     tick()
 
-    callback(matrix, xmax, ymax, watchmen.toMap, watchmenPositions.toMap)
+    callback(matrix, xmax, ymax, 
+      watchmen.toMap, watchmenPositions.toMap, 
+      getElapsedTime)
   }
   
   def getElapsedTime = timeElapsed
@@ -423,10 +425,12 @@ class TaskExecution(private val matrix: TaskMatrix,
 // Companion object for creating an execution instance
 object TaskExecution {
   
-  type CallBack = (TaskMatrix, Int, Int, Map[Int, Watchman], Map[Int, IPoint]) => Unit
+  type CallBack = (TaskMatrix, Int, Int, 
+    Map[Int, Watchman], Map[Int, IPoint], Int) => Unit
   
   def dummyCallback(m: TaskMatrix, dx: Int, dy: Int,
-                    ws: Map[Int, Watchman], wpos: Map[Int, IPoint]) {}
+                    ws: Map[Int, Watchman], wpos: Map[Int, IPoint],
+                    timeElapsed: Int) {}
 
   /**
     *

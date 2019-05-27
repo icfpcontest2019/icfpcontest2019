@@ -130,35 +130,35 @@ object ContestTaskUtils {
     val ContestTask(room, initPos, obstacles, boosterPositions) = task
 
     // Check room
-    if (!room.isWellFormed) throw ContestException(MALFORMED_ROOM)
-    if (!room.isRectilinear) throw ContestException(NON_RECTILINEAR_ROOM)
-    if (!room.containsCell(initPos)) throw ContestException(BAD_INIT_POS)
-    if (!roomWithinPositiveBoundingBox(room)) throw ContestException(BOUNDING_BOX)
+    if (!room.isWellFormed) throw ContestException(MALFORMED_ROOM, None)
+    if (!room.isRectilinear) throw ContestException(NON_RECTILINEAR_ROOM, None)
+    if (!room.containsCell(initPos)) throw ContestException(BAD_INIT_POS, None)
+    if (!roomWithinPositiveBoundingBox(room)) throw ContestException(BOUNDING_BOX, None)
 
     // Check obstacles
     for (i <- obstacles.indices; o = obstacles(i)) {
 
       if (!checkObstacle(o))
-        throw ContestException(MALFORMED_OBSTACLE)
+        throw ContestException(MALFORMED_OBSTACLE, None)
 
       if (o.containsCell(initPos))
-        throw ContestException(INIT_POS_OBSTACLE)
+        throw ContestException(INIT_POS_OBSTACLE, None)
 
       if (!room.containsPolygonProperly(o)) {
-        throw ContestException(OBSTACLE_NOW_WITHIN)
+        throw ContestException(OBSTACLE_NOW_WITHIN, None)
       }
       
       // Obstacles do not intersect or contain each other
       for (j <- obstacles.indices; p = obstacles(j); if i != j) {
         val inter = o.intersectPolygon(p)
 
-        if (inter) throw ContestException(OBSTACLES_INTERSECT)
+        if (inter) throw ContestException(OBSTACLES_INTERSECT, None)
 
         if (o.containsCell(p.vertices.head))
-          throw ContestException(OBSTACLES_INTERSECT)
+          throw ContestException(OBSTACLES_INTERSECT, None)
 
         if (p.containsCell(o.vertices.head))
-          throw ContestException(OBSTACLES_INTERSECT)
+          throw ContestException(OBSTACLES_INTERSECT, None)
       }
     }
 
@@ -181,8 +181,7 @@ object ContestTaskUtils {
 
     true
   }
-
-
+  
   def roomWithinPositiveBoundingBox(room: IPolygon): Boolean = {
     val ((xl, yl), (xr, yr)) = room.boundingBox
 

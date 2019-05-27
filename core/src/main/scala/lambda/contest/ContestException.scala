@@ -1,8 +1,10 @@
 package lambda.contest
 
+import lambda.geometry.integer.IPoint
+
 /**
   * @author Ilya Sergey
   */
-case class ContestException(loc: String, data: Any = None) extends Exception {
-  override def getMessage = s"Location: $loc\nMessage:\n${data.toString}"
+case class ContestException(msg: String, loc: Option[IPoint] = None) extends Exception {
+  override def getMessage = msg
 }

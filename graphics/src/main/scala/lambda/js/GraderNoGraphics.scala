@@ -76,8 +76,9 @@ object GraderNoGraphics extends JSGrading {
 
 
 
-  def setText(text: String): Unit = {
+  def setText(text: String): Boolean = {
     textArea.textContent = text
+    true
   }
 
 
@@ -107,7 +108,7 @@ object GraderNoGraphics extends JSGrading {
     } catch {
       case ContestException(msg, data) =>
         val dataText = data match {
-          case p : IPoint => s"position $p"
+          case Some(p) => s"position $p"
           case _ => data.toString 
         }
         val text = if (data.toString.isEmpty) msg else s"$msg ($dataText)"

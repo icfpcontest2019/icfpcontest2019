@@ -36,11 +36,14 @@ class SolutionPropertyTests extends FlatSpec with Matchers
     try {
       state.evalSolution()
     } catch {
-      case ContestException(_, p: IPoint) =>
+      case ContestException(_, Some(p)) =>
         println("Final state:")
         println(state.toStringBuffer.toString().trim)
         val (x, y) = whereBreaks
         assertResult(IPoint(x, y))(p)
+      case z : ContestException =>
+        println("Final state:")
+        println(state.toStringBuffer.toString().trim)
     }
   }
 

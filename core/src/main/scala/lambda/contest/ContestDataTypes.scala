@@ -145,9 +145,9 @@ case class Cell(private var hasSpace: Boolean = false,
     }
   }
 
-  def installNewTeleport(): Unit = doIfHasSpace {
-    if (teleport) throw ContestException(TELEPORT_INSTALLED)
-    if (callPoint) throw ContestException(CALL_POINT_INSTALLED)
+  def installNewTeleport(pos: IPoint): Unit = doIfHasSpace {
+    if (teleport) throw ContestException(TELEPORT_INSTALLED, Some(pos))
+    if (callPoint) throw ContestException(CALL_POINT_INSTALLED, Some(pos))
     teleport = true
   }
 
