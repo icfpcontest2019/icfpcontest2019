@@ -15,9 +15,11 @@ case class IPoint(x: Int, y: Int) {
 
   def /(d: Int) = IPoint(x / d, y / d)
 
+  def length: Double = math.sqrt(x * x + y * y)
+
   def toPair: (Int, Int) = (x, y)
 
-  def toFPoint : FPoint = FPoint(x, y)
+  def toFPoint: FPoint = FPoint(x, y)
 
   // Rotate CCW by pi/2
   def rotateLeft: IPoint = IPoint(-y, x)
@@ -26,15 +28,15 @@ case class IPoint(x: Int, y: Int) {
   def rotateRight: IPoint = IPoint(y, -x)
 
   override def toString = s"($x,$y)"
-  
+
   def toSquare: IPolygon = {
-    val p1 = IPoint(x, y) 
-    val p2 = IPoint(x + 1, y) 
-    val p3 = IPoint(x + 1, y + 1) 
+    val p1 = IPoint(x, y)
+    val p2 = IPoint(x + 1, y)
+    val p3 = IPoint(x + 1, y + 1)
     val p4 = IPoint(x, y + 1)
     IPolygon(List(p1, p2, p3, p4))
-  } 
-  
+  }
+
 
 }
 

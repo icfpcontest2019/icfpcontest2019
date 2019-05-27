@@ -1,14 +1,14 @@
-package examples
+package example
 
 import lambda.geometry.integer.IPoint
 import org.scalajs.dom
 import org.scalajs.dom.html
 
-import scala.scalajs.js.annotation._
+import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.util.Random
 
-object ScalaJSExample {
-  // @JSExportTopLevel("drawFractal")
+object Fractal {
+  @JSExportTopLevel("drawFractal")
   def main(canvas: html.Canvas): Unit = {
     val ctx = canvas.getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]

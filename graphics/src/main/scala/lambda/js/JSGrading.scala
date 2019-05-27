@@ -1,8 +1,6 @@
 package lambda.js
 
 import lambda.contest.ContestErrorMessages.{BAD_SOLUTION_FORMAT, MALFORMED_TASK}
-import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
-import lambda.contest.checkers.TaskExecution
 import lambda.contest.parsers.{ContestSolutionParser, ContestTaskParser}
 import lambda.contest.{ContestConstants, ContestException, ContestTask}
 import org.scalajs.dom
@@ -17,16 +15,30 @@ import scala.scalajs.js.Date
   */
 trait JSGrading {
 
+  val canvasId = "canvas"
+  val mainSectionID = "main_section"
+  val outTextFieldId = "output"
+  val checkButtonId = "check_solution"
+  val submitTaskId = "submit_task"
+  val submitSolutionId = "submit_solution"
+
   type ButtonHandler = js.Function1[MouseEvent, _]
   
   val DEFAULT_BUTTON_TEXT = "Booya!"
   val SUBMIT_TASK_TEXT = "Task file"
   val SUBMIT_SOLUTION_TEXT = "Solution file"
-  val SUBMIT_TEXT = "Check"
+  val CHECK_TEXT = "Check"
+  val CHECK_AND_RENDER_TEXT = "Upload files"
+  
   val PREPROCESSING_TEXT = "Validating and pre-processing the task..."
   val CHECKING_TEXT = "Checking the solution..."
   val FAILED_TEXT = "Failed to cover the full task"
   val LOADING_TEXT = s"Processing your solution..."
+  val UPLOAD_FILES = "Upload the task and solution files"
+  val NO_TASK_FILE = "No task file provided"
+  val NO_SOLUTION_FILE = "No solution file provided"
+  val UPLOADED_TASK = "Uploaded task description"
+  val UPLOADED_ALL = "Uploaded task and solution"
 
 
   val taskFileInput : HTMLInputElement
@@ -55,6 +67,11 @@ trait JSGrading {
   /* ---------------------------------------------------------------- */
 
   def processTaskAndSolution(): Unit = {
+    if (!taskFileInput.files(0).isInstanceOf[Blob]) {
+      setText(NO_TASK_FILE)
+      return 
+    }
+    
     val taskReader = new FileReader()
     taskReader.onloadend = event => {
       val text = taskReader.result.toString
@@ -63,50 +80,21 @@ trait JSGrading {
     taskReader.readAsText(taskFileInput.files(0))
   }
 
-
   def processSolution(taskText: String): Unit = {
+    if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
+      setText(NO_SOLUTION_FILE)
+      return
+    }
+
     val solutionReader = new FileReader()
     solutionReader.onloadend = event => {
       val solText = solutionReader.result.toString
-      checkSolution(taskText, solText)
+      runSolution(taskText, solText)
     }
     solutionReader.readAsText(solutionFileInput.files(0))
   }
 
-  /* ---------------------------------------------------------------- */
-  /*                          Solution checking                       */
-  /* ---------------------------------------------------------------- */
-
-  def checkSolution(taskText: String, solutionText: String): Unit = {
-    try {
-      val task@ContestTask(_, init, _, _) = parseTask(taskText)
-      val moves = parseSolution(solutionText)
-      setText(PREPROCESSING_TEXT)
-      val t0 = new Date().getTime()
-      val (matrix, dx, dy) = contestTaskToMatrix(task)
-      val t1 = new Date().getTime()
-      val state = TaskExecution.createState(matrix, dx, dy, init, moves, Nil)
-      setText(CHECKING_TEXT)
-      val finalState = state.evalSolution()
-      val resultText = finalState match {
-        case Some(steps) =>
-          val t2 = new Date().getTime()
-          val tPre = (t1 - t0) / 1000
-          val tMain = (t2 - t1) / 1000
-          val s1 = "Success! \n"
-          val s2 = s"Your solution took $steps time units. \n"
-          val s3 = s"Pre-processing: $tPre sec, checking: $tMain sec."
-          s1 + s2 + s3
-        case None => FAILED_TEXT
-      }
-      setText(resultText)
-    } catch {
-      case ContestException(msg, data) =>
-        val text = if (data.toString.isEmpty) msg else s"$msg (${data.toString})"
-        val errorText = s"Failed: $text"
-        setText(errorText)
-    }
-  }
+  def runSolution(taskText: String, solutionText: String): Unit
 
   /* ---------------------------------------------------------------- */
   /*                          Various DOM elements                    */
@@ -123,14 +111,21 @@ trait JSGrading {
     targetNode.appendChild(parNode)
   }
 
-  def mkButton(targetNode: dom.Node, id: String,
-               initText: String = DEFAULT_BUTTON_TEXT,
-               onClick: ButtonHandler): Unit = {
+  def mkButton(targetNode: dom.Node, 
+               id: String,
+               initText: String = DEFAULT_BUTTON_TEXT): Unit = {
     val button = document.createElement("button").asInstanceOf[HTMLButtonElement]
     button.textContent = initText
-    button.onclick = onClick
+    button.id = id
     val parNode = document.createElement("p")
     parNode.appendChild(button)
+    targetNode.appendChild(parNode)
+  }
+
+  def mkCanvas(targetNode: dom.Node, id: String): Unit = {
+    val canvas = document.createElement("canvas").asInstanceOf[HTMLButtonElement]
+    val parNode = document.createElement("p")
+    parNode.appendChild(canvas)
     targetNode.appendChild(parNode)
   }
 

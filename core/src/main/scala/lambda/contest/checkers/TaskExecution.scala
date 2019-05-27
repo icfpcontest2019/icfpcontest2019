@@ -311,7 +311,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   }
 
-  private def evalRound(): Unit = {
+  def evalRound(): Unit = {
     val wNums = watchmen.keys.toList.sorted
     for (wNum <- wNums) {
       step(wNum)
@@ -321,6 +321,8 @@ class TaskExecution(private val matrix: TaskMatrix,
     // TODO: Provide a callback (taking the updated room,
     //       the old and the new watchmen positions) for rendering
   }
+  
+  def getElapsedTime = timeElapsed
 
   /**
     * A driver loop and a final checker
@@ -341,7 +343,7 @@ class TaskExecution(private val matrix: TaskMatrix,
   /*              Evaluation utilities                   */
   /* --------------------------------------------------- */
 
-  private def moreStepsToDo(): Boolean = {
+  def moreStepsToDo(): Boolean = {
     watchmen.keys.exists { wNum =>
       val route = routes.getOrElse(wNum, Nil)
       route.nonEmpty
@@ -355,7 +357,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     }
   }
 
-  private def checkFullIllumination(): Boolean = {
+  def checkFullIllumination(): Boolean = {
     for {x <- 0 until xmax
          y <- 0 until ymax
          cell = matrix(x)(y)

@@ -25,6 +25,14 @@ case class FPoint(x: Double, y: Double) extends EpsEq[FPoint] with MetricPoint[F
   def -(p: FPoint): FPoint = FPoint(x - p.x, y - p.y)
 
   def +(d: Direction): FPoint = FPoint(x + d.dx, y + d.dy)
+  
+  def +(d: FPoint): FPoint = FPoint(x + d.x, y + d.y)
+
+  def *(d: Double) = FPoint(x * d, y * d)
+
+  def length: Double = math.sqrt(x * x + y * y)
+
+  def toPair: (Double, Double) = (x, y)
 
   implicit def toPolar: PointPolar = {
     val r = scala.math.hypot(x, y)

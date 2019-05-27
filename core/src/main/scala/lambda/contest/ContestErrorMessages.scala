@@ -5,16 +5,16 @@ package lambda.contest
   */
 object ContestErrorMessages {
 
-  val MALFORMED_TASK = "Malformed task description."
-  val MALFORMED_ROOM = "The room polygon is ill-formed (e.g., it has self-intersections)."
-  val NON_RECTILINEAR_ROOM = "The room is not rectilinear."
-  val BAD_INIT_POS = "Initial position is not within the room."
-  val BOUNDING_BOX = "Room must be within non-negative bounding box."
+  val MALFORMED_TASK = "malformed task description"
+  val MALFORMED_ROOM = "task polygon is ill-formed (e.g., it has self-intersections)"
+  val NON_RECTILINEAR_ROOM = "The block is not rectilinear"
+  val BAD_INIT_POS = "Initial position is not within the block"
+  val BOUNDING_BOX = "Block must be within non-negative bounding box"
   val MALFORMED_OBSTACLE = "Some obstacles are not well-formed (non-rectilinear, have self-intersections, etc.)."
   val INIT_POS_OBSTACLE = "Initial position is within an obstacle."
-  val OBSTACLE_NOW_WITHIN = "Some obstacles are not fully within the room or touch its walls."
+  val OBSTACLE_NOW_WITHIN = "Some obstacles are not fully within the block or touch its boundaries"
   val OBSTACLES_INTERSECT = "Some obstacles intersect."
-  val BOOSTER_NOT_IN_ROOM = "A booster not in the room."
+  val BOOSTER_NOT_IN_ROOM = "A booster not in the block"
   val BOOSTER_IN_OBSTACLE = "A booster is in an obstacle."
   val BOOSTER_CLASH = "Two or more boosters in the same position."
 
@@ -36,7 +36,7 @@ object ContestErrorMessages {
   val BAD_BOOSTER_FORMAT = "Booster descriptor is malformed"
   val DUPLICATED_SOLUTION = "Duplicating solution file"
   val BAD_SOLUTION_FILE_NAME = "Ill-formed solution file name"
-  val BAD_SOLUTION_FORMAT = "Solution is malformed"
+  val BAD_SOLUTION_FORMAT = "solution text is malformed"
   
   val BAD_TASK_MATRIX = "Ill-formed task matrix"
 
