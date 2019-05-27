@@ -1,18 +1,14 @@
 package lambda.js
 
-import example.SpaceInvaders.{draw, run}
 import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
-import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
+import lambda.contest.{ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.js.JSColors._
 import org.scalajs.dom
 import org.scalajs.dom.raw.{FileReader, _}
 import org.scalajs.dom.{html, _}
 
-import scala.concurrent.Future
-import scala.scalajs.js
-import scala.scalajs.js.Promise
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 
@@ -38,13 +34,13 @@ object GraderWithGraphics extends JSGrading {
   mkFileInput(centered, submitSolutionId, SUBMIT_SOLUTION_TEXT)
   mkButton(centered, execButtonId, EXECUTE_TEXT)
 
-  private val scaleFactor: Double = 4.5 / 5
+  private val scaleFactorX: Double = 4.0 / 5
+  private val scaleFactorY: Double = 4.6 / 5
   private val upperBorder = 30
-  lazy val dim: Int = {
+  lazy val dims: (Int, Int) = {
     val myWidth = dom.window.innerWidth.toInt
     val myHeight = dom.window.innerHeight.toInt
-    val dim = (math.min(myWidth, myHeight).toDouble * scaleFactor).toInt
-    dim
+    ((myWidth.toDouble * scaleFactorX).toInt, (myHeight.toDouble * scaleFactorY).toInt)
   }
 
   private def getFontSize(s: String): Int = {
@@ -62,7 +58,7 @@ object GraderWithGraphics extends JSGrading {
   var currentTaskText: String = ""
   var currentSolutionText: String = ""
   var currentPainter: Option[JSCanvasPainter] = None
-  var currentTask: Option[(ContestTask, ProcessedTask)] = None
+  var currentTask: Option[ContestTask] = None
   var currentSolution: Option[TaskSolution] = None
   var currentState: Option[TaskExecution] = None
   var execIntervalHandle: Option[Int] = None
@@ -74,7 +70,7 @@ object GraderWithGraphics extends JSGrading {
       painter.drawCirclePoint(bp, boosterToColor(b))
     }
     painter.drawCirclePoint(task.initPos, RED)
-
+    // setText(s"K = ${painter.scalingCoefficient}")
   }
 
   /* ------------------------------------------------------------------------ */
@@ -86,16 +82,15 @@ object GraderWithGraphics extends JSGrading {
                        watchmen: Map[Int, Watchman],
                        watchPos: Map[Int, IPoint]): Unit = {
     // TODO: This is supeer-slow, draw it more efficiently using only the changing bits around watchmen! 
-//    for {
-//      i <- 0 until dx
-//      j <- 0 until dx
-//      c = m(i)(j)
-//      sq = IPoint(i, j).toSquare
-//    } {
-//      painter.drawPoly(sq, if (c.canStep) LIGHT_GRAY else DARK_GRAY)
-//    }
-    
-    drawTask(currentTask.get._1, painter)
+    //    for {
+    //      i <- 0 until dx
+    //      j <- 0 until dx
+    //      c = m(i)(j)
+    //      sq = IPoint(i, j).toSquare
+    //    } {
+    //      painter.drawPoly(sq, if (c.canStep) LIGHT_GRAY else DARK_GRAY)
+    //    }
+
     for (w <- watchmen.keySet.toList; wp = watchPos(w)) {
       painter.drawCirclePoint(wp, RED)
     }
@@ -107,8 +102,6 @@ object GraderWithGraphics extends JSGrading {
       val state = currentState.get
       if (state.moreStepsToDo()) {
         try {
-          clearMain
-          drawTask(currentTask.get._1, painter)
           state.evalRound(callback(painter))
         } catch {
           case ContestException(msg, data) =>
@@ -183,17 +176,10 @@ object GraderWithGraphics extends JSGrading {
             clearMain
             setText(UPLOADING_TASK)
             val task@ContestTask(room, init, _, _) = parseTask(text)
-            val painter = new JSCanvasPainter(ctx, room, dim, dim, upperBorder)
-            val z@(matrix, dx, dy) = TaskCreationUtils.contestTaskToMatrix(task)
+            val painter = new JSCanvasPainter(ctx, room, dims._1, dims._2, upperBorder)
             currentTaskText = text
-            currentTask = Some(task, z)
+            currentTask = Some(task)
             currentPainter = Some(painter)
-            currentSolution match {
-              case Some(moves) =>
-                currentState = Some(TaskExecution.createState(matrix, dx, dy, task.initPos, moves, Nil))
-              case None =>
-            }
-
             setText(UPLOADED_TASK)
             drawTask(task, painter)
             refreshExecButton
@@ -225,11 +211,6 @@ object GraderWithGraphics extends JSGrading {
             setText(UPLOADING_SOLUTION)
             val moves = parseSolution(text)
             currentSolution = Some(moves)
-            currentTask match {
-              case Some((task, (matrix, dx, dy))) =>
-                currentState = Some(TaskExecution.createState(matrix, dx, dy, task.initPos, moves, Nil))
-              case None =>
-            }
             setText(UPLOADED_SOLUTION)
             refreshExecButton
           } catch {
@@ -247,11 +228,17 @@ object GraderWithGraphics extends JSGrading {
   }
 
   val execHandler: Function1[Event, Unit] = event => {
-    val handle = dom.window.setInterval(() => {
-      runSolution()
-    }, 20)
-    execIntervalHandle = Some(handle)
-    execButton.disabled = true
+    if (currentTask.isDefined && currentSolution.isDefined) {
+      val task = currentTask.get
+      // TODO: Use asyncs/futures to inform about this processing
+      val z@(matrix, dx, dy) = TaskCreationUtils.contestTaskToMatrix(task)
+      currentState = Some(TaskExecution.createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil))
+      val handle = dom.window.setInterval(() => {
+        runSolution()
+      }, 20)
+      execIntervalHandle = Some(handle)
+      execButton.disabled = true
+    }
   }
 
   private def clearTask = {
@@ -275,17 +262,17 @@ object GraderWithGraphics extends JSGrading {
     }
   }
 
+  // May start execution
   private def allInPlace = {
-    currentState.isDefined &&
-      currentTask.isDefined &&
+    currentTask.isDefined &&
       currentSolution.isDefined &&
       currentPainter.isDefined
   }
 
   @JSExportTopLevel("graderWithGraphics")
   def main(): Unit = {
-    canvas.height = dim + upperBorder
-    canvas.width = dim
+    canvas.width = dims._1
+    canvas.height = dims._2 + upperBorder
     clearMain
     setText(UPLOAD_FILES)
     refreshExecButton

@@ -42,11 +42,13 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
       FPoint(x1, y1)
   }
 
+  val defaultRadius = 4
+
   def drawCirclePoint(p: IPoint, c: Color): Unit = {
     ctx.fillStyle = c.toHex
     val pos = movePoint(p) + FPoint(0.5, 0.5)
     ctx.beginPath()
-    ctx.arc(pos.x, pos.y, 5, 0, 2 * scala.math.Pi)
+    ctx.arc(pos.x, pos.y, defaultRadius, 0, 2 * scala.math.Pi)
     ctx.fill()
     ctx.fillStyle = DARK_GRAY.toHex
   }
