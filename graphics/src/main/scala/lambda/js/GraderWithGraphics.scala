@@ -258,7 +258,7 @@ object GraderWithGraphics extends JSGrading {
     val watchmenPositionsOld: Seq[(Watchman, IPoint)] =
       for {k <- watchmen.keySet.toList
            if watchPosOld.isDefinedAt(k)
-           wPos = watchPos(k)
+           wPos = watchPosOld(k)
            w = watchmen(k)} yield (w, wPos)
     
     

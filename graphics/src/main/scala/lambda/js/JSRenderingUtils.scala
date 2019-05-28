@@ -25,8 +25,8 @@ object JSRenderingUtils {
   val DRILL_COLOR = new Color(0, 204, 0)
   // Purple
   val TELE_COLOR = new Color(147, 112, 219)
-  // Installed Teleport 
-  val INSTALLED_TELE_COLOR = new Color(255, 20, 147)
+  // Installed Teleport (white)
+  val INSTALLED_TELE_COLOR = Color(255, 255, 255)  // new Color(255, 20, 147)
   // Light blue
   val CALL_WATCHMAN_COLOR = new Color(51, 153, 255)
   // Blue
