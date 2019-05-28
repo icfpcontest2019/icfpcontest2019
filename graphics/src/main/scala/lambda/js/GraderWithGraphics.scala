@@ -1,5 +1,6 @@
 package lambda.js
 
+import example.SpaceInvaders.bullets
 import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
@@ -68,6 +69,9 @@ object GraderWithGraphics extends JSGrading {
   var currentMatrix: Option[ProcessedTask] = None
 
   var execIntervalHandle: Option[Int] = None
+  val defaultSpeed: Int = 20
+  var currentSpeed: Int = defaultSpeed
+  var paused: Boolean = true
 
   /* ------------------------------------------------------------------------ */
   /*                               Main                                       */
@@ -83,7 +87,92 @@ object GraderWithGraphics extends JSGrading {
     taskFileInput.onchange = taskHandler
     solutionFileInput.onchange = solutionHandler
     execButton.onclick = execHandler
+    dom.window.onkeypress = { e: dom.KeyboardEvent =>
+      blurAllInputs
+      e.keyCode match {
+        // space
+        case 32 => pauseResumeHandler()
+        // 'r'
+        case 114 => execHandler(e)
+        case _ =>
+      }
+    }
+
   }
+
+  /* ------------------------------------------------------------------------ */
+  /*                           Controlling execution                          */
+  /* ------------------------------------------------------------------------ */
+
+  def pauseResumeHandler(): Unit = {
+    paused = !paused
+  }
+
+  def setOnPause(): Unit = {
+    paused = true
+  }
+
+  /* ------------------------------------------------------------------------ */
+  /*                         Running solution                                 */
+  /* ------------------------------------------------------------------------ */
+
+  def tryRunSolution(): Unit = {
+    if (currentState.isDefined) {
+      val state = currentState.get
+      if (state.getElapsedTime == 0) {
+        setText(SPACE_TO_RUN_TEXT)
+      } else {
+        setText(SPACE_TO_RESUME_TEXT)
+      }
+    }
+    if (!paused) runSolution()
+  }
+
+  def runSolution(): Unit = {
+    if (allInPlace) {
+      val painter = currentPainter.get
+      val state = currentState.get
+      if (state.moreStepsToDo()) {
+        try {
+          state.evalRound(callback(painter))
+        } catch {
+          case ContestException(msg, data) =>
+            interruptExecution
+            val text = if (data.isEmpty) msg else s"$msg ${data.get.toString}"
+            val errorText = s"Failed: $text"
+            setText(errorText, TEXT_RED)
+            refreshExecButton
+            currentState = None
+            // enableFileInputs
+        }
+      } else {
+        interruptExecution
+        if (state.checkFullIllumination()) {
+          val steps = state.getElapsedTime
+          setText(s"Success! Your solution took $steps time units.", TEXT_GREEN)
+        } else {
+          setText("Not all parts of the task were covered.", TEXT_RED)
+        }
+        refreshExecButton
+        // enableFileInputs
+        currentState = None
+      }
+    } else {
+      // enableFileInputs
+      currentState = None
+    }
+  }
+
+  private def interruptExecution = {
+    if (execIntervalHandle.isDefined) {
+      dom.window.clearInterval(execIntervalHandle.get)
+      execIntervalHandle = None
+      currentState = None
+      setOnPause()
+      refreshExecButton
+    }
+  }
+
 
   /* ------------------------------------------------------------------------ */
   /*                                 Drawing                                  */
@@ -148,55 +237,6 @@ object GraderWithGraphics extends JSGrading {
       painter.drawCirclePoint(bp, boosterToColor(b))
     }
     painter.drawCirclePoint(task.initPos, RED)
-  }
-
-
-  /* ------------------------------------------------------------------------ */
-  /*                         Running solution                                 */
-  /* ------------------------------------------------------------------------ */
-
-  def runSolution(): Unit = {
-    if (allInPlace) {
-      val painter = currentPainter.get
-      val state = currentState.get
-      if (state.moreStepsToDo()) {
-        try {
-          state.evalRound(callback(painter))
-        } catch {
-          case ContestException(msg, data) =>
-            stopExecution
-            val text = if (data.isEmpty) msg else s"$msg ${data.get.toString}"
-            val errorText = s"Failed: $text"
-            setText(errorText, TEXT_RED)
-            refreshExecButton
-            currentState = None
-            enableFileInputs
-        }
-      } else {
-        stopExecution
-        if (state.checkFullIllumination()) {
-          val steps = state.getElapsedTime
-          setText(s"Success! Your solution took $steps time units.", TEXT_GREEN)
-        } else {
-          setText("Not all parts of the task were covered.", TEXT_RED)
-        }
-        refreshExecButton
-        enableFileInputs
-        currentState = None
-      }
-    } else {
-      enableFileInputs
-      currentState = None
-    }
-  }
-
-  // TODO: Add shortcuts to start/pause/reset solution and also to change speed
-
-  private def stopExecution = {
-    if (execIntervalHandle.isDefined) {
-      dom.window.clearInterval(execIntervalHandle.get)
-      execIntervalHandle = None
-    }
   }
 
   /* ------------------------------------------------------------------------ */
@@ -266,8 +306,16 @@ object GraderWithGraphics extends JSGrading {
   /* ------------------------------------------------------------------------ */
   /*                               Handlers                                   */
   /* ------------------------------------------------------------------------ */
+  
+  def blurAllInputs(): Unit ={
+    taskFileInput.blur()
+    solutionFileInput.blur()
+    execButton.blur()
+  }
 
   val execHandler: Function1[Event, Unit] = event => {
+    interruptExecution
+    
     if (currentTask.isDefined && currentSolution.isDefined) {
       setText(PREPROCESSING_TEXT, TEXT_YELLOW)
 
@@ -283,17 +331,15 @@ object GraderWithGraphics extends JSGrading {
             (matrixCopy(m, xmax, ymax), xmax, ymax)
         }
         currentState = Some(createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil))
-        disableFileInputs
+        // disableFileInputs
         val handle = dom.window.setInterval(() => {
-          runSolution()
-        }, 20)
+          tryRunSolution()
+        }, defaultSpeed)
         execIntervalHandle = Some(handle)
-        execButton.disabled = true
       }
 
       // Oh, this is nasty...
       dom.window.setTimeout(act, 50)
-
     }
   }
 
@@ -339,6 +385,8 @@ object GraderWithGraphics extends JSGrading {
   }
 
   val solutionHandler: Function1[Event, Unit] = event => {
+    interruptExecution
+    
     if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
       setText(NO_SOLUTION_FILE, TEXT_RED)
       clearSolution

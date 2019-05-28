@@ -33,6 +33,8 @@ trait JSGrading {
   val EXECUTE_TEXT = "Execute"
   
   val PREPROCESSING_TEXT = "Pre-processing and validating the task..."
+  val SPACE_TO_RUN_TEXT = "Press SPACE to begin execution"
+  val SPACE_TO_RESUME_TEXT = "Press SPACE to resume execution"
   val RUNNING_TEXT = "Running"
   val CHECKING_TEXT = "Checking the solution..."
   val FAILED_TEXT = "Failed to cover the full task"
