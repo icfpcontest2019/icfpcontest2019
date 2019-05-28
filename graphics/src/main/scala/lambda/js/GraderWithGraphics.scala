@@ -1,12 +1,13 @@
 package lambda.js
 
-import example.SpaceInvaders.bullets
+import example.SpaceInvaders.{bullets, keysDown}
 import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
+import lambda.js.GraderWithGraphics.{decreaseSpeed, execHandler, increaseSpeed, pauseResumeHandler}
 import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
@@ -32,6 +33,7 @@ object GraderWithGraphics extends JSGrading {
   lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
   lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
   lazy val execButton = document.getElementById(execButtonId).asInstanceOf[HTMLButtonElement]
+  lazy val speedText = document.getElementById(speedTextId)
 
   // Make submission buttons
   mkFileInput(centered, submitTaskId, SUBMIT_TASK_TEXT)
@@ -69,7 +71,7 @@ object GraderWithGraphics extends JSGrading {
   var currentMatrix: Option[ProcessedTask] = None
 
   var execIntervalHandle: Option[Int] = None
-  val defaultSpeed: Int = 20
+  val defaultSpeed: Int = 50
   var currentSpeed: Int = defaultSpeed
   var paused: Boolean = true
 
@@ -83,21 +85,30 @@ object GraderWithGraphics extends JSGrading {
     canvas.height = dims._2 + upperBorder
     clearMain
     setText(UPLOAD_FILES)
+    setSpeedText
     refreshExecButton
     taskFileInput.onchange = taskHandler
     solutionFileInput.onchange = solutionHandler
     execButton.onclick = execHandler
     dom.window.onkeypress = { e: dom.KeyboardEvent =>
-      blurAllInputs
+      blurAllInputs()
       e.keyCode match {
-        // space
+        // Space
         case 32 => pauseResumeHandler()
         // 'r'
         case 114 => execHandler(e)
         case _ =>
       }
     }
-
+    dom.window.onkeydown = { e: dom.KeyboardEvent =>
+      e.keyCode match {
+        // Right 
+        case 39 => increaseSpeed()
+        // Left
+        case 37 => decreaseSpeed()
+        case _ =>
+      }
+    }
   }
 
   /* ------------------------------------------------------------------------ */
@@ -110,6 +121,33 @@ object GraderWithGraphics extends JSGrading {
 
   def setOnPause(): Unit = {
     paused = true
+  }
+  
+  def increaseSpeed(): Unit ={
+    if (currentSpeed >= 400) {
+      currentSpeed = 1000
+    } else if (currentSpeed < 25) {
+      currentSpeed = currentSpeed + 1
+    } else {
+      currentSpeed = currentSpeed * 2
+    }
+    setSpeedText()
+  }
+  
+  def decreaseSpeed(): Unit ={
+    if (currentSpeed <= 1) {}
+    else if (currentSpeed >= 1000) {
+      currentSpeed = 400
+    } else if (currentSpeed <= 25) {
+      currentSpeed = currentSpeed - 1
+    } else {
+      currentSpeed = currentSpeed / 2
+    }
+    setSpeedText()
+  }
+  
+  def getCurrentRefreshRateMS = {
+    1000 / currentSpeed
   }
 
   /* ------------------------------------------------------------------------ */
@@ -143,7 +181,7 @@ object GraderWithGraphics extends JSGrading {
             setText(errorText, TEXT_RED)
             refreshExecButton
             currentState = None
-            // enableFileInputs
+          // enableFileInputs
         }
       } else {
         interruptExecution
@@ -254,6 +292,10 @@ object GraderWithGraphics extends JSGrading {
     true
   }
 
+  def setSpeedText(): Unit = {
+    speedText.textContent = s"$currentSpeed rounds/sec"
+  }
+
   private def clearCaption: Unit = {
     ctx.fillStyle = DARK_GRAY.toHex
     ctx.fillRect(0, 0, canvas.width, upperBorder)
@@ -306,8 +348,8 @@ object GraderWithGraphics extends JSGrading {
   /* ------------------------------------------------------------------------ */
   /*                               Handlers                                   */
   /* ------------------------------------------------------------------------ */
-  
-  def blurAllInputs(): Unit ={
+
+  def blurAllInputs(): Unit = {
     taskFileInput.blur()
     solutionFileInput.blur()
     execButton.blur()
@@ -315,7 +357,7 @@ object GraderWithGraphics extends JSGrading {
 
   val execHandler: Function1[Event, Unit] = event => {
     interruptExecution
-    
+
     if (currentTask.isDefined && currentSolution.isDefined) {
       setText(PREPROCESSING_TEXT, TEXT_YELLOW)
 
@@ -334,7 +376,7 @@ object GraderWithGraphics extends JSGrading {
         // disableFileInputs
         val handle = dom.window.setInterval(() => {
           tryRunSolution()
-        }, defaultSpeed)
+        }, getCurrentRefreshRateMS)
         execIntervalHandle = Some(handle)
       }
 
@@ -386,7 +428,7 @@ object GraderWithGraphics extends JSGrading {
 
   val solutionHandler: Function1[Event, Unit] = event => {
     interruptExecution
-    
+
     if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
       setText(NO_SOLUTION_FILE, TEXT_RED)
       clearSolution

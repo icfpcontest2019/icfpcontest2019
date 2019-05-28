@@ -22,6 +22,7 @@ trait JSGrading {
   val execButtonId = "execute_solution"
   val submitTaskId = "submit_task"
   val submitSolutionId = "submit_solution"
+  val speedTextId = "speed_text"
 
   type ButtonHandler = js.Function1[MouseEvent, _]
   

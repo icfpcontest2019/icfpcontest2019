@@ -25,7 +25,7 @@ object GraderNoGraphics extends JSGrading {
   lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
   lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
   lazy val checkButton = document.getElementById(checkButtonId).asInstanceOf[HTMLButtonElement]
-  lazy val textArea = document.getElementById(outTextFieldId).asInstanceOf[HTMLTextAreaElement]
+  lazy val textArea = document.getElementById(outTextFieldId)
 
   @JSExportTopLevel("graderNoGraphics")
   def main(canvas: html.Canvas): Unit = {
@@ -69,7 +69,7 @@ object GraderNoGraphics extends JSGrading {
     val solutionReader = new FileReader()
     solutionReader.onloadend = event => {
       val solText = solutionReader.result.toString
-      setText(PREPROCESSING_TEXT)
+      setText(CHECKING_TEXT)
       val act = () => runSolution(taskText, solText)
       dom.window.setTimeout(act, 50)
     }
