@@ -48,7 +48,6 @@ trait JSGrading {
 
   val taskFileInput : HTMLInputElement
   val solutionFileInput : HTMLInputElement
-  def setText(s: String) : Boolean
 
   /* ---------------------------------------------------------------- */
   /*                          Parsing submissions                     */

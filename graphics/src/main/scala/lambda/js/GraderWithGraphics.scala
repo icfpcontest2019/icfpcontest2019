@@ -4,14 +4,14 @@ import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
-import lambda.contest.{ContestException, ContestTask, Watchman}
+import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
+import org.scalajs.dom.ext.Color
 import org.scalajs.dom.raw.{FileReader, _}
 import org.scalajs.dom.{html, _}
 
-import scala.collection.immutable
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 
@@ -95,7 +95,7 @@ object GraderWithGraphics extends JSGrading {
                        watchPos: Map[Int, IPoint],
                        timeElapsed: Int): Unit = {
 
-    setText(s"$RUNNING_TEXT: $timeElapsed rounds.")
+    setText(s"$RUNNING_TEXT: $timeElapsed rounds")
 
     // Get all watchmen at their current positions
     val watchmenPositions: Seq[(Watchman, IPoint)] =
@@ -104,7 +104,35 @@ object GraderWithGraphics extends JSGrading {
            wPos = watchPos(k)
            w = watchmen(k)} yield (w, wPos)
 
-    // TODO: Draw affected cells 
+    // Re-draw illumination in affected cells
+    val cells = (for ((w, wPos) <- watchmenPositions;
+                      pc <- getAffectedCells(m, dx, dy, painter.affectedRadius, wPos, w)) yield pc).toSet
+    cells.foreach { case (p, c) => painter.renderCell(p, c) }
+
+    // Draw watchmen torch range
+    for ((w, wPos) <- watchmenPositions;
+         lit <- w.getTorchRange(wPos)) {
+      cells.find { case (p, _) => p == lit } match {
+        case Some((_, c)) if c.canStep && c.isIlluminated =>
+          painter.renderCellWithColor(lit, DARK_YELLOW)
+        case _ =>
+      }
+    }
+
+    // Draw remaining boosters in affected cells
+    cells
+      .flatMap { case (p, _) => getAffectedNeighbours(p, painter.affectedRadius, m, dx, dy) }
+      .foreach { case (p, c) =>
+        c.peekBooster match {
+          case Some(b) => painter.drawCirclePoint(p, boosterToColor(b))
+          case None =>
+        }
+        if (c.hasCallPoint) {
+          painter.drawCirclePoint(p, boosterToColor(Booster.CallPoint))
+        } else if (c.hasTeleport) {
+          painter.drawCirclePoint(p, boosterToColor(Booster.CallPoint))
+        }
+      }
 
     // Draw watchmen
     for ((_, wPos) <- watchmenPositions) {
@@ -137,9 +165,9 @@ object GraderWithGraphics extends JSGrading {
         } catch {
           case ContestException(msg, data) =>
             stopExecution
-            val text = if (data.isEmpty) msg else s"$msg location ${data.get.toString}"
+            val text = if (data.isEmpty) msg else s"$msg ${data.get.toString}"
             val errorText = s"Failed: $text"
-            setText(errorText)
+            setText(errorText, TEXT_RED)
             refreshExecButton
             currentState = None
             enableFileInputs
@@ -148,9 +176,9 @@ object GraderWithGraphics extends JSGrading {
         stopExecution
         if (state.checkFullIllumination()) {
           val steps = state.getElapsedTime
-          setText(s"Success! Your solution took $steps time units. \n")
+          setText(s"Success! Your solution took $steps time units.", TEXT_GREEN)
         } else {
-          setText("Not all parts of the task were covered.")
+          setText("Not all parts of the task were covered.", TEXT_RED)
         }
         refreshExecButton
         enableFileInputs
@@ -175,12 +203,12 @@ object GraderWithGraphics extends JSGrading {
   /*                                Bookkeeping                               */
   /* ------------------------------------------------------------------------ */
 
-  def setText(text: String): Boolean = {
+  def setText(text: String, color: Color = TEXT_WHITE): Boolean = {
     clearCaption
     ctx.font = s"${getFontSize(text)}px sans-serif"
     ctx.textAlign = "center"
     ctx.textBaseline = "middle"
-    ctx.fillStyle = "white"
+    ctx.fillStyle = color.toHex
     ctx.fillText(text, canvas.width / 2, 15)
     ctx.fillStyle = DARK_GRAY.toHex
     true
@@ -241,8 +269,7 @@ object GraderWithGraphics extends JSGrading {
 
   val execHandler: Function1[Event, Unit] = event => {
     if (currentTask.isDefined && currentSolution.isDefined) {
-      setText(PREPROCESSING_TEXT)
-      window.requestAnimationFrame(_ => setText(PREPROCESSING_TEXT))
+      setText(PREPROCESSING_TEXT, TEXT_YELLOW)
 
       val act = () => {
         val task = currentTask.get
@@ -273,7 +300,7 @@ object GraderWithGraphics extends JSGrading {
   private val taskHandler: Function1[Event, Unit] = event => {
     if (!taskFileInput.files(0).isInstanceOf[Blob]) {
       clearMain
-      setText(NO_TASK_FILE)
+      setText(NO_TASK_FILE, TEXT_RED)
       clearTask
       refreshExecButton
     } else {
@@ -282,7 +309,7 @@ object GraderWithGraphics extends JSGrading {
         val text = taskReader.result.toString
         if (text == currentTaskText) {
         } else {
-          setText(UPLOADING_TASK)
+          setText(UPLOADING_TASK, TEXT_YELLOW)
           val act = () => {
             try {
               clearMain
@@ -300,7 +327,7 @@ object GraderWithGraphics extends JSGrading {
                 clearTask
                 val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
                 val errorText = s"Failed: $text"
-                setText(errorText)
+                setText(errorText, TEXT_RED)
                 refreshExecButton
             }
           }
@@ -313,7 +340,7 @@ object GraderWithGraphics extends JSGrading {
 
   val solutionHandler: Function1[Event, Unit] = event => {
     if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
-      setText(NO_SOLUTION_FILE)
+      setText(NO_SOLUTION_FILE, TEXT_RED)
       clearSolution
       refreshExecButton
     } else {
@@ -322,7 +349,7 @@ object GraderWithGraphics extends JSGrading {
         val text = solutionReader.result.toString
         if (text == currentSolutionText) {}
         else {
-          setText(UPLOADING_SOLUTION)
+          setText(UPLOADING_SOLUTION, TEXT_YELLOW)
           val act = () => {
             try {
               clearSolution
@@ -335,7 +362,7 @@ object GraderWithGraphics extends JSGrading {
                 clearSolution
                 val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
                 val errorText = s"Failed: $text"
-                setText(errorText)
+                setText(errorText, TEXT_RED)
                 refreshExecButton
             }
           }

@@ -1,8 +1,9 @@
 package lambda.js
 
+import lambda.contest.Cell
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
 import lambda.geometry.integer.{IPoint, IPolygon}
-import lambda.js.JSRenderingUtils.{BLACK, DARK_GRAY}
+import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
 
@@ -11,13 +12,15 @@ import org.scalajs.dom.ext.Color
   */
 class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
                       room: IPolygon,
-                      dx: Int, dy: Int, upperBoundary: Int = 0) {
+                      xMax: Int, yMax: Int, upperBoundary: Int = 0) {
 
 
   val MARGIN_SIZE: Int = 10
 
-  val xSize = dx - 2 * MARGIN_SIZE
-  val ySize = dy - 2 * MARGIN_SIZE - upperBoundary
+  val xSize = xMax - 2 * MARGIN_SIZE
+  val ySize = yMax - 2 * MARGIN_SIZE - upperBoundary
+
+  val defaultRadius = 4
 
   lazy val scalingCoefficient: Double = {
     val (_, (px, py)) = room.shiftToOrigin.boundingBox
@@ -25,6 +28,8 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
     val ky = ySize.toDouble / py
     math.min(kx, ky)
   }
+
+  lazy val affectedRadius: Int = (defaultRadius.toDouble / scalingCoefficient + 1).toInt
 
   lazy val shift: FPoint = {
     val scaledPoly = FPolygon(room.vertices.map(v => v.toFPoint * scalingCoefficient))
@@ -42,11 +47,9 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
       FPoint(x1, y1)
   }
 
-  val defaultRadius = 4
-
   def drawCirclePoint(p: IPoint, c: Color): Unit = {
     ctx.fillStyle = c.toHex
-    val pos = movePoint(p.toFPoint + FPoint(0.5, 0.5)) 
+    val pos = movePoint(p.toFPoint + FPoint(0.5, 0.5))
     ctx.beginPath()
     ctx.arc(pos.x, pos.y, defaultRadius, 0, 2 * scala.math.Pi)
     ctx.fill()
@@ -73,6 +76,33 @@ class JSCanvasPainter(ctx: dom.CanvasRenderingContext2D,
     }
 
     ctx.fillStyle = DARK_GRAY.toHex
+  }
+
+  def squareToRect(sq: IPoint) = {
+    val (x, y) = movePoint(sq.toFPoint).toPair
+    (x, y, scalingCoefficient, scalingCoefficient)
+  }
+
+  def renderCell(p: IPoint, c: Cell): Unit = {
+    val (x, y) = movePoint(p.toFPoint).toPair
+    // Do not render outside of canvas boundaries
+    if (x < 0 || x > xMax || y < 0 || y > yMax) return 
+    
+    val color = if (!c.canStep) DARK_GRAY
+    else if (c.isIlluminated) LIGHT_YELLOW
+    else LIGHT_GRAY
+    ctx.fillStyle = color.toHex
+    drawPoly(p.toSquare, color)
+    ctx.fillStyle = BLACK.toHex
+  }
+
+  def renderCellWithColor(p: IPoint, color: Color): Unit = {
+    val (x, y) = movePoint(p.toFPoint).toPair
+    // Do not render outside of canvas boundaries
+    if (x < 0 || x > xMax || y < 0 || y > yMax) return 
+    ctx.fillStyle = color.toHex
+    drawPoly(p.toSquare, color)
+    ctx.fillStyle = BLACK.toHex
   }
 
 }
