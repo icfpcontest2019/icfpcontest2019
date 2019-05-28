@@ -1,6 +1,5 @@
 package lambda.js
 
-import example.SpaceInvaders.{bullets, keysDown}
 import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
@@ -8,7 +7,6 @@ import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
-import lambda.js.GraderWithGraphics.{decreaseSpeed, execHandler, increaseSpeed, pauseResumeHandler}
 import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
@@ -42,7 +40,7 @@ object GraderWithGraphics extends JSGrading {
   mkButton(centered, execButtonId, EXECUTE_TEXT)
 
   private val scaleFactorX: Double = 3.8 / 5
-  private val scaleFactorY: Double = 4.6 / 5
+  private val scaleFactorY: Double = 4.55 / 5
   private val upperBorder = 28
   lazy val dims: (Int, Int) = {
     val myWidth = dom.window.innerWidth.toInt
@@ -94,10 +92,14 @@ object GraderWithGraphics extends JSGrading {
     dom.window.onkeypress = { e: dom.KeyboardEvent =>
       blurAllInputs()
       e.keyCode match {
-        // Space
-        case 32 => pauseResumeHandler()
+        // Space (s)
+        case 32 | 115 => pauseResumeHandler()
         // 'r'
         case 114 => execHandler(e)
+        // 'd'
+        case 100 => increaseSpeed()
+        // 'a'
+        case 97 => decreaseSpeed()
         case _ =>
       }
     }
@@ -245,23 +247,21 @@ object GraderWithGraphics extends JSGrading {
                        watchPosOld: Map[Int, IPoint],
                        timeElapsed: Int): Unit = {
 
-    setText(s"$RUNNING_TEXT: $timeElapsed rounds")
-
     // Get all watchmen at their current positions
     val watchmenPositions: Seq[(Watchman, IPoint)] =
       for {k <- watchmen.keySet.toList
            if watchPos.isDefinedAt(k)
            wPos = watchPos(k)
            w = watchmen(k)} yield (w, wPos)
-    
-    
+
+
     val watchmenPositionsOld: Seq[(Watchman, IPoint)] =
       for {k <- watchmen.keySet.toList
            if watchPosOld.isDefinedAt(k)
            wPos = watchPosOld(k)
            w = watchmen(k)} yield (w, wPos)
-    
-    
+
+
     // Re-draw illumination in affected cells
     val cells = (for ((w, wPos) <- watchmenPositions ++ watchmenPositionsOld;
                       pc <- getAffectedCells(m, dx, dy, painter.affectedRadius, wPos, w)) yield pc).toSet
@@ -271,7 +271,7 @@ object GraderWithGraphics extends JSGrading {
     for ((w, wPos) <- watchmenPositions;
          lit <- w.getTorchRange(wPos)) {
       cells.find { case (p, _) => p == lit } match {
-        case Some((p, c)) 
+        case Some((p, c))
           if c.canStep && c.isIlluminated && squareIsVisible(wPos, p, m, dx, dy) =>
           painter.renderCellWithColor(lit, DARK_YELLOW)
         case _ =>
@@ -297,6 +297,8 @@ object GraderWithGraphics extends JSGrading {
     for ((_, wPos) <- watchmenPositions) {
       painter.drawCirclePoint(wPos, RED)
     }
+
+    setText(s"$RUNNING_TEXT: $timeElapsed rounds")
   }
 
   private def positionWithinBoundingBox(pos: IPoint, dx: Int, dy: Int): Boolean = {
@@ -313,7 +315,6 @@ object GraderWithGraphics extends JSGrading {
       matrix(x)(y).canStep
     })
   }
-
 
 
   // Draw the initial task

@@ -56,7 +56,7 @@ object JSRenderingUtils {
     val torchX = w.getTorchRange(IPoint(0, 0)).maxBy { p => math.abs(p.x) }.x
     val torchY = w.getTorchRange(IPoint(0, 0)).maxBy { p => math.abs(p.y) }.y
     // Adding because of coffee booster 
-    val torchRadius = math.max(math.abs(torchX), math.abs(torchY)) * 2 + 3
+    val torchRadius = math.max(math.abs(torchX), math.abs(torchY)) + 2
     val maxRadius = math.max(torchRadius, affectedRadius)
 
     // Getting the square to re-render
