@@ -1,12 +1,14 @@
 package lambda.js
 
-import lambda.contest.Booster
+import lambda.contest.{Booster, Cell, Watchman}
+import lambda.contest.checkers.TaskMatrix
+import lambda.geometry.integer.IPoint
 import org.scalajs.dom.ext.Color
 
 /**
   * @author Ilya Sergey
   */
-object JSColors {
+object JSRenderingUtils {
 
   // Colors 
   val LIGHT_GRAY = Color(240, 240, 240)
@@ -34,6 +36,12 @@ object JSColors {
     case Booster.TeleBooster => TELE_COLOR
     case Booster.CallBooster => CALL_WATCHMAN_COLOR
     case Booster.CallPoint => CALL_POINT_COLOR
+  }
+  
+  // TODO: get affected region to redraw
+  def getAffectedCells(matrix: TaskMatrix, dx: Int, dy: Int,
+                       wPos: IPoint, w: Watchman): Seq[(IPoint, Cell)] = {
+    ???
   }
 
 }

@@ -2,7 +2,7 @@ package lambda.js
 
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
 import lambda.geometry.integer.{IPoint, IPolygon}
-import lambda.js.JSColors.{BLACK, DARK_GRAY}
+import lambda.js.JSRenderingUtils.{BLACK, DARK_GRAY}
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
 

@@ -6,11 +6,12 @@ import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
-import lambda.js.JSColors._
+import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.raw.{FileReader, _}
 import org.scalajs.dom.{html, _}
 
+import scala.collection.immutable
 import scala.scalajs.js.annotation.JSExportTopLevel
 
 
@@ -68,18 +69,24 @@ object GraderWithGraphics extends JSGrading {
 
   var execIntervalHandle: Option[Int] = None
 
-  private def drawTask(task: ContestTask, painter: JSCanvasPainter) = {
-    painter.drawPoly(task.room, LIGHT_GRAY)
-    task.obstacles.foreach(o => painter.drawPoly(o, DARK_GRAY))
-    for ((b, bp) <- task.boosters) {
-      painter.drawCirclePoint(bp, boosterToColor(b))
-    }
-    painter.drawCirclePoint(task.initPos, RED)
-    // setText(s"K = ${painter.scalingCoefficient}")
+  /* ------------------------------------------------------------------------ */
+  /*                               Main                                       */
+  /* ------------------------------------------------------------------------ */
+
+  @JSExportTopLevel("graderWithGraphics")
+  def main(): Unit = {
+    canvas.width = dims._1
+    canvas.height = dims._2 + upperBorder
+    clearMain
+    setText(UPLOAD_FILES)
+    refreshExecButton
+    taskFileInput.onchange = taskHandler
+    solutionFileInput.onchange = solutionHandler
+    execButton.onclick = execHandler
   }
 
   /* ------------------------------------------------------------------------ */
-  /*                         Running solution                                 */
+  /*                                 Drawing                                  */
   /* ------------------------------------------------------------------------ */
 
   private def callback(painter: JSCanvasPainter)
@@ -87,22 +94,38 @@ object GraderWithGraphics extends JSGrading {
                        watchmen: Map[Int, Watchman],
                        watchPos: Map[Int, IPoint],
                        timeElapsed: Int): Unit = {
-    // TODO: This is supeer-slow, draw it more efficiently using only the changing bits around watchmen! 
-    //    for {
-    //      i <- 0 until dx
-    //      j <- 0 until dx
-    //      c = m(i)(j)
-    //      sq = IPoint(i, j).toSquare
-    //    } {
-    //      painter.drawPoly(sq, if (c.canStep) LIGHT_GRAY else DARK_GRAY)
-    //    }
 
     setText(s"$RUNNING_TEXT: $timeElapsed rounds.")
 
-    for (w <- watchmen.keySet.toList; wp = watchPos(w)) {
-      painter.drawCirclePoint(wp, RED)
+    // Get all watchmen at their current positions
+    val watchmenPositions: Seq[(Watchman, IPoint)] =
+      for {k <- watchmen.keySet.toList
+           if watchPos.isDefinedAt(k)
+           wPos = watchPos(k)
+           w = watchmen(k)} yield (w, wPos)
+
+    // TODO: Draw affected cells 
+
+    // Draw watchmen
+    for ((_, wPos) <- watchmenPositions) {
+      painter.drawCirclePoint(wPos, RED)
     }
   }
+
+  // Draw the initial task
+  private def drawTask(task: ContestTask, painter: JSCanvasPainter) = {
+    painter.drawPoly(task.room, LIGHT_GRAY)
+    task.obstacles.foreach(o => painter.drawPoly(o, DARK_GRAY))
+    for ((b, bp) <- task.boosters) {
+      painter.drawCirclePoint(bp, boosterToColor(b))
+    }
+    painter.drawCirclePoint(task.initPos, RED)
+  }
+
+
+  /* ------------------------------------------------------------------------ */
+  /*                         Running solution                                 */
+  /* ------------------------------------------------------------------------ */
 
   def runSolution(): Unit = {
     if (allInPlace) {
@@ -133,8 +156,13 @@ object GraderWithGraphics extends JSGrading {
         enableFileInputs
         currentState = None
       }
+    } else {
+      enableFileInputs
+      currentState = None
     }
   }
+
+  // TODO: Add shortcuts to start/pause/reset solution and also to change speed
 
   private def stopExecution = {
     if (execIntervalHandle.isDefined) {
@@ -144,7 +172,7 @@ object GraderWithGraphics extends JSGrading {
   }
 
   /* ------------------------------------------------------------------------ */
-  /*                                Rendering                                 */
+  /*                                Bookkeeping                               */
   /* ------------------------------------------------------------------------ */
 
   def setText(text: String): Boolean = {
@@ -207,22 +235,9 @@ object GraderWithGraphics extends JSGrading {
       currentPainter.isDefined
   }
 
-  @JSExportTopLevel("graderWithGraphics")
-  def main(): Unit = {
-    canvas.width = dims._1
-    canvas.height = dims._2 + upperBorder
-    clearMain
-    setText(UPLOAD_FILES)
-    refreshExecButton
-    taskFileInput.onchange = taskHandler
-    solutionFileInput.onchange = solutionHandler
-    execButton.onclick = execHandler
-  }
-
   /* ------------------------------------------------------------------------ */
   /*                               Handlers                                   */
   /* ------------------------------------------------------------------------ */
-
 
   val execHandler: Function1[Event, Unit] = event => {
     if (currentTask.isDefined && currentSolution.isDefined) {
