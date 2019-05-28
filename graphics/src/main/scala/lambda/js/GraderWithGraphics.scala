@@ -7,6 +7,7 @@ import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
+import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
 import lambda.js.GraderWithGraphics.{decreaseSpeed, execHandler, increaseSpeed, pauseResumeHandler}
 import lambda.js.JSRenderingUtils._
 import org.scalajs.dom
@@ -40,7 +41,7 @@ object GraderWithGraphics extends JSGrading {
   mkFileInput(centered, submitSolutionId, SUBMIT_SOLUTION_TEXT)
   mkButton(centered, execButtonId, EXECUTE_TEXT)
 
-  private val scaleFactorX: Double = 4.0 / 5
+  private val scaleFactorX: Double = 3.8 / 5
   private val scaleFactorY: Double = 4.6 / 5
   private val upperBorder = 28
   lazy val dims: (Int, Int) = {
@@ -122,9 +123,14 @@ object GraderWithGraphics extends JSGrading {
   def setOnPause(): Unit = {
     paused = true
   }
-  
-  def increaseSpeed(): Unit ={
-    if (currentSpeed >= 400) {
+
+  def increaseSpeed(): Unit = {
+    if (currentSpeed >= 4000) return
+    if (currentSpeed >= 2000) {
+      currentSpeed = 4000
+    } else if (currentSpeed >= 1000) {
+      currentSpeed = 2000
+    } else if (currentSpeed >= 400) {
       currentSpeed = 1000
     } else if (currentSpeed < 25) {
       currentSpeed = currentSpeed + 1
@@ -132,11 +138,16 @@ object GraderWithGraphics extends JSGrading {
       currentSpeed = currentSpeed * 2
     }
     setSpeedText()
+    changeExecutionSpeed()
   }
-  
-  def decreaseSpeed(): Unit ={
-    if (currentSpeed <= 1) {}
-    else if (currentSpeed >= 1000) {
+
+  def decreaseSpeed(): Unit = {
+    if (currentSpeed <= 1) return
+    if (currentSpeed >= 4000) {
+      currentSpeed = 2000
+    } else if (currentSpeed >= 2000) {
+      currentSpeed = 1000
+    } else if (currentSpeed >= 1000) {
       currentSpeed = 400
     } else if (currentSpeed <= 25) {
       currentSpeed = currentSpeed - 1
@@ -144,11 +155,33 @@ object GraderWithGraphics extends JSGrading {
       currentSpeed = currentSpeed / 2
     }
     setSpeedText()
+    changeExecutionSpeed()
   }
-  
+
   def getCurrentRefreshRateMS = {
     1000 / currentSpeed
   }
+
+  def changeExecutionSpeed(): Unit = {
+    if (execIntervalHandle.isDefined) {
+      dom.window.clearInterval(execIntervalHandle.get)
+      val handle = dom.window.setInterval(() => {
+        tryRunSolution()
+      }, getCurrentRefreshRateMS)
+      execIntervalHandle = Some(handle)
+    }
+  }
+
+  private def interruptExecution = {
+    if (execIntervalHandle.isDefined) {
+      dom.window.clearInterval(execIntervalHandle.get)
+      execIntervalHandle = None
+      currentState = None
+      setOnPause()
+      refreshExecButton
+    }
+  }
+
 
   /* ------------------------------------------------------------------------ */
   /*                         Running solution                                 */
@@ -201,17 +234,6 @@ object GraderWithGraphics extends JSGrading {
     }
   }
 
-  private def interruptExecution = {
-    if (execIntervalHandle.isDefined) {
-      dom.window.clearInterval(execIntervalHandle.get)
-      execIntervalHandle = None
-      currentState = None
-      setOnPause()
-      refreshExecButton
-    }
-  }
-
-
   /* ------------------------------------------------------------------------ */
   /*                                 Drawing                                  */
   /* ------------------------------------------------------------------------ */
@@ -220,6 +242,7 @@ object GraderWithGraphics extends JSGrading {
                       (m: TaskMatrix, dx: Int, dy: Int,
                        watchmen: Map[Int, Watchman],
                        watchPos: Map[Int, IPoint],
+                       watchPosOld: Map[Int, IPoint],
                        timeElapsed: Int): Unit = {
 
     setText(s"$RUNNING_TEXT: $timeElapsed rounds")
@@ -230,9 +253,17 @@ object GraderWithGraphics extends JSGrading {
            if watchPos.isDefinedAt(k)
            wPos = watchPos(k)
            w = watchmen(k)} yield (w, wPos)
-
+    
+    
+    val watchmenPositionsOld: Seq[(Watchman, IPoint)] =
+      for {k <- watchmen.keySet.toList
+           if watchPosOld.isDefinedAt(k)
+           wPos = watchPos(k)
+           w = watchmen(k)} yield (w, wPos)
+    
+    
     // Re-draw illumination in affected cells
-    val cells = (for ((w, wPos) <- watchmenPositions;
+    val cells = (for ((w, wPos) <- watchmenPositions ++ watchmenPositionsOld;
                       pc <- getAffectedCells(m, dx, dy, painter.affectedRadius, wPos, w)) yield pc).toSet
     cells.foreach { case (p, c) => painter.renderCell(p, c) }
 
@@ -240,7 +271,8 @@ object GraderWithGraphics extends JSGrading {
     for ((w, wPos) <- watchmenPositions;
          lit <- w.getTorchRange(wPos)) {
       cells.find { case (p, _) => p == lit } match {
-        case Some((_, c)) if c.canStep && c.isIlluminated =>
+        case Some((p, c)) 
+          if c.canStep && c.isIlluminated && squareIsVisible(wPos, p, m, dx, dy) =>
           painter.renderCellWithColor(lit, DARK_YELLOW)
         case _ =>
       }
@@ -257,7 +289,7 @@ object GraderWithGraphics extends JSGrading {
         if (c.hasCallPoint) {
           painter.drawCirclePoint(p, boosterToColor(Booster.CallPoint))
         } else if (c.hasTeleport) {
-          painter.drawCirclePoint(p, boosterToColor(Booster.CallPoint))
+          painter.drawCirclePoint(p, INSTALLED_TELE_COLOR)
         }
       }
 
@@ -266,6 +298,23 @@ object GraderWithGraphics extends JSGrading {
       painter.drawCirclePoint(wPos, RED)
     }
   }
+
+  private def positionWithinBoundingBox(pos: IPoint, dx: Int, dy: Int): Boolean = {
+    val (x, y) = pos.toPair
+    x >= 0 && y >= 0 && x < dy && y < dy
+  }
+
+
+  private def squareIsVisible(wPos: IPoint, litSquare: IPoint, matrix: TaskMatrix, dx: Int, dy: Int): Boolean = {
+    if (!positionWithinBoundingBox(litSquare, dx, dy)) return false
+    val crossedCells = cellsIntersectedByViewSegment(wPos, litSquare)
+    crossedCells.forall(p => {
+      val (x, y) = p.toPair
+      matrix(x)(y).canStep
+    })
+  }
+
+
 
   // Draw the initial task
   private def drawTask(task: ContestTask, painter: JSCanvasPainter) = {
@@ -293,7 +342,7 @@ object GraderWithGraphics extends JSGrading {
   }
 
   def setSpeedText(): Unit = {
-    speedText.textContent = s"$currentSpeed rounds/sec"
+    speedText.textContent = s"$currentSpeed"
   }
 
   private def clearCaption: Unit = {

@@ -30,6 +30,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
   private val watchmen: MMap[Int, Watchman] = MMap.empty
   private val watchmenPositions: MMap[Int, IPoint] = MMap.empty
+  private val watchmenPositionsOld: MMap[Int, IPoint] = MMap.empty
 
   /* --------------------------------------------------- */
   /*          Checking runtime properties                */
@@ -109,6 +110,7 @@ class TaskExecution(private val matrix: TaskMatrix,
     def moveToNewPosWithDrill(wPosNew: IPoint) = {
       assertCondition(positionWithinBoundingBox(wPosNew), wPosOld)
       getCell(wPosNew).clearSpace()
+      watchmenPositionsOld(watchNum) = wPosOld
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     }
@@ -135,6 +137,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
     def moveToNewPosWithCoffee(wPosOld: IPoint, wPosNew: IPoint) = {
       if (canStepToPosition(wPosNew)) {
+        watchmenPositionsOld(watchNum) = wPosOld
         watchmenPositions(watchNum) = wPosNew
         wPosNew
       } else wPosOld
@@ -180,6 +183,7 @@ class TaskExecution(private val matrix: TaskMatrix,
           val newWatchman = new Watchman()
           val newWNum = watchmen.keys.max + 1
           watchmen.update(newWNum, newWatchman)
+          watchmenPositionsOld(newWNum) = wPosOld
           watchmenPositions.update(newWNum, wPosOld)
           wPosOld
         } else {
@@ -219,12 +223,13 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
 
-  def doTeleport(watchNum: Int, wPosNew: IPoint): IPoint = {
+  def doTeleport(watchNum: Int, wPosNew: IPoint, wPosOld: IPoint): IPoint = {
     if (canStepToPosition(wPosNew)) {
       val cell = getCell(wPosNew)
       if (!cell.hasTeleport) {
         throw ContestException(BAD_TELEPORT_LOCATION, Some(wPosNew))
       }
+      watchmenPositionsOld(watchNum) = wPosOld
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     } else {
@@ -245,6 +250,7 @@ class TaskExecution(private val matrix: TaskMatrix,
 
     def moveToNewPos(wPosNew: IPoint) = {
       assertCondition(canStepToPosition(wPosNew), wPosOld)
+      watchmenPositionsOld(watchNum) = wPosOld
       watchmenPositions(watchNum) = wPosNew
       wPosNew
     }
@@ -266,7 +272,7 @@ class TaskExecution(private val matrix: TaskMatrix,
       case InstallTele => tryUseBooster(act, watchNum, wPosOld)
       case UseCall => tryUseBooster(act, watchNum, wPosOld)
 
-      case DoTele(x, y) => doTeleport(watchNum, IPoint(x, y))
+      case DoTele(x, y) => doTeleport(watchNum, IPoint(x, y), wPosOld)
 
     }
 
@@ -320,7 +326,9 @@ class TaskExecution(private val matrix: TaskMatrix,
     tick()
 
     callback(matrix, xmax, ymax, 
-      watchmen.toMap, watchmenPositions.toMap, 
+      watchmen.toMap, 
+      watchmenPositions.toMap, 
+      watchmenPositionsOld.toMap, 
       getElapsedTime)
   }
   
@@ -426,10 +434,12 @@ class TaskExecution(private val matrix: TaskMatrix,
 object TaskExecution {
   
   type CallBack = (TaskMatrix, Int, Int, 
-    Map[Int, Watchman], Map[Int, IPoint], Int) => Unit
+    Map[Int, Watchman], Map[Int, IPoint], Map[Int, IPoint], Int) => Unit
   
   def dummyCallback(m: TaskMatrix, dx: Int, dy: Int,
-                    ws: Map[Int, Watchman], wpos: Map[Int, IPoint],
+                    ws: Map[Int, Watchman], 
+                    wpos: Map[Int, IPoint],
+                    wposOld: Map[Int, IPoint],
                     timeElapsed: Int) {}
 
   /**

@@ -31,7 +31,7 @@ trait JSGrading {
   val SUBMIT_SOLUTION_TEXT = "Solution file"
   val CHECK_TEXT = "Check"
   val CHECK_AND_RENDER_TEXT = "Upload files"
-  val EXECUTE_TEXT = "Execute"
+  val EXECUTE_TEXT = "Prepare to Run"
   
   val PREPROCESSING_TEXT = "Pre-processing and validating the task..."
   val SPACE_TO_RUN_TEXT = "Press SPACE to begin execution"
