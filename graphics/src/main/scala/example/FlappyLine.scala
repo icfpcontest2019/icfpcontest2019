@@ -6,6 +6,11 @@ import org.scalajs.dom.html
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.util.Random
 
+/**
+  * Used as an example of Scala.JS
+  *
+  * @author Li Haoyi
+  */
 object FlappyLine extends{
 
   val canvas =
@@ -24,7 +29,7 @@ object FlappyLine extends{
   renderer.textBaseline = "middle"
   
 
-  @JSExportTopLevel("flappyLine")
+  // @JSExportTopLevel("flappyLine")
   def main(canvas: html.Canvas) = {
     /*setup*/
 

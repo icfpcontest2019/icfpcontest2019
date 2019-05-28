@@ -7,8 +7,13 @@ import org.scalajs.dom.html
 import scala.scalajs.js.annotation.JSExportTopLevel
 import scala.util.Random
 
+/**
+  * Used as an example of Scala.JS
+  *
+  * @author Li Haoyi
+  */
 object Fractal {
-  @JSExportTopLevel("drawFractal")
+  //@JSExportTopLevel("drawFractal")
   def main(canvas: html.Canvas): Unit = {
     val ctx = canvas.getContext("2d")
       .asInstanceOf[dom.CanvasRenderingContext2D]

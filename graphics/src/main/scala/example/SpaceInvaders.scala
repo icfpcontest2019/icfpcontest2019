@@ -6,6 +6,11 @@ import org.scalajs.dom.html
 
 import scala.scalajs.js.annotation.JSExportTopLevel
 
+/**
+  * Used as an example of Scala.JS
+  * 
+  * @author Li Haoyi
+  */
 object SpaceInvaders {
   private lazy val canvas =
     dom.document
@@ -84,7 +89,7 @@ object SpaceInvaders {
   }
 
   private val keysDown = collection.mutable.Set.empty[Int]
-  @JSExportTopLevel("spaceInvaders")
+  // @JSExportTopLevel("spaceInvaders")
   def main(): Unit = {
 
     dom.console.log("main")
