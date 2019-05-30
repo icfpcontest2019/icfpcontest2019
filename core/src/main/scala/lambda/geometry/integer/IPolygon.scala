@@ -251,6 +251,19 @@ case class IPolygon(vertices: Seq[IPoint]) {
     res
   }
 
+  def randomCellOutside: IPoint = {
+    val ((xl, yl), (xr, yr)) = boundingBox
+    var x = xl + Random.nextInt(xr - xl)
+    var y = yl + Random.nextInt(yr - yl)
+    while (containsCell(IPoint(x, y))) {
+      x = xl + Random.nextInt(xr - xl)
+      y = yl + Random.nextInt(yr - yl)
+    }
+    val res = IPoint(x, y)
+    assert(!this.containsCell(res))
+    res
+  }
+
   def leftMostBottomCell: IPoint = {
     val IPoint(minx, _) = getMinXY
     val minLeft = vertices.filter(_.x == minx).minBy(_.y)
