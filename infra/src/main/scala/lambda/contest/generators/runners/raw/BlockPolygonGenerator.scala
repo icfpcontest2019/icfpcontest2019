@@ -51,6 +51,10 @@ object BlockPolygonGenerator {
     }
   }
 
+
+  val pixelDiscrepancy = 10
+  val ratioDiscrepancy = 0.25
+
   /**
     * Try to generate polygons while doesn't satisfy characteristics  
     */
@@ -60,13 +64,13 @@ object BlockPolygonGenerator {
     def checkPoly(poly: IPolygon): Boolean = {
       val (_, (dx, dy)) = poly.boundingBox
       if (dx > boxSize || dy > boxSize) return false
-      if (boxSize - dx > 5 || boxSize - dy > 5) return false
+      if (boxSize - dx > pixelDiscrepancy || boxSize - dy > pixelDiscrepancy) return false
       val vs = poly.vertices
       if (vs.size < minVertices || vs.size > maxVertices) return false
       val area = poly.toFPolygon.area
       val boxArea = boxSize * boxSize.toDouble
       val ratio = area / boxArea
-      if (ratio < 0.25) return false
+      if (ratio < ratioDiscrepancy) return false
       true
     }
 
