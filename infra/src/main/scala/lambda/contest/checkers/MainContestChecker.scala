@@ -1,5 +1,6 @@
 package lambda.contest.checkers
 
+import lambda.contest.generators.runners.matrices.TaskMatrixConverter
 import lambda.solvers.SimpleSolver
 
 /**
@@ -19,7 +20,7 @@ object MainContestChecker {
 
   object CheckerMode extends Enumeration {
     type CheckerMode = Value
-    val Team, Solver, Batch, Chain, Bad = Value
+    val Team, Solver, MatrixConverter, Chain, Bad = Value
   }
 
   private val mainParser = new scopt.OptionParser[CheckerMode.Value](SCRIPTNAME) {
@@ -31,7 +32,7 @@ object MainContestChecker {
         case "team" => CheckerMode.Team
         case "solver" => CheckerMode.Solver
         case "chain" => CheckerMode.Chain
-        // case "batch" => CheckerMode.Batch
+        case "matrix" => CheckerMode.MatrixConverter
       }
     }.text(s"a mode to run the checker: individual team (team), solver (solver), or chain processing (chain).")
 
@@ -51,8 +52,8 @@ object MainContestChecker {
           case CheckerMode.Team => IndividualGrader.main(newArgs)
           case CheckerMode.Solver => SimpleSolver.main(newArgs)
           case CheckerMode.Chain => ChainEvaluator.main(newArgs)
-          // case CheckerMode.Batch => BatchGrader(newArgs)
-          case _ => System.err.println("Uknown checker mode.")
+          case CheckerMode.MatrixConverter => TaskMatrixConverter.main(newArgs)
+          case _ => System.err.println("Unknown checker mode")
         }
       case _ => 
         //System.err.println("Provided arguments for the checker are malformed.")

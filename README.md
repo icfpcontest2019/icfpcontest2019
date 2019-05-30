@@ -59,6 +59,15 @@ For instance:
 ./checker solver ./infra/src/main/resources/contest/final ~/tmp/solutions
 ```
 
+### Generating a Task Matrix
+
+```
+./checker matrix <task_file.desc> <task_file.mat>
+```
+
+Make sure to put the files with correct extensions (the converter doesn't check those)!
+
+
 ## Compiling the JavaScript checker
 
 First, run from terminal:
