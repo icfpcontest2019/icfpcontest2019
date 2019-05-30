@@ -42,7 +42,7 @@ object RawRoomGenerator {
 
   var pp: PolygonToRender = _
   var path = "./infra/src/main/resources/contest/no_obstacles_no_boosters"
-  var gens = 150
+  var gens = 100
 
 
   def main(args: Array[String]) {
