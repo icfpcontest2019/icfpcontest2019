@@ -20,7 +20,7 @@ object AddBoostersToTasks {
     val mainDir = new File(rawPath)
     assert(mainDir.exists() && mainDir.isDirectory)
     val subdirs = mainDir.listFiles().toList.filter(_.isDirectory)
-    for (d <- subdirs.sortBy(_.getName)) {
+    for (d <- subdirs.sortBy(_.getName) if d.getName.contains("genesis")) {
       processDir(d)
     }
   }
