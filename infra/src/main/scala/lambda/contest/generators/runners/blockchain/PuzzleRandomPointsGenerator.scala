@@ -35,20 +35,40 @@ object PuzzleRandomPointsGenerator {
       val s = FileUtil.readFromFile(polyFile.getAbsolutePath).head
       val poly = polyParser(s).get
       val (inSquares, outSquares) = generateInOutSquares(poly, p.pointsInsideNum, p.pointsOutsideNum)
+
+      val inString = inSquares.mkString(",")
+      val outString = outSquares.mkString(",")
+      val mainParamsString = List(
+        p.puzzleNum,
+        p.epoch,
+        p.boxSize,
+        p.minVNum,
+        p.maxVNum,
+        p.batteriesNum,
+        p.coffeeNum,
+        p.drillNum,
+        p.portalNum,
+        p.forkNum,
+        p.callPointNum,
+      ).map(_.toString).mkString(",")
       
-      // TODO: generate complete puzzle specification
+      val finalString = s"$mainParamsString#$inString#$outString"
       
-      println(s"Done with polygon ${p.puzzleNum}")
+      val outFilePath = s"$outPath/${intAs3CharString(num)}$SPEC_EXT"
+      
+      FileUtil.writeToNewFile(outFilePath, finalString)
+
+      println(s"Done with polygon ${p.puzzleNum}, written to $outFilePath")
     }
 
   }
-  
-  private def generateInOutSquares(poly : IPolygon, inNum: Int, outNum: Int): (List[IPoint], List[IPoint]) = {
+
+  private def generateInOutSquares(poly: IPolygon, inNum: Int, outNum: Int): (List[IPoint], List[IPoint]) = {
     import collection.mutable.{HashSet => MSet}
-    
-    val pointsIn: MSet[IPoint] = MSet.empty 
+
+    val pointsIn: MSet[IPoint] = MSet.empty
     val pointsOut: MSet[IPoint] = MSet.empty
-    
+
     while (pointsIn.size < inNum) {
       val p = poly.randomCellWithin
       if (!pointsIn.contains(p)) {
@@ -62,9 +82,9 @@ object PuzzleRandomPointsGenerator {
         pointsOut.add(p)
       }
     }
-    
+
     (pointsIn.toList, pointsOut.toList)
-    
+
   }
 
   private def polyParser = new GeometryParsers {
