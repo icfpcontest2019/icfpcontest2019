@@ -2,11 +2,11 @@ package lambda.contest.generators.runners.blockchain
 
 import java.io.File
 
-import lambda.contest.generators.runners.blockchain.BlockPolygonGenerator.{POLY_EXT, generatePolygonWithinBox, loadEpochParams, outPath}
+import lambda.contest.generators.runners.blockchain.BlockPolygonGenerator.{POLY_EXT, loadEpochParams}
 import lambda.geometry.GeometryParsers
 import lambda.geometry.integer.{IPoint, IPolygon}
 import lambda.util.FileUtil
-import lambda.util.FileUtil.{intAs3CharString, writeToNewFile}
+import lambda.util.FileUtil.intAs3CharString
 
 /**
   * @author Ilya Sergey
