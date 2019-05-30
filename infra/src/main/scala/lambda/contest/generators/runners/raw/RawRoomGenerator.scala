@@ -132,7 +132,7 @@ object RawRoomGenerator {
     buttons ++ List(rejectButton)
   }
 
-  protected def generateNewPolygon(boxSize: Int = 100): CompositePolygon = {
+  def generateNewPolygon(boxSize: Int = 100): CompositePolygon = {
     val numGen = gens + Random.nextInt(gens)
     val generator = TaskGeneratorUtils.getSuitableGenerator(boxSize, None)
     val pc = generator.generate(numGen).sample.get
