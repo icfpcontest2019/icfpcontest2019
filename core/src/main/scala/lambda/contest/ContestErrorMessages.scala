@@ -45,6 +45,9 @@ object ContestErrorMessages {
   val SPEC_ERROR = "the task does not conform to the current block specification" 
   val SPEC_BOOSTER_ERROR = "wrong booster configuration" 
   val POINTS_NOT_INSIDE_ERROR = "some inside-points are not inside" 
-  val POINTS_NOT_OUTSIDE_ERROR = "some outside-points are not outside" 
-  
+  val POINTS_NOT_OUTSIDE_ERROR = "some outside-points are not outside"
+  val TASK_TOO_LARGE_ERROR = "the task size is too large (in one of the dimensions)"
+  val TASK_TOO_SMALL_ERROR = "the task size is too small"
+  val TASK_VERTICES_ERROR = "the number of the vertices is not within the specified limits"
+  val TASK_AREA_ERROR = "the task area is too small"
 }

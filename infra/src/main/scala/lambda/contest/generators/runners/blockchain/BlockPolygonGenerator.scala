@@ -52,7 +52,7 @@ object BlockPolygonGenerator {
 
     val pc = generateNewPolygon(boxSize)
     val poly = pc.pol.toIPolygon.shiftToOrigin
-    if (!PuzzleCheckingUtils.checkPolyForPuzzle(poly, boxSize, minVertices, maxVertices)) {
+    if (!PuzzleCheckingUtils.checkPolyForPuzzleSafe(poly, boxSize, minVertices, maxVertices)) {
       generatePolygonWithinBox(boxSize, minVertices, maxVertices)
     } else {
       poly

@@ -4,7 +4,7 @@ import java.io.File
 
 import lambda.contest.ContestErrorMessages._
 import lambda.contest.checkers.ContestTaskUtils
-import lambda.contest.{Booster, ContestErrorMessages, ContestException, ContestTask}
+import lambda.contest.{Booster, ContestException, ContestTask}
 import lambda.geometry.integer.IPolygonUtils.parsePoly
 import lambda.geometry.integer.{IPoint, IPolygon}
 import lambda.util.FileUtil
@@ -20,15 +20,27 @@ object PuzzleCheckingUtils {
     val (_, (dx, dy)) = poly.boundingBox
     val pixelDiscrepancy = math.floor(boxSize / 10)
 
-    if (dx > boxSize || dy > boxSize) return false
-    if (boxSize - dx > pixelDiscrepancy && boxSize - dy > pixelDiscrepancy) return false
+    if (dx > boxSize || dy > boxSize) 
+      throw ContestException(TASK_TOO_LARGE_ERROR)
+    if (boxSize - dx > pixelDiscrepancy && boxSize - dy > pixelDiscrepancy)
+      throw ContestException(TASK_TOO_SMALL_ERROR)
     val vs = poly.vertices
-    if (vs.size < minVertices || vs.size > maxVertices) return false
+    if (vs.size < minVertices || vs.size > maxVertices)
+      throw ContestException(TASK_VERTICES_ERROR)
     val area = poly.toFPolygon.area
     val boxArea = boxSize * boxSize.toDouble
     val ratio = area / boxArea
-    if (ratio < ratioDiscrepancy) return false
+    if (ratio < ratioDiscrepancy)
+      throw ContestException(TASK_AREA_ERROR)
     true
+  }
+  
+  def checkPolyForPuzzleSafe(poly: IPolygon, boxSize: Int, minVertices: Int, maxVertices: Int): Boolean = {
+    try {
+      checkPolyForPuzzle(poly, boxSize, minVertices, maxVertices)
+    } catch {
+      case ContestException(_, _) => false
+    }
   }
 
 
@@ -69,12 +81,12 @@ object PuzzleCheckingUtils {
       ContestTaskUtils.checkTaskWellFormed(task)
       val ContestTask(room, _, obs, boosters) = task
       
-      if (!checkPolyForPuzzle(room, spec.boxSize, spec.minVNum, spec.maxVNum))
-        throw ContestException(SPEC_ERROR)
-      
       if (obs.nonEmpty) 
         throw ContestException(HAS_OBSTACLES_ERROR)
-
+      
+      // Check room fitting
+      checkPolyForPuzzle(room, spec.boxSize, spec.minVNum, spec.maxVNum)
+      
       // Check boosters
       checkBoosterNumbers(spec, boosters)
       
