@@ -50,4 +50,7 @@ object ContestErrorMessages {
   val TASK_TOO_SMALL_ERROR = "the task size is too small"
   val TASK_VERTICES_ERROR = "the number of the vertices is not within the specified limits"
   val TASK_AREA_ERROR = "the task area is too small"
+  
+  val NO_SOLUTION_FILE = "No solution file for the team"
+  val NO_PUZZLE_FILE = "No task description file for the team"
 }

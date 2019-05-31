@@ -2,7 +2,7 @@ package lambda.js
 
 
 import lambda.contest.checkers.TaskCreationUtils.contestTaskToMatrix
-import lambda.contest.checkers.TaskExecution
+import lambda.contest.checkers.{ContestTaskUtils, TaskExecution}
 import lambda.contest.{ContestException, ContestTask}
 import lambda.geometry.integer.IPoint
 import org.scalajs.dom
@@ -87,6 +87,7 @@ object GraderNoGraphics extends JSGrading {
   def runSolution(taskText: String, solutionText: String): Unit = {
     try {
       val task@ContestTask(_, init, _, _) = parseTask(taskText)
+      ContestTaskUtils.checkTaskWellFormed(task)
       val moves = parseSolution(solutionText)
       val t0 = new Date().getTime()
       val (matrix, dx, dy) = contestTaskToMatrix(task)

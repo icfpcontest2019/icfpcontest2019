@@ -18,6 +18,12 @@ sbt test
 To assemble the executable JARs, run
 
 ```
+make build
+```
+
+or
+
+```
 sbt assembly
 ```
 
@@ -67,6 +73,30 @@ For instance:
 
 Make sure to put the files with correct extensions (the converter doesn't check those)!
 
+### Checking submissions for a given block
+
+The format for block checking is as follows:
+
+```
+./checker block -p <current_task.mat> -c <lambda.chain> -b <blockNum> -s <submissionFolder> -o <path-to-scores.csv> -v <true>
+```
+
+For example, in the root of this project run:
+
+```
+./checker block -p ./infra/src/main/resources/blockchain/genesis/prob-000.mat -c ./infra/src/main/resources/blockchain/lambda.chain -b 1 -s ./infra/src/main/resources/blockchain/test/1/submissions -o ./infra/src/main/resources/blockchain/test/1 -v true
+```
+
+## Location of important files:
+
+* `icfpcontest2019/infra/src/main/resources/blockchain` -- lambda-chain relate resources:
+  * `lambda.chain` -- specification for future tasks (one peer line)
+  * `genesis` -- a description, matrix (and a pretty bad solution) for the genesis block
+
+* `icfpcontest2019/infra/src/main/resources/blockchain` -- main contest files  
+  * `deliverables` -- three folders to be given to the contestants
+  * `final` -- same tasks, but with matrices
+
 
 ## Compiling the JavaScript checker
 
@@ -84,7 +114,7 @@ Then open the web-page `./graphics/src/main/resources/validate.html` which conta
 * `RawRoomGenerator` -- generate random room within a given box
 * `AddObstaclesToTasks` -- adding obstacles to rooms
 * `AddBoostersToTasks` -- adding boosters to the tasks
-* `BatchTaskMatrixConverter` -- converting tasks to matrices
+* `BatchTaskMatrixConverter` -- converting tasks to matrices, can use it on the server on deliverables to produce matrices
 * `CountriesToRectilinear` -- make rectilinear country shapes from the geodata
 * `SimpleSolver` -- a dumb solver for the problem
 

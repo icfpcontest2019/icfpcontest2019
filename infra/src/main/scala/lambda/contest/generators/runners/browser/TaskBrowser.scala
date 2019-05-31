@@ -6,11 +6,11 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.ContestTask
+import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.generators.PolygonToRender
 import lambda.contest.generators.runners.TaskRenderingUtils
 import lambda.contest.parsers.ContestTaskParser
-import lambda.geometry.integer.IPoint
 import lambda.util.FileUtil
 
 import scala.collection.mutable
@@ -47,6 +47,7 @@ object TaskBrowser {
           System.err.println("Nothing to paint, sorry!")
         } else {
           val (task, file) = tasks(index)
+          assert(ContestTaskUtils.checkTaskWellFormed(task))
           TaskRenderingUtils.renderTask(g, task, file)
         }
       }

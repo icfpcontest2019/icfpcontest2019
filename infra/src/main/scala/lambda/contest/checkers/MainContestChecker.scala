@@ -20,7 +20,7 @@ object MainContestChecker {
 
   object CheckerMode extends Enumeration {
     type CheckerMode = Value
-    val Team, Solver, MatrixConverter, Chain, Bad = Value
+    val Team, Solver, MatrixConverter, Block, Bad = Value
   }
 
   private val mainParser = new scopt.OptionParser[CheckerMode.Value](SCRIPTNAME) {
@@ -31,7 +31,7 @@ object MainContestChecker {
       x match {
         case "team" => CheckerMode.Team
         case "solver" => CheckerMode.Solver
-        case "chain" => CheckerMode.Chain
+        case "block" => CheckerMode.Block
         case "matrix" => CheckerMode.MatrixConverter
       }
     }.text(s"a mode to run the checker: individual team (team), solver (solver), or chain processing (chain).")
@@ -51,7 +51,7 @@ object MainContestChecker {
         m match {
           case CheckerMode.Team => IndividualGrader.main(newArgs)
           case CheckerMode.Solver => SimpleSolver.main(newArgs)
-          case CheckerMode.Chain => ChainEvaluator.main(newArgs)
+          case CheckerMode.Block => BlockChecker.main(newArgs)
           case CheckerMode.MatrixConverter => TaskMatrixConverter.main(newArgs)
           case _ => System.err.println("Unknown checker mode")
         }

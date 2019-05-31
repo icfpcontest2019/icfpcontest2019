@@ -3,7 +3,7 @@ package lambda.js
 import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
-import lambda.contest.checkers.{TaskCreationUtils, TaskExecution, TaskMatrix}
+import lambda.contest.checkers.{ContestTaskUtils, TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
@@ -453,6 +453,7 @@ object GraderWithGraphics extends JSGrading {
               clearMain
               clearTask
               val task@ContestTask(room, init, _, _) = parseTask(text)
+              ContestTaskUtils.checkTaskWellFormed(task)
               val painter = new JSCanvasPainter(ctx, room, dims._1, dims._2, upperBorder)
               currentTaskText = text
               currentTask = Some(task)
