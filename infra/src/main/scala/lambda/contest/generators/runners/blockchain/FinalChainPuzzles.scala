@@ -25,7 +25,7 @@ object FinalChainPuzzles {
   val PUZZLE_PREFIX = "puzzle-"
 
   def main(args: Array[String]): Unit = {
-    val puzzleSpecs = getPuzzles(specPath)
+    val puzzleSpecs = getPuzzleSpecs(specPath)
     new File(polyPath)
       .listFiles()
       .toList
@@ -35,7 +35,7 @@ object FinalChainPuzzles {
         val polyString = FileUtil.readFromFile(f.getAbsolutePath).head.trim
         val poly = IPolygonUtils.parsePoly(polyString).get
         val rawTask = ContestTask(poly, poly.randomCellWithin, Nil, Nil)
-        val spec = puzzleSpecs.find(s => s.num == num).get
+        val spec = puzzleSpecs(num)
         val taskWithBoosters = beefTaskWithBoosters(rawTask, spec)
         val fName = s"$PROBLEM_PREFIX${intAs3CharString(num)}$PROBLEM_DESC_EXT"
         FileUtil.writeToNewFile(s"$finalPath/$fName", taskWithBoosters.toString)

@@ -44,5 +44,7 @@ object ContestErrorMessages {
   val HAS_OBSTACLES_ERROR = "the task description should contain no obstacles" 
   val SPEC_ERROR = "the task does not conform to the current block specification" 
   val SPEC_BOOSTER_ERROR = "wrong booster configuration" 
+  val POINTS_NOT_INSIDE_ERROR = "some inside-points are not inside" 
+  val POINTS_NOT_OUTSIDE_ERROR = "some outside-points are not outside" 
   
 }
