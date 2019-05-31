@@ -513,6 +513,5 @@ object GraderWithGraphics extends JSGrading {
       solutionReader.readAsText(solutionFileInput.files(0))
     }
   }
-
-
+  
 }

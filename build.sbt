@@ -37,7 +37,9 @@ lazy val infra = project
     settings,
     fork in Test := true,
     libraryDependencies ++= commonDependencies ++ akka,
-    libraryDependencies += geoJSON
+    libraryDependencies += geoJSON,
+    mainClass in Compile := Some("lambda.contest.checkers.MainContestChecker"),
+    
   )
   .dependsOn(
     core
@@ -48,24 +50,24 @@ lazy val graphics = project
   .settings(
     name := "graphics",
     settings,
-    libraryDependencies ++= commonDependencies,
+    libraryDependencies ++= commonDependenciesMinusParsers,
     libraryDependencies += "org.scala-js" %% "scalajs-env-jsdom-nodejs" % "1.0.0-M7",
     libraryDependencies += "org.scala-js" %%% "scalajs-dom" % "0.9.7",
     libraryDependencies += "org.scala-lang.modules" %%% "scala-parser-combinators" % "1.1.2",
-    //libraryDependencies += "com.lihaoyi" %%% "fastparse" % "2.1.0"
+    assembleArtifact := false,
   )
   .dependsOn(
     core
   )
   .enablePlugins(ScalaJSPlugin)
+  .disablePlugins(sbtassembly.AssemblyPlugin)
 
 /** ******************************************/
 //               Dependencies               //
 /** ******************************************/
 
 
-lazy val commonDependencies = Seq(
-  parserCombinators,
+lazy val commonDependenciesMinusParsers = Seq(
   scalaIO,
   email,
   commonsIO,
@@ -77,6 +79,9 @@ lazy val commonDependencies = Seq(
   specs,
   scopt
 )
+
+lazy val commonDependencies = Seq(parserCombinators) ++ commonDependenciesMinusParsers
+
 
 lazy val parserCombinators = "org.scala-lang.modules" %% "scala-parser-combinators" % "1.1.2"
 lazy val geoJSON = "org.locationtech.geotrellis" %% "geotrellis-raster" % "2.2.0"

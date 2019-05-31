@@ -19,52 +19,52 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     val d = letters.distinct
     assertResult(letters)(d)
   }
-  
+
   val rawPath = "./src/main/resources/contest/no_obstacles_no_boosters"
-  
+
   def checkRawTasksInFolder(folder: String): Unit = {
-    s"A consistency check for $folder" should "succeed" in {}  
-      val dir = new File(s"$rawPath/$folder/")
-      assert(dir.isDirectory)
-      for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
-        val path = f.getAbsolutePath
-        val contents = FileUtil.readFromFileWithNewLines(path).trim
-        val res = ContestTaskParser(contents)
-        it should s"pass for ${f.getName}" in {
-          assert(!res.isEmpty)
-          val task = res.get
-          // val (matrix, _, _) = TaskCreationUtils.contestTaskToMatrix(task)
-          assert(checkTaskWellFormed(task))
-        }
+    s"A consistency check for $folder" should "succeed" in {}
+    val dir = new File(s"$rawPath/$folder/")
+    assert(dir.isDirectory)
+    for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
+      val path = f.getAbsolutePath
+      val contents = FileUtil.readFromFileWithNewLines(path).trim
+      val res = ContestTaskParser(contents)
+      it should s"pass for ${f.getName}" in {
+        assert(!res.isEmpty)
+        val task = res.get
+        // val (matrix, _, _) = TaskCreationUtils.contestTaskToMatrix(task)
+        assert(checkTaskWellFormed(task))
+      }
     }
   }
 
-//  checkRawTasksInFolder("genesis")
-//  
-//  checkRawTasksInFolder("part-1/10-simple")
-//  checkRawTasksInFolder("part-1/30-random")
-//  checkRawTasksInFolder("part-1/50-random")
-//  checkRawTasksInFolder("part-1/100-random")
-//  checkRawTasksInFolder("part-1/100-countries")
-//  checkRawTasksInFolder("part-1/200-random")
-//  checkRawTasksInFolder("part-1/200-countries")
-//  
-//  checkRawTasksInFolder("part-2/100-random")
-//  checkRawTasksInFolder("part-2/100-countries")
-//  checkRawTasksInFolder("part-2/200-random")
-//  checkRawTasksInFolder("part-2/200-countries")
-//  checkRawTasksInFolder("part-2/400-random")
-//  checkRawTasksInFolder("part-2/400-countries")
-//  
-//  checkRawTasksInFolder("part-3/100-random")
-//  checkRawTasksInFolder("part-3/100-countries")
-//  checkRawTasksInFolder("part-3/200-random")
-//  checkRawTasksInFolder("part-3/200-countries")
-//  checkRawTasksInFolder("part-3/400-countries")
-//
-//  checkRawTasksInFolder("bonus/400-random")
-//  checkRawTasksInFolder("bonus/400-countries")
-//  checkRawTasksInFolder("bonus/600-random")
+  //  checkRawTasksInFolder("genesis")
+  //  
+  //  checkRawTasksInFolder("part-1/10-simple")
+  //  checkRawTasksInFolder("part-1/30-random")
+  //  checkRawTasksInFolder("part-1/50-random")
+  //  checkRawTasksInFolder("part-1/100-random")
+  //  checkRawTasksInFolder("part-1/100-countries")
+  //  checkRawTasksInFolder("part-1/200-random")
+  //  checkRawTasksInFolder("part-1/200-countries")
+  //  
+  //  checkRawTasksInFolder("part-2/100-random")
+  //  checkRawTasksInFolder("part-2/100-countries")
+  //  checkRawTasksInFolder("part-2/200-random")
+  //  checkRawTasksInFolder("part-2/200-countries")
+  //  checkRawTasksInFolder("part-2/400-random")
+  //  checkRawTasksInFolder("part-2/400-countries")
+  //  
+  //  checkRawTasksInFolder("part-3/100-random")
+  //  checkRawTasksInFolder("part-3/100-countries")
+  //  checkRawTasksInFolder("part-3/200-random")
+  //  checkRawTasksInFolder("part-3/200-countries")
+  //  checkRawTasksInFolder("part-3/400-countries")
+  //
+  //  checkRawTasksInFolder("bonus/400-random")
+  //  checkRawTasksInFolder("bonus/400-countries")
+  //  checkRawTasksInFolder("bonus/600-random")
 
 
   val obstaclesPath = "./src/main/resources/contest/final"
@@ -86,13 +86,10 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
     }
   }
 
-  //checkTasksWithObstaclesInFolder("genesis")
 
   checkFinalTasksWithObstacles("part-1")
-  checkFinalTasksWithObstacles("part-2")
-  checkFinalTasksWithObstacles("part-3")
-  
-  // checkTasksWithObstaclesInFolder("bonus")
-  
+  //  checkFinalTasksWithObstacles("part-2")
+  //  checkFinalTasksWithObstacles("part-3")
+
 
 }
