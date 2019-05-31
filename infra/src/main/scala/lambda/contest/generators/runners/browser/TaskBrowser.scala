@@ -6,11 +6,13 @@ import java.io.File
 
 import javax.swing.{BoxLayout, JButton, JFrame, JPanel}
 import lambda.contest.ContestTask
+import lambda.contest.blockchain.PuzzleCheckingUtils
 import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.generators.PolygonToRender
 import lambda.contest.generators.runners.TaskRenderingUtils
 import lambda.contest.parsers.ContestTaskParser
+import lambda.geometry.integer.IPoint
 import lambda.util.FileUtil
 
 import scala.collection.mutable
@@ -27,13 +29,13 @@ object TaskBrowser {
   val tasks = new mutable.ListBuffer[(ContestTask, File)]()
 
   private var rawPath = "./infra/src/main/resources/contest/final"
-  private var puzzleDescPath: Option[String] = None
+  private var puzzleSpecPath: Option[String] = None
 
   var index = 0
 
   def main(args: Array[String]): Unit = {
     if (args.nonEmpty) rawPath = args(0)
-    if (args.length > 1) puzzleDescPath = Some(args(1))
+    if (args.length > 1) puzzleSpecPath = Some(args(1))
 
     fillWithFiles()
     draw()
@@ -48,7 +50,7 @@ object TaskBrowser {
         } else {
           val (task, file) = tasks(index)
           assert(ContestTaskUtils.checkTaskWellFormed(task))
-          TaskRenderingUtils.renderTask(g, task, file)
+          TaskRenderingUtils.renderTask(g, task, file, firstObst = false, getInOutPoints(file))
         }
       }
 
@@ -163,7 +165,16 @@ object TaskBrowser {
       .foreach(tasks += _)
   }
   
-//  private def getInOutPoints(f: File): (List[IPoint], List[IPoint]) = {
-//    ???
-//  }
+  private def getInOutPoints(f: File): (List[IPoint], List[IPoint]) = {
+    puzzleSpecPath match {
+      case None => (Nil, Nil)
+      case Some(path) =>
+        val puzzles = PuzzleCheckingUtils.getPuzzleSpecs(path)
+        val num = f.getName.stripPrefix(PROBLEM_PREFIX).stripSuffix(PROBLEM_DESC_EXT).toInt
+        val puzzle = puzzles(num)
+        (puzzle.pointsInside, puzzle.pointsOutside)
+    }
+    
+    
+  }
 }

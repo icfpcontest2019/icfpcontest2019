@@ -7,13 +7,16 @@ import java.io.File
 import lambda.contest.generators.PolygonToRender
 import lambda.contest.{Booster, ContestTask}
 import lambda.geometry.floating.Direction
+import lambda.geometry.integer.IPoint
 
 /**
   * @author Ilya Sergey
   */
 object TaskRenderingUtils {
 
-  def renderTask(g: Graphics, t: ContestTask, f: File, firstObst: Boolean = false): Unit = {
+  def renderTask(g: Graphics, t: ContestTask, f: File,
+                 firstObst: Boolean = false,
+                 inOutPoints: (List[IPoint], List[IPoint]) = (Nil, Nil)): Unit = {
     val ContestTask(room, init, obs, boosters) = t
 
     // Render main polygon
@@ -51,7 +54,7 @@ object TaskRenderingUtils {
     val text = (f.getName, BLACK)
     val (x, y) = room.dimensions
     val dims = (s"Dimensions: ${x}x${y}", BLACK)
-    
+
     // val prod = (x * y).toString
     val bs = boosters.groupBy { case (b, n) => b }
       .toList
@@ -67,6 +70,19 @@ object TaskRenderingUtils {
       g.drawChars(line.toCharArray, 0, line.length, 10, 5 + (2 * i + 1) * 10)
     }
 
+    val (inPoints, outPoints) = inOutPoints
+    for (p <- inPoints) {
+      val sq = p.toSquare.toFPolygon
+      pp.fillPoly(g, sq, Color.GREEN)
+      pp.drawPoly(g, sq, Color.BLACK)
+    }
+
+    for (p <- outPoints) {
+      val sq = p.toSquare.toFPolygon
+      pp.fillPoly(g, sq, Color.RED)
+      pp.drawPoly(g, sq, Color.BLACK)
+    }
+
   }
 
   // Gold
@@ -74,7 +90,7 @@ object TaskRenderingUtils {
   // Brown
   val COFFEE_COLOR = new Color(153, 102, 0)
   // Light green
-  val DRILL_COLOR =   new Color(0, 204, 0)
+  val DRILL_COLOR = new Color(0, 204, 0)
   // Purple
   val TELEPORT_COLOR = new Color(102, 0, 153)
   // Light blue
