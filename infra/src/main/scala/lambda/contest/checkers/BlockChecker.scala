@@ -50,7 +50,8 @@ object BlockChecker extends ContestGrader {
     }
     val submissions = retrieveSubmissions(config.submissionFolderPath)
     if (config.verbose) {
-      println(s"${submissions.size} submissions for block ${config.blockNum}.")
+      println(s"got ${submissions.size} submissions for block ${config.blockNum}.")
+      println()
     }
 
     // Now grade all this stuff
@@ -73,7 +74,8 @@ object BlockChecker extends ContestGrader {
     }
 
     writeScoreToCSV(gradeMap.toMap, config.outPath)
-    if (config.verbose) {
+    if (config.verbose && gradeMap.nonEmpty) {
+      println()
       println(s"Finished. The scores are written into ${config.outPath}")
     }
   }

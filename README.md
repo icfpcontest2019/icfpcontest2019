@@ -84,7 +84,7 @@ The format for block checking is as follows:
 For example, in the root of this project run:
 
 ```
-./checker block -p ./infra/src/main/resources/blockchain/genesis/prob-000.mat -c ./infra/src/main/resources/blockchain/lambda.chain -b 1 -s ./infra/src/main/resources/blockchain/test/1/submissions -o ./infra/src/main/resources/blockchain/test/1 -v true
+./checker block -p ./infra/src/main/resources/blockchain/genesis/prob-000.mat -c ./infra/src/main/resources/blockchain/lambda.chain -b 1 -s ./infra/src/main/resources/blockchain/test/1/submissions -o score.csv -v true
 ```
 
 ## Location of important files:

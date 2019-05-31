@@ -13,8 +13,8 @@ import org.scalatest.{FlatSpec, Matchers}
   */
 class BlockPuzzleTests extends FlatSpec with Matchers {
 
-  private val taskPath = "./infra/src/main/resources/blockchain/puzzles"
-  private val specPath = "./infra/src/main/resources/blockchain/lambda.chain"
+  private val taskPath = "./src/main/resources/blockchain/puzzles"
+  private val specPath = "./src/main/resources/blockchain/lambda.chain"
 
   s"A block spec checker" should s"succeed for all block puzzles" in {}
 
