@@ -28,20 +28,22 @@ object MainContestChecker {
     arg[String]("mode")
       .required()
       .action { (x, c) =>
-      x match {
-        case "team" => CheckerMode.Team
-        case "solver" => CheckerMode.Solver
-        case "block" => CheckerMode.Block
-        case "matrix" => CheckerMode.MatrixConverter
-      }
-    }.text(s"a mode to run the checker: individual team (team), solver (solver), or chain processing (chain).")
+        x match {
+          case "team" => CheckerMode.Team
+          case "solver" => CheckerMode.Solver
+          case "block" => CheckerMode.Block
+          case "matrix" => CheckerMode.MatrixConverter
+        }
+      }.text(
+      s"a mode to run the checker: individual team (team), solver (solver), block checking (block), " +
+        s"or matrix construction (matrix)".stripMargin)
 
     help("help").text("prints this usage text")
   }
 
   def main(args: Array[String]): Unit = {
     val mode = if (args.length < 1) args else Array(args(0))
-    
+
     mainParser.parse(args = mode, init = CheckerMode.Bad) match {
       case Some(m: CheckerMode.Value) if m != CheckerMode.Bad =>
         val newArgs = new Array[String](args.length - 1)
@@ -55,8 +57,8 @@ object MainContestChecker {
           case CheckerMode.MatrixConverter => TaskMatrixConverter.main(newArgs)
           case _ => System.err.println("Unknown checker mode")
         }
-      case _ => 
-        //System.err.println("Provided arguments for the checker are malformed.")
+      case _ =>
+      //System.err.println("Provided arguments for the checker are malformed.")
     }
 
   }
