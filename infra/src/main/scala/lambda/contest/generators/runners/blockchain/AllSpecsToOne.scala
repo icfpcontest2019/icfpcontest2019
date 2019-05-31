@@ -2,7 +2,7 @@ package lambda.contest.generators.runners.blockchain
 
 import java.io.File
 
-import lambda.contest.generators.runners.blockchain.PuzzleRandomPointsGenerator.SPEC_EXT
+import lambda.contest.generators.runners.blockchain.RandomPointsForPuzzles.SPEC_EXT
 import lambda.util.FileUtil
 
 /**

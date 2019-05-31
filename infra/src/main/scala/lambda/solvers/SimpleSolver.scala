@@ -39,47 +39,48 @@ object SimpleSolver {
       solutionDir.mkdirs()
     }
 
-    val dirs = baseDir.listFiles().toList.filter(_.isDirectory).sortBy(_.getName)
+    val dirs = baseDir :: baseDir.listFiles().toList.filter(_.isDirectory).sortBy(_.getName)
     for {d <- dirs
          dPath = d.getAbsolutePath
          nums = getTaskNumbers(dPath)
-         taskNum <- nums
-         res = readOneTask(dPath, taskNum)
-         if res.isDefined} {
-      val (matrix, dx, dy, init) = res.get
-      print(s"Task $taskNum (${dx}x$dy): ")
-      val t0 = System.currentTimeMillis()
-      val solString = solveTask(matrix, dx, dy, init)
-      val t1 = System.currentTimeMillis()
-      val tsec1 = (t1 - t0).toDouble / 1000
-      print(s"solution size ${solString.length} ($tsec1 sec); checking: ")
+         taskNum <- nums} {
+      val res = readOneTask(dPath, taskNum)
+      if (res.isDefined) {
+        val (matrix, dx, dy, init) = res.get
+        print(s"Task $taskNum (${dx}x$dy): ")
+        val t0 = System.currentTimeMillis()
+        val solString = solveTask(matrix, dx, dy, init)
+        val t1 = System.currentTimeMillis()
+        val tsec1 = (t1 - t0).toDouble / 1000
+        print(s"solution size ${solString.length} ($tsec1 sec); checking: ")
 
-      val t2 = System.currentTimeMillis()
+        val t2 = System.currentTimeMillis()
 
-      val solution = ContestSolutionParser(solString).get
+        val solution = ContestSolutionParser(solString).get
 
-      // Now checking, with a fresh matrix
+        // Now checking, with a fresh matrix
 
-      val (matrix1, _, _, _) = readOneTask(dPath, taskNum).get
+        val (matrix1, _, _, _) = readOneTask(dPath, taskNum).get
 
-      val state = TaskExecution.createState(matrix1, dx, dy, init, solution, Nil)
-      val checkingResult = try {
-        state.evalSolution()
-        match {
-          case Some(value) => "OK"
-          case None => "Fail"
+        val state = TaskExecution.createState(matrix1, dx, dy, init, solution, Nil)
+        val checkingResult = try {
+          state.evalSolution()
+          match {
+            case Some(value) => "OK"
+            case None => "Fail"
+          }
+        } catch {
+          case ContestException(loc, _) =>
+            val msg = s"Failure: $loc."
+            Right(msg)
+          case _: Throwable => "Exception"
         }
-      } catch {
-        case ContestException(loc, _) =>
-          val msg = s"Failure: $loc."
-          Right(msg)
-        case _: Throwable => "Exception"
-      }
-      val t3 = System.currentTimeMillis()
-      val tsec2 = (t3 - t2).toDouble / 1000
-      println(s"$checkingResult ($tsec2 sec)")
+        val t3 = System.currentTimeMillis()
+        val tsec2 = (t3 - t2).toDouble / 1000
+        println(s"$checkingResult ($tsec2 sec)")
 
-      writeSolutionToFile(solutionDir, taskNum, solString)
+        writeSolutionToFile(solutionDir, taskNum, solString)
+      }
     }
 
 

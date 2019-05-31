@@ -11,7 +11,7 @@ import lambda.util.FileUtil.intAs3CharString
 /**
   * @author Ilya Sergey
   */
-object PuzzleRandomPointsGenerator {
+object RandomPointsForPuzzles {
 
   val SPEC_EXT = ".spec"
 

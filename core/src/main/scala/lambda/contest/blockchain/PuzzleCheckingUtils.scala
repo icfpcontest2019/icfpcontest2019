@@ -3,9 +3,9 @@ package lambda.contest.blockchain
 import java.io.File
 
 import lambda.contest.ContestErrorMessages.BAD_CHAIN_FILE
-import lambda.contest.{ContestErrorMessages, ContestException}
+import lambda.contest.{Booster, ContestException}
 import lambda.geometry.integer.IPolygonUtils.parsePoly
-import lambda.geometry.integer.{IPoint, IPolygon, IPolygonUtils}
+import lambda.geometry.integer.{IPoint, IPolygon}
 import lambda.util.FileUtil
 
 /**
@@ -37,7 +37,7 @@ object PuzzleCheckingUtils {
       throw ContestException(BAD_CHAIN_FILE)
     }
 
-    val lines = FileUtil.readFromFile(puzzleFile.toString).filter(_.trim.isEmpty)
+    val lines = FileUtil.readFromFile(puzzleFile.getAbsolutePath).map(_.trim).filter(_.nonEmpty)
     val puzzles = lines
       .map(l => {
         val strings = l.split("#")
@@ -46,7 +46,7 @@ object PuzzleCheckingUtils {
         }
         (strings(0), strings(1), strings(2))
       })
-      .map{ case (l, is, os) =>
+      .map { case (l, is, os) =>
         val chunk = l.split(",").toList
         val ps = chunk.map(_.toInt)
         val isRes = parsePoly(is)
@@ -66,7 +66,7 @@ object PuzzleCheckingUtils {
 
 }
 
-case class BlockPuzzle(puzzleNum: Int,
+case class BlockPuzzle(num: Int,
                        epoch: Int,
                        boxSize: Int,
                        minVNum: Int,
@@ -78,4 +78,17 @@ case class BlockPuzzle(puzzleNum: Int,
                        forkNum: Int,
                        callPointNum: Int,
                        pointsInside: List[IPoint],
-                       pointsOutside: List[IPoint])
+                       pointsOutside: List[IPoint]) {
+
+  def getBoosterTable: Map[Booster.Value, Int] = {
+    import Booster._
+    Map(BatteriesBooster -> batteriesNum,
+      CoffeeBooster -> coffeeNum,
+      DrillBooster -> drillNum,
+      TeleBooster -> portalNum,
+      CallBooster -> forkNum,
+      CallPoint -> callPointNum)
+  }
+  
+
+}

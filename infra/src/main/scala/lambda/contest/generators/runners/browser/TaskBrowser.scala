@@ -10,6 +10,7 @@ import lambda.contest.checkers.GraderUtils._
 import lambda.contest.generators.PolygonToRender
 import lambda.contest.generators.runners.TaskRenderingUtils
 import lambda.contest.parsers.ContestTaskParser
+import lambda.geometry.integer.IPoint
 import lambda.util.FileUtil
 
 import scala.collection.mutable
@@ -26,11 +27,13 @@ object TaskBrowser {
   val tasks = new mutable.ListBuffer[(ContestTask, File)]()
 
   private var rawPath = "./infra/src/main/resources/contest/final"
+  private var puzzleDescPath: Option[String] = None
 
   var index = 0
 
   def main(args: Array[String]): Unit = {
     if (args.nonEmpty) rawPath = args(0)
+    if (args.length > 1) puzzleDescPath = Some(args(1))
 
     fillWithFiles()
     draw()
@@ -142,8 +145,9 @@ object TaskBrowser {
     assert(rawDir.exists() && rawDir.isDirectory)
 
     // Add all unprocessed files to the queue
-    rawDir.listFiles().toList
-      .filter(_.isDirectory)
+    val dirs = rawDir :: rawDir.listFiles().toList.filter(_.isDirectory)
+
+    dirs
       .flatMap(d => d.listFiles())
       .filter(f => {
         val fName = f.getName
@@ -157,4 +161,8 @@ object TaskBrowser {
       })
       .foreach(tasks += _)
   }
+  
+//  private def getInOutPoints(f: File): (List[IPoint], List[IPoint]) = {
+//    ???
+//  }
 }
