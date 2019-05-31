@@ -8,4 +8,4 @@ all: clean
 
 clean:
 	sbt clean
-	rm ./icfpcontest2019.jar
+	rm -f ./icfpcontest2019.jar
