@@ -2,8 +2,9 @@ package lambda.contest.blockchain
 
 import java.io.File
 
-import lambda.contest.ContestErrorMessages.BAD_CHAIN_FILE
-import lambda.contest.{Booster, ContestException}
+import lambda.contest.ContestErrorMessages._
+import lambda.contest.checkers.ContestTaskUtils
+import lambda.contest.{Booster, ContestErrorMessages, ContestException, ContestTask}
 import lambda.geometry.integer.IPolygonUtils.parsePoly
 import lambda.geometry.integer.{IPoint, IPolygon}
 import lambda.util.FileUtil
@@ -62,6 +63,32 @@ object PuzzleCheckingUtils {
       }
     puzzles
   }
+  
+  def checkTaskForSpec(task: ContestTask, spec: BlockPuzzle): Either[Unit, String] = {
+    try {
+      ContestTaskUtils.checkTaskWellFormed(task)
+      val ContestTask(room, _, obs, boosters) = task
+      
+      if (!checkPolyForPuzzle(room, spec.boxSize, spec.minVNum, spec.maxVNum))
+        throw ContestException(SPEC_ERROR)
+      
+      if (obs.nonEmpty) 
+        throw ContestException(HAS_OBSTACLES_ERROR)
+      
+      val boostersGrouped = boosters.map{_._1}.groupBy(b => b).map {case (b, ls) => (b, ls.size)}
+      val table = spec.getBoosterTable
+      val c1 = boostersGrouped.forall{case (b, n) => table.getOrElse(b, 0) == n}
+      val c2 = table.forall{case (b, n) => boostersGrouped.getOrElse(b, 0) == n}
+      if (!(c1 && c2))
+        throw ContestException(HAS_OBSTACLES_ERROR)
+      
+      Left(())
+    } catch {
+      case ContestException(msg, _) => Right(msg)
+      case _ : Throwable => Right(MALFORMED_TASK)
+    }
+  }
+    
 
 
 }

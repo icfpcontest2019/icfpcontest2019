@@ -40,6 +40,9 @@ object ContestErrorMessages {
   
   val BAD_TASK_MATRIX = "Ill-formed task matrix"
   val BAD_CHAIN_FILE = "Bad file with lambda-chain descriptions"
-
-
+  
+  val HAS_OBSTACLES_ERROR = "the task description should contain no obstacles" 
+  val SPEC_ERROR = "the task does not conform to the current block specification" 
+  val SPEC_BOOSTER_ERROR = "wrong booster configuration" 
+  
 }
