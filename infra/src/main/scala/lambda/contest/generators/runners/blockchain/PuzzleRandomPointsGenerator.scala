@@ -4,7 +4,7 @@ import java.io.File
 
 import lambda.contest.generators.runners.blockchain.BlockPolygonGenerator.{POLY_EXT, loadEpochParams}
 import lambda.geometry.GeometryParsers
-import lambda.geometry.integer.{IPoint, IPolygon}
+import lambda.geometry.integer.{IPoint, IPolygon, IPolygonUtils}
 import lambda.util.FileUtil
 import lambda.util.FileUtil.intAs3CharString
 
@@ -15,7 +15,7 @@ object PuzzleRandomPointsGenerator {
 
   val SPEC_EXT = ".spec"
 
-  private val epochPath = "./infra/src/main/resources/blockchain/epochs.chain"
+  private val epochPath = "./infra/src/main/resources/blockchain/aux/depochs.chain"
   private val inPath = "./infra/src/main/resources/blockchain/polygons"
   private val outPath = "./infra/src/main/resources/blockchain/specs"
 
@@ -33,7 +33,7 @@ object PuzzleRandomPointsGenerator {
          if polyFile.exists()
     ) {
       val s = FileUtil.readFromFile(polyFile.getAbsolutePath).head
-      val poly = polyParser(s).get
+      val poly = IPolygonUtils.parsePoly(s).get
       val (inSquares, outSquares) = generateInOutSquares(poly, p.pointsInsideNum, p.pointsOutsideNum)
 
       val inString = inSquares.mkString(",")
@@ -86,10 +86,5 @@ object PuzzleRandomPointsGenerator {
     (pointsIn.toList, pointsOut.toList)
 
   }
-
-  private def polyParser = new GeometryParsers {
-    def apply(s: String) = parseAll(ipoly, s)
-  }
-
 
 }

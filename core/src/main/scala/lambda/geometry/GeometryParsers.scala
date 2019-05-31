@@ -33,3 +33,6 @@ trait GeometryParsers extends JavaTokenParsers {
   def ipoly: Parser[IPolygon] = points(intPoint) ^^ IPolygon
 
 }
+
+
+

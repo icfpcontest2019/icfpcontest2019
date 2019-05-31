@@ -39,6 +39,7 @@ object ContestErrorMessages {
   val BAD_SOLUTION_FORMAT = "solution text is malformed"
   
   val BAD_TASK_MATRIX = "Ill-formed task matrix"
+  val BAD_CHAIN_FILE = "Bad file with lambda-chain descriptions"
 
 
 }
