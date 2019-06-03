@@ -3,7 +3,7 @@
 default: all
 
 all: 
-	git clean -dfXq
+	rm ./icfpcontest2019.jar
 	sbt clean fullOptJS assembly
 	cp ./infra/target/scala-2.12/infra-assembly-1.0.0.jar ./icfpcontest2019.jar
 
