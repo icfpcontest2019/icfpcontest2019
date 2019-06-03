@@ -110,6 +110,8 @@ Then open the web-page `./graphics/src/main/resources/validate.html` which conta
 
 For the rendering, open `./graphics/src/main/resources/render.html`.
 
+For checking blockchain puzzles, open `./graphics/src/main/resources/puzzle.html`.
+
 
 To add boosters and enable the blockchain checker, uncomment the corresponding lines in `JSGraders`.
 

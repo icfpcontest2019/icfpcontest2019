@@ -39,7 +39,7 @@ object ContestErrorMessages {
   val BAD_SOLUTION_FORMAT = "solution text is malformed"
   
   val BAD_TASK_MATRIX = "Ill-formed task matrix"
-  val BAD_CHAIN_FILE = "Bad file with lambda-chain descriptions"
+  val BAD_CHAIN_FILE = "Malformed block puzzle description"
   
   val HAS_OBSTACLES_ERROR = "the task description should contain no obstacles" 
   val SPEC_ERROR = "the task does not conform to the current block specification" 

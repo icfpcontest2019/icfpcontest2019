@@ -38,8 +38,12 @@ trait JSGrading {
   val CHECK_TEXT = "Check"
   val CHECK_AND_RENDER_TEXT = "Upload files"
   val EXECUTE_TEXT = "Prepare to Run"
-  
+
+  val SUBMIT_PUZZLE_TEXT = "Puzzle file"
+
+  val CANNOT_PROCESS_TEXT = "Cannot check: some parts of the input are missing or malformed"
   val PREPROCESSING_TEXT = "Pre-processing and validating the task..."
+  val PREPROCESSING_PUZZLE_TEXT = "Validating the puzzle solution..."
   val SPACE_TO_RUN_TEXT = "Press SPACE (s) to begin execution"
   val SPACE_TO_RESUME_TEXT = "Press SPACE (s) to resume execution"
   val RUNNING_TEXT = "Running"
@@ -48,9 +52,11 @@ trait JSGrading {
   val LOADING_TEXT = s"Processing your solution..."
   val UPLOAD_FILES = "Upload the task and solution files"
   val NO_TASK_FILE = "No task file provided"
+  val NO_PUZZLE_FILE = "No puzzle file provided"
   val NO_SOLUTION_FILE = "No solution file provided"
   val UPLOADING_TASK = "Uploading task description..."
   val UPLOADED_TASK = "Done uploading task description"
+  val UPLOADED_PUZZLE = "Done uploading puzzle description"
   val UPLOADING_SOLUTION = "Uploading solution file..."
   val UPLOADED_SOLUTION = "Done uploading solution"
 

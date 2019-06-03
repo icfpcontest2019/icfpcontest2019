@@ -381,7 +381,7 @@ object GraderWithGraphics extends JSGrading {
   }
 
   // May start execution
-  private def allInPlace = {
+  private def allInPlace: Boolean = {
     currentTask.isDefined &&
       currentSolution.isDefined &&
       currentPainter.isDefined
@@ -441,6 +441,7 @@ object GraderWithGraphics extends JSGrading {
       taskReader.onloadend = _ => {
         val text = taskReader.result.toString
         if (text == currentTaskText) {
+          refreshExecButton
         } else {
           setText(UPLOADING_TASK, TEXT_YELLOW)
           val act = () => {
@@ -483,7 +484,9 @@ object GraderWithGraphics extends JSGrading {
       val solutionReader = new FileReader()
       solutionReader.onloadend = _ => {
         val text = solutionReader.result.toString
-        if (text == currentSolutionText) {}
+        if (text == currentSolutionText) {
+          refreshExecButton
+        }
         else {
           setText(UPLOADING_SOLUTION, TEXT_YELLOW)
           val act = () => {
@@ -491,6 +494,7 @@ object GraderWithGraphics extends JSGrading {
               clearSolution
               val moves = parseSolution(text)
               currentSolution = Some(moves)
+              currentSolutionText = text
               setText(UPLOADED_SOLUTION)
               refreshExecButton
             } catch {
@@ -514,21 +518,23 @@ object GraderWithGraphics extends JSGrading {
     if (boostersFileInput == null ||
       !boostersFileInput.files(0).isInstanceOf[Blob]) {
       clearBoosters
-    }
-    else {
+      refreshExecButton
+    } else {
       val boosterReader = new FileReader()
       boosterReader.onloadend = _ => {
         val text = boosterReader.result.toString
-        if (text == currentBoosterText) {}
-        else {
+        if (text == currentBoosterText) {
+          refreshExecButton
+        } else {
           val act = () => {
             try {
               clearBoosters
               currentBoosters = parseBoosters(text)
+              currentBoosterText = text
               refreshExecButton
             } catch {
               case ContestException(msg, data) =>
-                clearSolution
+                clearBoosters
                 val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
                 val errorText = s"Failed: $text"
                 setText(errorText, TEXT_RED)

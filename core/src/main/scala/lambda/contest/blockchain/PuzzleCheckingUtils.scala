@@ -42,8 +42,7 @@ object PuzzleCheckingUtils {
       case ContestException(_, _) => false
     }
   }
-
-
+  
   def getPuzzleSpecs(lambdaChainPath: String): Map[Int, BlockPuzzle] = {
     val puzzleFile = new File(lambdaChainPath)
     if (!puzzleFile.exists || puzzleFile.isDirectory) {
@@ -51,29 +50,28 @@ object PuzzleCheckingUtils {
     }
 
     val lines = FileUtil.readFromFile(puzzleFile.getAbsolutePath).map(_.trim).filter(_.nonEmpty)
-    val puzzles = lines
-      .map(l => {
-        val strings = l.split("#")
-        if (strings.length != 3) {
-          throw ContestException(BAD_CHAIN_FILE)
-        }
-        (strings(0), strings(1), strings(2))
-      })
-      .map { case (l, is, os) =>
-        val chunk = l.split(",").toList
-        val ps = chunk.map(_.toInt)
-        val isRes = parsePoly(is)
-        val osRes = parsePoly(os)
-        if (isRes.isEmpty || osRes.isEmpty) {
-          throw ContestException(BAD_CHAIN_FILE)
-        }
-        val inPoints = isRes.get.vertices.toList
-        val outPoints = osRes.get.vertices.toList
-        BlockPuzzle(ps.head, ps(1), ps(2), ps(3), ps(4),
-          ps(5), ps(6), ps(7), ps(8), ps(9),
-          ps(10), inPoints, outPoints)
-      }
+    val puzzles = lines.map(parsePuzzleLine)
     puzzles.map(p => (p.num, p)).toMap
+  }
+  
+  def parsePuzzleLine(line: String) : BlockPuzzle = {
+    val strings = line.split("#")
+    if (strings.length != 3) {
+      throw ContestException(BAD_CHAIN_FILE)
+    }
+    val (l, is, os) = (strings(0), strings(1), strings(2))
+    val chunk = l.split(",").toList
+    val ps = chunk.map(_.toInt)
+    val isRes = parsePoly(is)
+    val osRes = parsePoly(os)
+    if (isRes.isEmpty || osRes.isEmpty) {
+      throw ContestException(BAD_CHAIN_FILE)
+    }
+    val inPoints = isRes.get.vertices.toList
+    val outPoints = osRes.get.vertices.toList
+    BlockPuzzle(ps.head, ps(1), ps(2), ps(3), ps(4),
+      ps(5), ps(6), ps(7), ps(8), ps(9),
+      ps(10), inPoints, outPoints)
   }
 
   def checkTaskForSpec(task: ContestTask, spec: BlockPuzzle): Either[Unit, String] = {

@@ -108,6 +108,7 @@ object GraderNoGraphics extends JSGrading {
               clearSolution
               val moves = parseSolution(text)
               currentSolution = Some(moves)
+              currentSolutionText = text
               setText(UPLOADED_SOLUTION)
             } catch {
               case ContestException(msg, data) =>
@@ -143,6 +144,8 @@ object GraderNoGraphics extends JSGrading {
 
       // Oh, this is nasty...
       dom.window.setTimeout(act, 50)
+    } else {
+      setText(CANNOT_PROCESS_TEXT)
     }
   }
 
@@ -182,9 +185,10 @@ object GraderNoGraphics extends JSGrading {
             try {
               clearBoosters
               currentBoosters = parseBoosters(text)
+              currentBoosterText = text
             } catch {
               case ContestException(msg, data) =>
-                clearSolution
+                clearBoosters
                 val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
                 val errorText = s"Failed: $text"
                 setText(errorText)
