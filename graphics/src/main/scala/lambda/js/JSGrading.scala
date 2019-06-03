@@ -1,8 +1,10 @@
 package lambda.js
 
-import lambda.contest.ContestErrorMessages.{BAD_SOLUTION_FORMAT, MALFORMED_TASK}
-import lambda.contest.parsers.{ContestSolutionParser, ContestTaskParser}
-import lambda.contest.{ContestConstants, ContestException, ContestTask}
+import lambda.contest.ContestConstants.Action
+import lambda.contest.ContestErrorMessages.{BAD_BOOSTER_FORMAT, BAD_SOLUTION_FORMAT, MALFORMED_TASK}
+import lambda.contest.checkers.TaskMatrix
+import lambda.contest.parsers.{BoosterBuyingParser, ContestSolutionParser, ContestTaskParser}
+import lambda.contest.{Booster, ContestConstants, ContestException, ContestTask}
 import org.scalajs.dom
 import org.scalajs.dom.document
 import org.scalajs.dom.raw._
@@ -15,6 +17,9 @@ import scala.scalajs.js.Date
   */
 trait JSGrading {
 
+  type ProcessedTask = (TaskMatrix, Int, Int)
+  type TaskSolution = List[List[Action]]
+
   val canvasId = "canvas"
   val mainSectionID = "main_section"
   val outTextFieldId = "output"
@@ -22,6 +27,7 @@ trait JSGrading {
   val execButtonId = "execute_solution"
   val submitTaskId = "submit_task"
   val submitSolutionId = "submit_solution"
+  val submitBoostersId = "submit_boosters"
   val speedTextId = "speed_text"
 
   type ButtonHandler = js.Function1[MouseEvent, _]
@@ -29,6 +35,7 @@ trait JSGrading {
   val DEFAULT_BUTTON_TEXT = "Booya!"
   val SUBMIT_TASK_TEXT = "Task file"
   val SUBMIT_SOLUTION_TEXT = "Solution file"
+  val SUBMIT_BOOSTERS_TEXT = "Boosters (optional)"
   val CHECK_TEXT = "Check"
   val CHECK_AND_RENDER_TEXT = "Upload files"
   val EXECUTE_TEXT = "Prepare to Run"
@@ -67,6 +74,12 @@ trait JSGrading {
     val res = ContestSolutionParser(solText)
     if (res.successful) return res.get
     throw ContestException(BAD_SOLUTION_FORMAT)
+  }
+
+  def parseBoosters(text: String): List[Booster.Value] = {
+    val res = BoosterBuyingParser(text)
+    if (res.successful) return res.get
+    throw ContestException(BAD_BOOSTER_FORMAT)
   }
 
   /* ---------------------------------------------------------------- */

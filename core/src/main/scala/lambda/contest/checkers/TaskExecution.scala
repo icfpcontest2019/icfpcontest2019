@@ -319,19 +319,23 @@ class TaskExecution(private val matrix: TaskMatrix,
   }
 
   def evalRound(callback : CallBack = dummyCallback): Unit = {
+    runCallBack(callback)
     val wNums = watchmen.keys.toList.sorted
     for (wNum <- wNums) {
       step(wNum)
     }
     tick()
+    runCallBack(callback)
+  }
 
-    callback(matrix, xmax, ymax, 
-      watchmen.toMap, 
-      watchmenPositions.toMap, 
-      watchmenPositionsOld.toMap, 
+  private def runCallBack(callback: CallBack) = {
+    callback(matrix, xmax, ymax,
+      watchmen.toMap,
+      watchmenPositions.toMap,
+      watchmenPositionsOld.toMap,
       getElapsedTime)
   }
-  
+
   def getElapsedTime = timeElapsed
 
   /**

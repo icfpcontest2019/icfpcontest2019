@@ -1,9 +1,9 @@
-package lambda.js
+package lambda.js.render
 
 import lambda.contest.Cell
 import lambda.geometry.floating.{FPoint, FPolygon, RenderUtils}
 import lambda.geometry.integer.{IPoint, IPolygon}
-import lambda.js.JSRenderingUtils._
+import lambda.js.render.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
 

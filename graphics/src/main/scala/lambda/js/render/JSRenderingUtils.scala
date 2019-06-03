@@ -1,7 +1,7 @@
-package lambda.js
+package lambda.js.render
 
-import lambda.contest.{Booster, Cell, Watchman}
 import lambda.contest.checkers.TaskMatrix
+import lambda.contest.{Booster, Cell, Watchman}
 import lambda.geometry.integer.IPoint
 import org.scalajs.dom.ext.Color
 

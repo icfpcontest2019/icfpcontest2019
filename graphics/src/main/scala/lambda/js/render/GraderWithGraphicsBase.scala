@@ -1,25 +1,25 @@
-package lambda.js
+package lambda.js.render
 
-import lambda.contest.ContestConstants.Action
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{ContestTaskUtils, TaskCreationUtils, TaskExecution, TaskMatrix}
 import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
-import lambda.js.JSRenderingUtils._
+import lambda.js.JSGrading
+import lambda.js.render.JSRenderingUtils._
 import org.scalajs.dom
 import org.scalajs.dom.ext.Color
 import org.scalajs.dom.raw.{FileReader, _}
 import org.scalajs.dom.{html, _}
 
-import scala.scalajs.js.annotation.JSExportTopLevel
-
 
 /**
   * @author Ilya Sergey
   */
-object GraderWithGraphics extends JSGrading {
+trait GraderWithGraphicsBase extends JSGrading {
+
+
 
   /* ------------------------------------------------------------------------ */
   /*                         Boring rendering                                 */
@@ -31,13 +31,9 @@ object GraderWithGraphics extends JSGrading {
   lazy val centered = document.getElementById("main_section")
   lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
   lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
+  lazy val boostersFileInput = document.getElementById(submitBoostersId).asInstanceOf[HTMLInputElement]
   lazy val execButton = document.getElementById(execButtonId).asInstanceOf[HTMLButtonElement]
   lazy val speedText = document.getElementById(speedTextId)
-
-  // Make submission buttons
-  mkFileInput(centered, submitTaskId, SUBMIT_TASK_TEXT)
-  mkFileInput(centered, submitSolutionId, SUBMIT_SOLUTION_TEXT)
-  mkButton(centered, execButtonId, EXECUTE_TEXT)
 
   private val scaleFactorX: Double = 3.8 / 5
   private val scaleFactorY: Double = 4.55 / 5
@@ -57,15 +53,14 @@ object GraderWithGraphics extends JSGrading {
   /*                  Mutable stuff and its manipulation                      */
   /* ------------------------------------------------------------------------ */
 
-  type ProcessedTask = (TaskMatrix, Int, Int)
-  type TaskSolution = List[List[Action]]
-
   var currentTaskText: String = ""
   var currentSolutionText: String = ""
+  var currentBoosterText: String = ""
   var currentPainter: Option[JSCanvasPainter] = None
   var currentTask: Option[ContestTask] = None
 
   var currentSolution: Option[TaskSolution] = None
+  var currentBoosters: List[Booster.Value] = Nil
   var currentState: Option[TaskExecution] = None
   var currentMatrix: Option[ProcessedTask] = None
 
@@ -78,8 +73,18 @@ object GraderWithGraphics extends JSGrading {
   /*                               Main                                       */
   /* ------------------------------------------------------------------------ */
 
-  @JSExportTopLevel("graderWithGraphics")
-  def main(): Unit = {
+  def main(createBoosters: Boolean = false): Unit = {
+    // Make submission buttons
+    mkFileInput(centered, submitTaskId, SUBMIT_TASK_TEXT)
+    mkFileInput(centered, submitSolutionId, SUBMIT_SOLUTION_TEXT)
+    if (createBoosters) {
+      mkFileInput(centered, submitBoostersId, SUBMIT_BOOSTERS_TEXT)
+      boostersFileInput.onchange = boosterHandler
+    }
+    mkButton(centered, execButtonId, EXECUTE_TEXT)
+  
+
+
     canvas.width = dims._1
     canvas.height = dims._2 + upperBorder
     clearMain
@@ -189,7 +194,7 @@ object GraderWithGraphics extends JSGrading {
   /*                         Running solution                                 */
   /* ------------------------------------------------------------------------ */
 
-  def tryRunSolution(): Unit = {
+  private def tryRunSolution(): Unit = {
     if (currentState.isDefined) {
       val state = currentState.get
       if (state.getElapsedTime == 0) {
@@ -351,7 +356,7 @@ object GraderWithGraphics extends JSGrading {
     ctx.fillRect(0, 0, canvas.width, upperBorder)
   }
 
-  def clearMain: Unit = {
+  private def clearMain: Unit = {
     ctx.fillStyle = DARK_GRAY.toHex
     ctx.fillRect(0, 0, canvas.width, canvas.height - upperBorder)
   }
@@ -368,6 +373,11 @@ object GraderWithGraphics extends JSGrading {
     currentSolutionText = ""
     currentSolution = None
     currentState = None
+  }
+
+  private def clearBoosters = {
+    currentBoosterText = ""
+    currentBoosters = Nil
   }
 
   private def disableFileInputs: Unit = {
@@ -402,10 +412,13 @@ object GraderWithGraphics extends JSGrading {
   def blurAllInputs(): Unit = {
     taskFileInput.blur()
     solutionFileInput.blur()
+    if (boostersFileInput != null) {
+      boostersFileInput.blur()
+    }
     execButton.blur()
   }
 
-  val execHandler: Function1[Event, Unit] = event => {
+  private val execHandler: Function1[Event, Unit] = event => {
     interruptExecution
 
     if (currentTask.isDefined && currentSolution.isDefined) {
@@ -422,7 +435,7 @@ object GraderWithGraphics extends JSGrading {
             currentMatrix = Some(t)
             (matrixCopy(m, xmax, ymax), xmax, ymax)
         }
-        currentState = Some(createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil))
+        currentState = Some(createState(matrix, dx, dy, task.initPos, currentSolution.get, currentBoosters))
         // disableFileInputs
         val handle = dom.window.setInterval(() => {
           tryRunSolution()
@@ -477,7 +490,7 @@ object GraderWithGraphics extends JSGrading {
     }
   }
 
-  val solutionHandler: Function1[Event, Unit] = event => {
+  private val solutionHandler: Function1[Event, Unit] = event => {
     interruptExecution
 
     if (!solutionFileInput.files(0).isInstanceOf[Blob]) {
@@ -513,5 +526,36 @@ object GraderWithGraphics extends JSGrading {
       solutionReader.readAsText(solutionFileInput.files(0))
     }
   }
-  
+
+  protected val boosterHandler: Function1[Event, Unit] = event => {
+    interruptExecution
+    if (boostersFileInput == null ||
+      !boostersFileInput.files(0).isInstanceOf[Blob]) {}
+    else {
+      val boosterReader = new FileReader()
+      boosterReader.onloadend = _ => {
+        val text = boosterReader.result.toString
+        if (text == currentBoosterText) {}
+        else {
+          val act = () => {
+            try {
+              clearBoosters
+              currentBoosters = parseBoosters(text)
+              refreshExecButton
+            } catch {
+              case ContestException(msg, data) =>
+                clearSolution
+                val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
+                val errorText = s"Failed: $text"
+                setText(errorText, TEXT_RED)
+                refreshExecButton
+            }
+          }
+          dom.window.setTimeout(act, 50)
+        }
+      }
+      boosterReader.readAsText(boostersFileInput.files(0))
+    }
+  }
+
 }
