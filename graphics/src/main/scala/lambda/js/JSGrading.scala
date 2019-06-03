@@ -2,7 +2,7 @@ package lambda.js
 
 import lambda.contest.ContestConstants.Action
 import lambda.contest.ContestErrorMessages.{BAD_BOOSTER_FORMAT, BAD_SOLUTION_FORMAT, MALFORMED_TASK}
-import lambda.contest.checkers.TaskMatrix
+import lambda.contest.checkers.{TaskExecution, TaskMatrix}
 import lambda.contest.parsers.{BoosterBuyingParser, ContestSolutionParser, ContestTaskParser}
 import lambda.contest.{Booster, ContestConstants, ContestException, ContestTask}
 import org.scalajs.dom
@@ -23,7 +23,6 @@ trait JSGrading {
   val canvasId = "canvas"
   val mainSectionID = "main_section"
   val outTextFieldId = "output"
-  val checkButtonId = "check_solution"
   val execButtonId = "execute_solution"
   val submitTaskId = "submit_task"
   val submitSolutionId = "submit_solution"
@@ -35,7 +34,7 @@ trait JSGrading {
   val DEFAULT_BUTTON_TEXT = "Booya!"
   val SUBMIT_TASK_TEXT = "Task file"
   val SUBMIT_SOLUTION_TEXT = "Solution file"
-  val SUBMIT_BOOSTERS_TEXT = "Boosters (optional)"
+  val SUBMIT_BOOSTERS_TEXT = "Additional boosters (optional)"
   val CHECK_TEXT = "Check"
   val CHECK_AND_RENDER_TEXT = "Upload files"
   val EXECUTE_TEXT = "Prepare to Run"
@@ -51,13 +50,24 @@ trait JSGrading {
   val NO_TASK_FILE = "No task file provided"
   val NO_SOLUTION_FILE = "No solution file provided"
   val UPLOADING_TASK = "Uploading task description..."
-  val UPLOADED_TASK = "Uploaded task description"
+  val UPLOADED_TASK = "Done uploading task description"
   val UPLOADING_SOLUTION = "Uploading solution file..."
-  val UPLOADED_SOLUTION = "Uploaded solution"
+  val UPLOADED_SOLUTION = "Done uploading solution"
 
+  lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
+  lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
+  lazy val boostersFileInput = document.getElementById(submitBoostersId).asInstanceOf[HTMLInputElement]
+  lazy val execButton = document.getElementById(execButtonId).asInstanceOf[HTMLButtonElement]
+  lazy val textArea = document.getElementById(outTextFieldId)
 
-  val taskFileInput : HTMLInputElement
-  val solutionFileInput : HTMLInputElement
+  var currentTaskText: String = ""
+  var currentSolutionText: String = ""
+  var currentBoosterText: String = ""
+  var currentTask: Option[ContestTask] = None
+  var currentBoosters: List[Booster.Value] = Nil
+  var currentSolution: Option[TaskSolution] = None
+  var currentState: Option[TaskExecution] = None
+  var currentMatrix: Option[ProcessedTask] = None
 
   /* ---------------------------------------------------------------- */
   /*                          Parsing submissions                     */
@@ -68,8 +78,7 @@ trait JSGrading {
     if (res.successful) return res.get
     throw ContestException(MALFORMED_TASK)
   }
-
-
+  
   def parseSolution(solText: String): List[List[ContestConstants.Action]] = {
     val res = ContestSolutionParser(solText)
     if (res.successful) return res.get

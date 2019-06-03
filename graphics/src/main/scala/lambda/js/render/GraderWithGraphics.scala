@@ -17,22 +17,16 @@ import org.scalajs.dom.{html, _}
 /**
   * @author Ilya Sergey
   */
-trait GraderWithGraphicsBase extends JSGrading {
+object GraderWithGraphics extends JSGrading {
 
-
-
+  
   /* ------------------------------------------------------------------------ */
   /*                         Boring rendering                                 */
   /* ------------------------------------------------------------------------ */
 
   lazy val canvas = dom.document.getElementById("canvas").asInstanceOf[html.Canvas]
   lazy val ctx: CanvasRenderingContext2D = canvas.getContext("2d").asInstanceOf[dom.CanvasRenderingContext2D]
-
   lazy val centered = document.getElementById("main_section")
-  lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
-  lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
-  lazy val boostersFileInput = document.getElementById(submitBoostersId).asInstanceOf[HTMLInputElement]
-  lazy val execButton = document.getElementById(execButtonId).asInstanceOf[HTMLButtonElement]
   lazy val speedText = document.getElementById(speedTextId)
 
   private val scaleFactorX: Double = 3.8 / 5
@@ -52,18 +46,8 @@ trait GraderWithGraphicsBase extends JSGrading {
   /* ------------------------------------------------------------------------ */
   /*                  Mutable stuff and its manipulation                      */
   /* ------------------------------------------------------------------------ */
-
-  var currentTaskText: String = ""
-  var currentSolutionText: String = ""
-  var currentBoosterText: String = ""
+  
   var currentPainter: Option[JSCanvasPainter] = None
-  var currentTask: Option[ContestTask] = None
-
-  var currentSolution: Option[TaskSolution] = None
-  var currentBoosters: List[Booster.Value] = Nil
-  var currentState: Option[TaskExecution] = None
-  var currentMatrix: Option[ProcessedTask] = None
-
   var execIntervalHandle: Option[Int] = None
   val defaultSpeed: Int = 50
   var currentSpeed: Int = defaultSpeed
@@ -83,8 +67,6 @@ trait GraderWithGraphicsBase extends JSGrading {
     }
     mkButton(centered, execButtonId, EXECUTE_TEXT)
   
-
-
     canvas.width = dims._1
     canvas.height = dims._2 + upperBorder
     clearMain
@@ -530,7 +512,9 @@ trait GraderWithGraphicsBase extends JSGrading {
   protected val boosterHandler: Function1[Event, Unit] = event => {
     interruptExecution
     if (boostersFileInput == null ||
-      !boostersFileInput.files(0).isInstanceOf[Blob]) {}
+      !boostersFileInput.files(0).isInstanceOf[Blob]) {
+      clearBoosters
+    }
     else {
       val boosterReader = new FileReader()
       boosterReader.onloadend = _ => {

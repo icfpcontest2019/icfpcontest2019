@@ -3,13 +3,11 @@ package lambda.js.validate
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{ContestTaskUtils, TaskCreationUtils, TaskExecution}
-import lambda.contest.{ContestException, ContestTask}
+import lambda.contest.{Booster, ContestException, ContestTask}
 import lambda.js.JSGrading
 import org.scalajs.dom
 import org.scalajs.dom._
 import org.scalajs.dom.raw._
-
-import scala.scalajs.js.annotation.JSExportTopLevel
 
 
 /**
@@ -20,28 +18,17 @@ import scala.scalajs.js.annotation.JSExportTopLevel
   */
 
 object GraderNoGraphics extends JSGrading {
-
-  lazy val taskFileInput = document.getElementById(submitTaskId).asInstanceOf[HTMLInputElement]
-  lazy val solutionFileInput = document.getElementById(submitSolutionId).asInstanceOf[HTMLInputElement]
-  lazy val execButton = document.getElementById(checkButtonId).asInstanceOf[HTMLButtonElement]
-  lazy val textArea = document.getElementById(outTextFieldId)
-
-  var currentTaskText: String = ""
-  var currentSolutionText: String = ""
-  var currentTask: Option[ContestTask] = None
-
-  var currentSolution: Option[TaskSolution] = None
-  var currentState: Option[TaskExecution] = None
-  var currentMatrix: Option[ProcessedTask] = None
-
-
-  @JSExportTopLevel("graderNoGraphics")
-  def main(canvas: html.Canvas): Unit = {
+  
+  def main(createBoosters: Boolean = false): Unit = {
     val centered = document.getElementById("main_section")
 
     mkFileInput(centered, submitTaskId, SUBMIT_TASK_TEXT)
     mkFileInput(centered, submitSolutionId, SUBMIT_SOLUTION_TEXT)
-    mkButton(centered, checkButtonId, CHECK_TEXT)
+    if (createBoosters) {
+      mkFileInput(centered, submitBoostersId, SUBMIT_BOOSTERS_TEXT)
+      boostersFileInput.onchange = boosterHandler
+    }
+    mkButton(centered, execButtonId, CHECK_TEXT)
     mkTextField(centered, outTextFieldId)
     taskFileInput.onchange = taskHandler
     solutionFileInput.onchange = solutionHandler
@@ -61,7 +48,11 @@ object GraderNoGraphics extends JSGrading {
     currentState = None
   }
 
-
+  private def clearBoosters = {
+    currentBoosterText = ""
+    currentBoosters = Nil
+  }
+  
   /* ---------------------------------------------------------------- */
   /*                          Solution checking                       */
   /* ---------------------------------------------------------------- */
@@ -146,7 +137,7 @@ object GraderNoGraphics extends JSGrading {
             currentMatrix = Some(t)
             (matrixCopy(m, xmax, ymax), xmax, ymax)
         }
-        val state = createState(matrix, dx, dy, task.initPos, currentSolution.get, Nil)
+        val state = createState(matrix, dx, dy, task.initPos, currentSolution.get, currentBoosters)
         runSolution(state)
       }
 
@@ -173,6 +164,36 @@ object GraderNoGraphics extends JSGrading {
         val text = if (data.isEmpty) msg else s"$msg ${data.get.toString}"
         val errorText = s"Failed: $text"
         setText(errorText)
+    }
+  }
+
+  protected val boosterHandler: Function1[Event, Unit] = event => {
+    if (boostersFileInput == null ||
+      !boostersFileInput.files(0).isInstanceOf[Blob]) {
+      clearBoosters
+    }
+    else {
+      val boosterReader = new FileReader()
+      boosterReader.onloadend = _ => {
+        val text = boosterReader.result.toString
+        if (text == currentBoosterText) {}
+        else {
+          val act = () => {
+            try {
+              clearBoosters
+              currentBoosters = parseBoosters(text)
+            } catch {
+              case ContestException(msg, data) =>
+                clearSolution
+                val text = if (data.isEmpty) msg else s"$msg, ${data.get.toString}"
+                val errorText = s"Failed: $text"
+                setText(errorText)
+            }
+          }
+          dom.window.setTimeout(act, 50)
+        }
+      }
+      boosterReader.readAsText(boostersFileInput.files(0))
     }
   }
 

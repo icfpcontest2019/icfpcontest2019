@@ -106,7 +106,12 @@ First, run from terminal:
 sbt fullOptJS
 ``` 
 
-Then open the web-page `./graphics/src/main/resources/validate.html` which contains the testing snippet.
+Then open the web-page `./graphics/src/main/resources/validate.html` which contains the testing snippet. 
+
+For the rendering, open `./graphics/src/main/resources/render.html`.
+
+
+To add boosters and enable the blockchain checker, uncomment the corresponding lines in `JSGraders`.
 
 ## Helper Scripts for Problem Generation and Checking
 
