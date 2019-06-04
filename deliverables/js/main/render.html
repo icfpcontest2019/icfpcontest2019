@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Solution Visualiser</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+</head>
+<body style="margin: 0px">
+
+<center>
+<script type="text/javascript" src="./lambda.js"></script>
+<table style="margin-top:20px" cellpadding="10" cellspacing="0">
+<tr>
+  <td><div><canvas style="display: block" id="canvas"/></div></td>
+  <td valign="top">  
+    <table cellpadding="5">
+    <tr> <td id="main_section" valign="top"></td> </tr>
+    <tr><td>Execution speed: <text id="speed_text"></text></td></tr>
+    <tr><td><b>Shortcuts</b> </td></tr>
+    <tr><td>
+      <table border=0 cellpadding="5">
+        <tr><td>r</td><td>Prepare/Reset</td></tr>
+        <tr><td>Space (s)</td><td>Start/Pause execution</td></tr>
+        <tr><td>Right (d)</td><td>Increase speed</td></tr>
+        <tr><td>Left (a)</td><td>Decrease speed</td></tr>
+      </table>
+    </td></tr>
+    </table>      
+  </td>
+</tr>
+</table>
+<script> render(); </script>
+</center>
+</body>
+</body>
+</html>

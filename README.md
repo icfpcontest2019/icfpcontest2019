@@ -118,14 +118,13 @@ To add boosters and enable the blockchain checker, uncomment the corresponding l
 
 All contest-related static files are collected under the `deliverables` subproject:
 
-*  `contest` - task related to the main contest
-    * `examples` - examples given to the contestants
-    * TODO   
+* `contest` - tasks for the main contest
 * `blockchain` - tasks related to blockchain
     * `lambda.chain` - a single file with block puzzle specifications
-    * `examples` - examples given to the contestants
     * `genesis` - genesis block (Germany)
     * `puzzles` - solutions (maps) to the block puzzle specifications 
+* `examples` - examples given to the contestants at different stages
+* `js` - complied lightweight checkers (lightning and main round)
 
 
 ## Helper Scripts for Problem Generation and Checking
