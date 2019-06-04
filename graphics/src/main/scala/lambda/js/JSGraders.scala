@@ -16,25 +16,25 @@ object JSGraders {
   //////////////////////////////////////////////////
 
 
-  @JSExportTopLevel("validate")
-  def grade(): Unit = GraderNoGraphics.main(false)
-
-  @JSExportTopLevel("render")
-  def render(): Unit = GraderWithGraphics.main(false)
+//  @JSExportTopLevel("validate")
+//  def grade(): Unit = GraderNoGraphics.main(false)
+//
+//  @JSExportTopLevel("render")
+//  def render(): Unit = GraderWithGraphics.main(false)
   
   //////////////////////////////////////////////////
   // TODO: Uncomment me in phase 2
   //////////////////////////////////////////////////
 
   
-//  @JSExportTopLevel("puzzle")
-//  def puzzle(): Unit = PuzzleValidator.main()
-//  
-//  @JSExportTopLevel("validate")
-//  def grade(): Unit = GraderNoGraphics.main(true)
-//  
-//  @JSExportTopLevel("render")
-//  def render(): Unit = GraderWithGraphics.main(true)
+  @JSExportTopLevel("puzzle")
+  def puzzle(): Unit = PuzzleValidator.main()
+
+  @JSExportTopLevel("validate")
+  def grade(): Unit = GraderNoGraphics.main(true)
+
+  @JSExportTopLevel("render")
+  def render(): Unit = GraderWithGraphics.main(true)
   
   
   

@@ -114,15 +114,14 @@ object PuzzleCheckingUtils {
     }
 
   }
-
-
+  
   private def checkBoosterNumbers(spec: BlockPuzzle, boosters: List[(Booster.Value, IPoint)]) = {
     val boostersGrouped = boosters.map(_._1).groupBy(b => b).map { case (b, ls) => (b, ls.size) }
-    val table = spec.getBoosterTable
+    val table = spec.getBoosterTable 
     val c1 = boostersGrouped.forall { case (b, n) => table.getOrElse(b, 0) == n }
     val c2 = table.forall { case (b, n) => boostersGrouped.getOrElse(b, 0) == n }
     if (!(c1 && c2))
-      throw ContestException(HAS_OBSTACLES_ERROR)
+      throw ContestException(SPEC_BOOSTER_ERROR)
   }
 }
 
