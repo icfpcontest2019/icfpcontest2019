@@ -80,22 +80,32 @@ object GraderWithGraphics extends JSGrading {
       blurAllInputs()
       e.keyCode match {
         // Space (s)
-        case 32 | 115 => pauseResumeHandler()
+        case 32 | 115 =>
+          e.preventDefault()
+          pauseResumeHandler()
         // 'r'
         case 114 => execHandler(e)
         // 'd'
-        case 100 => increaseSpeed()
+        case 100 =>
+          e.preventDefault()
+          increaseSpeed()
         // 'a'
-        case 97 => decreaseSpeed()
+        case 97 =>
+          e.preventDefault()
+          decreaseSpeed()
         case _ =>
       }
     }
     dom.window.onkeydown = { e: dom.KeyboardEvent =>
       e.keyCode match {
         // Right 
-        case 39 => increaseSpeed()
+        case 39 =>
+          e.preventDefault()
+          increaseSpeed()
         // Left
-        case 37 => decreaseSpeed()
+        case 37 =>
+          e.preventDefault()
+          decreaseSpeed()
         case _ =>
       }
     }
