@@ -67,11 +67,9 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
   //  checkRawTasksInFolder("bonus/600-random")
 
 
-  val obstaclesPath = "./src/main/resources/contest/final"
-
   def checkFinalTasksWithObstacles(folder: String): Unit = {
     s"A check for final tasks of $folder" should "succeed" in {}
-    val dir = new File(s"$obstaclesPath/$folder/")
+    val dir = new File(folder)
     assert(dir.isDirectory)
     for (f <- dir.listFiles() if f.getName.endsWith(GraderUtils.PROBLEM_DESC_EXT)) {
       val path = f.getAbsolutePath
@@ -87,7 +85,8 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
   }
 
 
-  checkFinalTasksWithObstacles("part-1")
+  checkFinalTasksWithObstacles("../deliverables/blockchain/genesis")
+  checkFinalTasksWithObstacles("./src/main/resources/contest/final/part-1")
   //  checkFinalTasksWithObstacles("part-2")
   //  checkFinalTasksWithObstacles("part-3")
 

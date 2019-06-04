@@ -112,8 +112,21 @@ For the rendering, open `./graphics/src/main/resources/render.html`.
 
 For checking blockchain puzzles, open `./graphics/src/main/resources/puzzle.html`.
 
-
 To add boosters and enable the blockchain checker, uncomment the corresponding lines in `JSGraders`.
+
+## Contest Deliverables
+
+All contest-related static files are collected under the `deliverables` subproject:
+
+*  `contest` - task related to the main contest
+    * `examples` - examples given to the contestants
+    * TODO   
+* `blockchain` - tasks related to blockchain
+    * `lambda.chain` - a single file with block puzzle specifications
+    * `examples` - examples given to the contestants
+    * `genesis` - genesis block (Germany)
+    * `puzzles` - solutions (maps) to the block puzzle specifications 
+
 
 ## Helper Scripts for Problem Generation and Checking
 
