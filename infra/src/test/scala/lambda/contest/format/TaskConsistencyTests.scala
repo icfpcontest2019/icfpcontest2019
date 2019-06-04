@@ -86,9 +86,9 @@ class TaskConsistencyTests extends FlatSpec with Matchers {
 
 
   checkFinalTasksWithObstacles("../deliverables/blockchain/genesis")
-  checkFinalTasksWithObstacles("./src/main/resources/contest/final/part-1")
-  //  checkFinalTasksWithObstacles("part-2")
-  //  checkFinalTasksWithObstacles("part-3")
+  checkFinalTasksWithObstacles("../deliverables/contest/part-1")
+  //  checkFinalTasksWithObstacles("../deliverables/contest/part-2")
+  //  checkFinalTasksWithObstacles("../deliverables/contest/part-3")
 
 
 }
