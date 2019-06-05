@@ -68,7 +68,6 @@ case class IPolygon(vertices: Seq[IPoint]) {
       noIntersect && // No self-intersections
       countLeftTurn > countRightTurn && // All polygon is on the left
       countNoTurn == 0 // No 0-degree turns
-
   }
 
   /**
@@ -79,7 +78,6 @@ case class IPolygon(vertices: Seq[IPoint]) {
     val fs = triplesV.filterNot { case (a, b, c) => IPointUtils.crossProduct(c - a, b - a) == 0 }
     IPolygon(fs.map(_._1))
   }
-
 
   /**
     * Not very efficient (O(n^^2)), but suffices for our purposes
