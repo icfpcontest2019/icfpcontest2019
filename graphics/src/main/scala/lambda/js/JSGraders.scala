@@ -37,7 +37,6 @@ object JSGraders {
 //  def render(): Unit = GraderWithGraphics.main(true)
   
   
-  
   val _ = PuzzleValidator
 
 }

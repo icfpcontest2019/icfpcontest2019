@@ -17,7 +17,11 @@ object PuzzleCheckingUtils {
   val ratioDiscrepancy = 0.20
 
   def checkPolyForPuzzle(poly: IPolygon, boxSize: Int, minVertices: Int, maxVertices: Int): Boolean = {
-    val (_, (dx, dy)) = poly.boundingBox
+    val ((x0, y0), (xr, yr)) = poly.boundingBox
+    
+    val dx = math.abs(xr - x0)
+    val dy = math.abs(yr - y0)
+    
     val pixelDiscrepancy = math.floor(boxSize / 10)
 
     if (dx > boxSize || dy > boxSize) 
