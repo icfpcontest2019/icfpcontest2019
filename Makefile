@@ -3,7 +3,7 @@
 default: all
 
 all: 
-	rm ./icfpcontest2019.jar
+	rm -f ./icfpcontest2019.jar
 	sbt clean fullOptJS assembly
 	cp ./infra/target/scala-2.12/infra-assembly-1.0.0.jar ./icfpcontest2019.jar
 
@@ -25,5 +25,5 @@ zip:
 	zip -j artifacts/part-1-examples.zip deliverables/examples/part-1-examples/{*.desc,*.sol}
 	zip -j artifacts/part-2-examples.zip deliverables/examples/part-2-examples/{*.desc,*.sol}
 	zip -j artifacts/part-3-examples.zip deliverables/examples/part-3-examples/{*.desc,*.sol}
-	zip -j artifacts/chain-puzzle-examples.zip deliverables/examples/chain-puzzle/{*.desc,*.spec}
+	zip -j artifacts/chain-puzzle-examples.zip deliverables/examples/chain-puzzle/{*.desc,*.cond}
 	zip -j artifacts/purchasing-examples.zip deliverables/examples/purchasing-boosters-examples/{*.desc,*.sol,*.buy}
