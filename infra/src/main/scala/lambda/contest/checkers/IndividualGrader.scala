@@ -24,7 +24,8 @@ object IndividualGrader extends ContestGrader {
       try {
         readSolutionsAndBoosters(config.solutionPath)
       } catch {
-        case _: Throwable => Map.empty
+        case x: Throwable => 
+          Map.empty
       }
 
     val solutionFolder = new File(config.solutionPath).getName

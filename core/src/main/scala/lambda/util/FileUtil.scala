@@ -23,17 +23,25 @@ object FileUtil {
   }
 
   def readFromFile(fpath: String) : List[String] = {
-    val bufferedSource = Source.fromFile(fpath)
-    val res = bufferedSource.getLines.toList
-    bufferedSource.close
-    res
+    try {
+      val bufferedSource = Source.fromFile(fpath)
+      val res = bufferedSource.getLines.toList
+      bufferedSource.close
+      res
+    } catch {
+      case _: Throwable => Nil
+    }
   }
 
   def readFromFileWithNewLines(fpath: String) : String = {
-    val bufferedSource = Source.fromFile(fpath)
-    val res = bufferedSource.getLines.toList.mkString("\n")
-    bufferedSource.close
-    res
+    try {
+      val bufferedSource = Source.fromFile(fpath)
+      val res = bufferedSource.getLines.toList.mkString("\n")
+      bufferedSource.close
+      res
+    } catch {
+      case _: Throwable => ""
+    }
   }
 
   def intAs3CharString(k: Int): String = f"$k%03d"
