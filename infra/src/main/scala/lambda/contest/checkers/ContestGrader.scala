@@ -102,19 +102,19 @@ trait ContestGrader {
       if (solMap.keySet.contains(solNum)) {
         throw ContestException(s"$DUPLICATED_SOLUTION: file $fname")
       }
-
-      // Obtain boosters
-      val boosters = try {
-        getBoosters(solutionFolderPath, solNum)
-      } catch {
-        case _: Throwable => Nil
-      }
-
+      
       // Obtain solutions
       val solLine = readFromFile(f.getAbsolutePath).mkString("").trim
       ContestSolutionParser(solLine) match {
         case ContestSolutionParser.Success(solution, next) =>
-          solMap = solMap + (solNum -> (boosters, solution))
+          // Obtain boosters
+          try {
+            val boosters = getBoosters(solutionFolderPath, solNum)
+            solMap = solMap + (solNum -> (boosters, solution))
+          } catch {
+            case e: Throwable =>
+              // Do nothing
+          }
         case _ =>
         // Do nothing
         //throw ContestException(s"$BAD_SOLUTION_FORMAT: file $fname")
