@@ -104,7 +104,11 @@ trait ContestGrader {
       }
 
       // Obtain boosters
-      val boosters = getBoosters(solutionFolderPath, solNum)
+      val boosters = try {
+        getBoosters(solutionFolderPath, solNum)
+      } catch {
+        case _: Throwable => Nil
+      }
 
       // Obtain solutions
       val solLine = readFromFile(f.getAbsolutePath).mkString("").trim
@@ -112,8 +116,8 @@ trait ContestGrader {
         case ContestSolutionParser.Success(solution, next) =>
           solMap = solMap + (solNum -> (boosters, solution))
         case _ =>
-          // Do nothing
-          //throw ContestException(s"$BAD_SOLUTION_FORMAT: file $fname")
+        // Do nothing
+        //throw ContestException(s"$BAD_SOLUTION_FORMAT: file $fname")
       }
     }
     solMap
@@ -136,7 +140,7 @@ trait ContestGrader {
       val task = try {
         readOneTask(taskPath, taskN)
       } catch {
-        case e : Throwable => None
+        case e: Throwable => None
       }
       task match {
         case Some((matrix, dx, dy, init)) =>
