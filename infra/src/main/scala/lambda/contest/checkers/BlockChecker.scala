@@ -63,9 +63,14 @@ object BlockChecker extends ContestGrader {
         print(s"[${config.submissionFolderPath}] Grading team $tid ... ")
       }
       val t0 = System.currentTimeMillis()
-      val task = getTaskDetails(config.taskMatrixPath)
-      val res = gradeSubmission(task, spec, submissions(tid))
-      gradeMap.put(tid, res)
+      try {
+        val task = getTaskDetails(config.taskMatrixPath)
+        val res = gradeSubmission(task, spec, submissions(tid))
+        gradeMap.put(tid, res)
+      } catch {
+        case _: Throwable =>
+          gradeMap.put(tid, None)
+      }
       val t1 = System.currentTimeMillis()
       if (config.verbose) {
         val delta = (t1 - t0).toDouble / 1000
@@ -155,7 +160,7 @@ object BlockChecker extends ContestGrader {
         subMap.put(tid, Right((solution, task)))
       } catch {
         case ContestException(msg, _) => subMap.put(tid, Left(s"Failure: $msg"))
-          _: Throwable => subMap.put(tid, Left(s"Failed"))
+        case _: Throwable => subMap.put(tid, Left(s"Failed"))
       }
     }
 
