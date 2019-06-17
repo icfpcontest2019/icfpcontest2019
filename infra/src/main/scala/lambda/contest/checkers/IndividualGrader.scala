@@ -4,6 +4,7 @@ import java.io.File
 
 import lambda.contest.checkers.MainContestChecker.{SCRIPTNAME, TOOLNAME}
 import GraderUtils._
+import lambda.contest.{Booster, ContestConstants}
 
 /**
   * @author Ilya Sergey
@@ -19,7 +20,12 @@ object IndividualGrader extends ContestGrader {
     
     val config = configOpt.get
     // Get all solutions (with boosters) from the folder 
-    val solutionMap = readSolutionsAndBoosters(config.solutionPath)
+    val solutionMap: Map[Int, (List[Booster.Value], List[List[ContestConstants.Action]])] = 
+      try {
+        readSolutionsAndBoosters(config.solutionPath)
+      } catch {
+        case _: Throwable => Map.empty
+      }
 
     val solutionFolder = new File(config.solutionPath).getName
     

@@ -27,7 +27,7 @@ object JSGraders {
   //////////////////////////////////////////////////
 
   
-//  @JSExportTopLevel("puzzle")
+//  @JSExportTopLevelr("puzzle")
 //  def puzzle(): Unit = PuzzleValidator.main()
 //
 //  @JSExportTopLevel("validate")
