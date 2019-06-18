@@ -33,8 +33,7 @@ object PuzzleCheckingUtils {
       throw ContestException(TASK_VERTICES_ERROR)
     val area = poly.toFPolygon.area
     val boxArea = boxSize * boxSize.toDouble
-    val ratio = area / boxArea
-    if (ratio < ratioDiscrepancy)
+    if (area < math.ceil(ratioDiscrepancy * boxArea))
       throw ContestException(TASK_AREA_ERROR)
     true
   }
