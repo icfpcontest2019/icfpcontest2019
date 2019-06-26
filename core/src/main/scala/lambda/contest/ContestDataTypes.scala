@@ -36,12 +36,12 @@ case class ContestTask(room: IPolygon,
 object Booster extends Enumeration {
   type Booster = Value
 
-  val BatteriesBooster, CoffeeBooster, DrillBooster,
+  val ArmBooster, WheelsBooster, DrillBooster,
   TeleBooster, CallBooster, CallPoint = Value
 
   def toChar(b: Value): Char = b match {
-    case BatteriesBooster => BATTERIES_LETTER
-    case CoffeeBooster => COFFEE_LETTER
+    case ArmBooster => ARM_LETTER
+    case WheelsBooster => WHEELS_LETTER
     case DrillBooster => DRILL_LETTER
     case TeleBooster => INSTALL_TELEPORT_LETTER
     case CallBooster => CALL_FRIEND_LETTER
@@ -49,8 +49,8 @@ object Booster extends Enumeration {
   }
 
   def pp(b: Value): String = b match {
-    case BatteriesBooster => "Batteries"
-    case CoffeeBooster => "Coffee"
+    case ArmBooster => "Arm"
+    case WheelsBooster => "Wheels"
     case DrillBooster => "Drill"
     case TeleBooster => "Teleport"
     case CallBooster => "Fork"
@@ -67,9 +67,9 @@ object Booster extends Enumeration {
   * Representation of a room's cell
   *
   * @param hasSpace         true when not part of the wall
-  * @param illuminated      true when illuminated by a watchman
+  * @param illuminated      true when wrapped
   * @param boosterToCollect contains (at most one) optional booster to collect
-  * @param callPoint        true if has a call point to summon another watchman
+  * @param callPoint        true if has a call point to summon another worker
   * @param teleport         true if has a teleport installed
   */
 
@@ -157,11 +157,11 @@ case class Cell(private var hasSpace: Boolean = false,
 import scala.collection.mutable.{Set => MSet}
 
 /* ********************************************** */
-//            Watchmen and their properties       //
+//            Workers and their properties       //
 /* ********************************************** */
 
 
-class Watchman(private val torch: MSet[(Int, Int)] =
+class Worker(private val torch: MSet[(Int, Int)] =
                MSet(DEFAULT_CONTEST_TORCH: _*)) {
 
   // Torch rotations
@@ -206,7 +206,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
   def getActiveBoostersWithTime: List[(Booster.Value, Int)] =
     activeBoosters.toList.map(b => (b.toBoosterTag, b.getRemainingTime)).distinct
 
-  def isUnderCoffe: Boolean = getActiveBoosters.contains(Booster.CoffeeBooster)
+  def isWithWheels: Boolean = getActiveBoosters.contains(Booster.WheelsBooster)
 
   def isDrillGuy: Boolean = getActiveBoosters.contains(Booster.DrillBooster)
 
@@ -241,11 +241,11 @@ class Watchman(private val torch: MSet[(Int, Int)] =
   //            Adding a new battery                //
   /* ---------------------------------------------- */
 
-  def addBattery(dx: Int, dy: Int) = {
+  def addArm(dx: Int, dy: Int) = {
     val squares = getTorchRange(IPoint(0, 0)).map(_.toSquare)
     val newSquare = IPoint(dx, dy).toSquare
     if (!squareTouchesOtherSquares(newSquare, squares)) {
-      throw ContestException(BAD_BATTERY_POSITION, Some(IPoint(dx, dy)))
+      throw ContestException(BAD_ARM_POSITION, Some(IPoint(dx, dy)))
     }
     torch.add((dx, dy))
   }
@@ -253,7 +253,7 @@ class Watchman(private val torch: MSet[(Int, Int)] =
 }
 
 /* ********************************************** */
-//            Boosters applied to watchmen        //
+//            Boosters applied to workers         //
 /* ********************************************** */
 
 abstract sealed class ActiveBooster(private var timeLeft: Int) {
@@ -272,8 +272,8 @@ abstract sealed class ActiveBooster(private var timeLeft: Int) {
   def toBoosterTag: Booster.Value
 }
 
-class ActiveCoffeeBooster extends ActiveBooster(COFFEE_TIME) {
-  def toBoosterTag = Booster.CoffeeBooster
+class ActiveWheelsBooster extends ActiveBooster(WHEELS_TIME) {
+  def toBoosterTag = Booster.WheelsBooster
 }
 
 class ActiveDrillBooster extends ActiveBooster(DRILL_TIME) {

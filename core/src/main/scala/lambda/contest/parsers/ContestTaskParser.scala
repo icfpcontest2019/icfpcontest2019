@@ -16,8 +16,8 @@ object ContestTaskParser extends GeometryParsers {
   def variousBoosters: Parser[(Booster.Value, IPoint)] =
     boosterParser(DRILL_LETTER) |
       boosterParser(INSTALL_TELEPORT_LETTER) |
-      boosterParser(BATTERIES_LETTER) |
-      boosterParser(COFFEE_LETTER) |
+      boosterParser(ARM_LETTER) |
+      boosterParser(WHEELS_LETTER) |
       boosterParser(CALL_FRIEND_LETTER) |
       boosterParser(CALL_POINT_LETTER)
 

@@ -130,6 +130,7 @@ All contest-related static files are collected under the `deliverables` subproje
 ## Helper Scripts for Problem Generation and Checking
 
 * `TaskBrowser` -- show tasks in the folder
+   Example argument: ./infra/src/main/resources/contest/final 
 * `RawRoomGenerator` -- generate random room within a given box
 * `AddObstaclesToTasks` -- adding obstacles to rooms
 * `AddBoostersToTasks` -- adding boosters to the tasks

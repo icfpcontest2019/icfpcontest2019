@@ -11,7 +11,7 @@
 #....      #
 ############
 Available boosters:
-  CoffeeBooster: 1
-Watchmen positions:
+  WheelsBooster: 1
+Workers positions:
   W0: (8, 4)
 Elapsed time: 26

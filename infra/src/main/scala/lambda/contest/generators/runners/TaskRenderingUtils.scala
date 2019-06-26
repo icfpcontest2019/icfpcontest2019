@@ -86,24 +86,24 @@ object TaskRenderingUtils {
   }
 
   // Gold
-  val BATTERIES_COLOR = new Color(255, 204, 51)
+  val ARMS_COLOR = new Color(255, 204, 51)
   // Brown
-  val COFFEE_COLOR = new Color(153, 102, 0)
+  val WHEELS_COLOR = new Color(153, 102, 0)
   // Light green
   val DRILL_COLOR = new Color(0, 204, 0)
   // Purple
   val TELEPORT_COLOR = new Color(102, 0, 153)
   // Light blue
-  val CALL_WATCHMAN_COLOR = new Color(51, 153, 255)
+  val CALL_WORKER_COLOR = new Color(51, 153, 255)
   // Blue
   val CALL_POINT_COLOR = new Color(0, 0, 255)
 
   def boosterToColor(b: Booster.Value): Color = b match {
-    case Booster.BatteriesBooster => BATTERIES_COLOR
-    case Booster.CoffeeBooster => COFFEE_COLOR
+    case Booster.ArmBooster => ARMS_COLOR
+    case Booster.WheelsBooster => WHEELS_COLOR
     case Booster.DrillBooster => DRILL_COLOR
     case Booster.TeleBooster => TELEPORT_COLOR
-    case Booster.CallBooster => CALL_WATCHMAN_COLOR
+    case Booster.CallBooster => CALL_WORKER_COLOR
     case Booster.CallPoint => CALL_POINT_COLOR
   }
 

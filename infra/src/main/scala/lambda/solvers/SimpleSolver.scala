@@ -2,12 +2,12 @@ package lambda.solvers
 
 import java.io.File
 
-import lambda.contest.Booster.BatteriesBooster
-import lambda.contest.ContestConstants.{Action, TurnLeft, TurnRight, UseBatteries, UseDrill}
+import lambda.contest.Booster.ArmBooster
+import lambda.contest.ContestConstants.{Action, TurnLeft, TurnRight, UseArm, UseDrill}
 import lambda.contest.checkers.GraderUtils._
 import lambda.contest.checkers.{TaskExecution, TaskMatrix}
 import lambda.contest.parsers.ContestSolutionParser
-import lambda.contest.{Booster, Cell, ContestException, Watchman}
+import lambda.contest.{Booster, Cell, ContestException, Worker}
 import lambda.geometry
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
@@ -106,7 +106,7 @@ object SimpleSolver {
 
   case class ContestProblem(matrix: TaskMatrix, xmax: Int, ymax: Int, private var currentPos: IPoint) {
 
-    val watchman = new Watchman()
+    val worker = new Worker()
 
     val pathUnderConstruction: mutable.Queue[Action] = new mutable.Queue[Action]()
     var darkNeighbours: collection.mutable.HashSet[IPoint] = new mutable.HashSet[IPoint]()
@@ -132,7 +132,7 @@ object SimpleSolver {
     }
 
     private def getLightableNeighbourCells(wPos: IPoint): List[IPoint] = {
-      val squares = for {litSquare <- watchman.getTorchRange(wPos)
+      val squares = for {litSquare <- worker.getTorchRange(wPos)
                          if positionWithinBoundingBox(litSquare)
                          if canStepToPosition(wPos)
                          if squareIsVisible(wPos, litSquare)
@@ -190,8 +190,8 @@ object SimpleSolver {
             case booster :: t =>
               availableBoosters = t
               booster match {
-                case BatteriesBooster =>
-                  addBattery()
+                case ArmBooster =>
+                  addWheels()
                 case Booster.DrillBooster =>
                   useDrill()
                 case _ =>
@@ -223,25 +223,25 @@ object SimpleSolver {
       execPath(drillPath, isDriller = true)
     }
 
-    def addBattery(): Unit = {
-      val torchCells = IPoint(0, 0) :: watchman.getTorchRange(IPoint(0, 0))
+    def addWheels(): Unit = {
+      val torchCells = IPoint(0, 0) :: worker.getTorchRange(IPoint(0, 0))
       val maxY = torchCells.maxBy(_.y).y
       val minX = torchCells.filter(c => c.y == maxY).minBy(_.x).x
       // println(s"Adding battery for ${(minX, maxY + 1)}}")
-      watchman.addBattery(minX, maxY + 1)
+      worker.addArm(minX, maxY + 1)
       castLight(currentPos)
-      pathUnderConstruction.enqueue(UseBatteries(minX, maxY + 1))
+      pathUnderConstruction.enqueue(UseArm(minX, maxY + 1))
     }
 
     def insertRandomTurn(): Unit = {
       val random = geometry.randomIntBetween(0, 10)
       random match {
         case 0 =>
-          watchman.rotateTorchLeft()
+          worker.rotateTorchLeft()
           castLight(currentPos)
           pathUnderConstruction.enqueue(TurnLeft)
         case 1 =>
-          watchman.rotateTorchRight()
+          worker.rotateTorchRight()
           castLight(currentPos)
           pathUnderConstruction.enqueue(TurnRight)
         case _ =>

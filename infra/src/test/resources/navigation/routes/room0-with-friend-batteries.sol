@@ -11,12 +11,12 @@
 #...       #
 ############
 Available boosters:
-  CoffeeBooster: 1
   TeleBooster: 1
-Watchmen positions:
+  WheelsBooster: 1
+Workers positions:
   W0: (0, 8)
   W1: (6, 7)
 Active boosters:
   W0: 
-  W1: (CoffeeBooster : 42) (DrillBooster : 26)
+  W1: (DrillBooster : 26) (WheelsBooster : 42)
 Elapsed time: 21

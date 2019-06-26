@@ -1,7 +1,7 @@
 package lambda.js.render
 
 import lambda.contest.checkers.TaskMatrix
-import lambda.contest.{Booster, Cell, Watchman}
+import lambda.contest.{Booster, Cell, Worker}
 import lambda.geometry.integer.IPoint
 import org.scalajs.dom.ext.Color
 
@@ -18,9 +18,9 @@ object JSRenderingUtils {
   val LIGHT_YELLOW = Color(255, 238, 115)
   val DARK_YELLOW = Color(237, 179, 0)
   // Gold
-  val BATTERIES_COLOR = new Color(255, 204, 51)
+  val ARMS_COLOR = new Color(255, 204, 51)
   // Brown
-  val COFFEE_COLOR = new Color(153, 102, 0)
+  val WHEELS_COLOR = new Color(153, 102, 0)
   // Light green
   val DRILL_COLOR = new Color(0, 204, 0)
   // Purple
@@ -28,7 +28,7 @@ object JSRenderingUtils {
   // Installed Teleport (white)
   val INSTALLED_TELE_COLOR = Color(255, 255, 255)  // new Color(255, 20, 147)
   // Light blue
-  val CALL_WATCHMAN_COLOR = new Color(51, 153, 255)
+  val CALL_WORKER_COLOR = new Color(51, 153, 255)
   // Blue
   val CALL_POINT_COLOR = new Color(0, 0, 255)
   
@@ -39,23 +39,23 @@ object JSRenderingUtils {
   val TEXT_WHITE = Color(255, 255, 255)
 
   def boosterToColor(b: Booster.Value): Color = b match {
-    case Booster.BatteriesBooster => BATTERIES_COLOR
-    case Booster.CoffeeBooster => COFFEE_COLOR
+    case Booster.ArmBooster => ARMS_COLOR
+    case Booster.WheelsBooster => WHEELS_COLOR
     case Booster.DrillBooster => DRILL_COLOR
     case Booster.TeleBooster => TELE_COLOR
-    case Booster.CallBooster => CALL_WATCHMAN_COLOR
+    case Booster.CallBooster => CALL_WORKER_COLOR
     case Booster.CallPoint => CALL_POINT_COLOR
   }
 
   def getAffectedCells(matrix: TaskMatrix, dx: Int, dy: Int,
                        affectedRadius: Int,
-                       wPos: IPoint, w: Watchman): Set[(IPoint, Cell)] = {
+                       wPos: IPoint, w: Worker): Set[(IPoint, Cell)] = {
     val (x0, y0) = wPos.toPair
 
-    // Getting the torch spread
+    // Getting the arm spread
     val torchX = w.getTorchRange(IPoint(0, 0)).maxBy { p => math.abs(p.x) }.x
     val torchY = w.getTorchRange(IPoint(0, 0)).maxBy { p => math.abs(p.y) }.y
-    // Adding because of coffee booster 
+    // Adding because of wheels booster 
     val torchRadius = math.max(math.abs(torchX), math.abs(torchY)) + 2
     val maxRadius = math.max(torchRadius, affectedRadius)
 

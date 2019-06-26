@@ -17,8 +17,8 @@ object ContestConstants {
   val TURN_LEFT_LETTER = 'Q'
   val TURN_RIGHT_LETTER = 'E'
 
-  val BATTERIES_LETTER = 'B'
-  val COFFEE_LETTER = 'F'
+  val ARM_LETTER = 'B'
+  val WHEELS_LETTER = 'F'
   val DRILL_LETTER = 'L'
   val INSTALL_TELEPORT_LETTER = 'R'
   val DO_TELEPORT_LETTER = 'T'
@@ -26,8 +26,8 @@ object ContestConstants {
   val CALL_POINT_LETTER = 'X'
 
   lazy val CONTEST_LETTERS = List(
-    BATTERIES_LETTER,
-    COFFEE_LETTER,
+    ARM_LETTER,
+    WHEELS_LETTER,
     DRILL_LETTER,
     INSTALL_TELEPORT_LETTER,
     DO_TELEPORT_LETTER,
@@ -45,8 +45,8 @@ object ContestConstants {
   import Booster._
 
   def codeToBooster(c: Char): Booster.Value = c match {
-    case BATTERIES_LETTER => BatteriesBooster
-    case COFFEE_LETTER => CoffeeBooster
+    case ARM_LETTER => ArmBooster
+    case WHEELS_LETTER => WheelsBooster
     case DRILL_LETTER => DrillBooster
     case INSTALL_TELEPORT_LETTER => TeleBooster
     case CALL_FRIEND_LETTER => CallBooster
@@ -93,11 +93,11 @@ object ContestConstants {
 
   // Using boosters
 
-  case class UseBatteries(dx: Int, dy: Int) extends Action(BATTERIES_LETTER) with UseBooster {
+  case class UseArm(dx: Int, dy: Int) extends Action(ARM_LETTER) with UseBooster {
     override def pp = s"${super.pp}($dx,$dy)"
   }
 
-  case object UseCoffee extends Action(COFFEE_LETTER) with UseBooster
+  case object UseWheels extends Action(WHEELS_LETTER) with UseBooster
 
   case object UseDrill extends Action(DRILL_LETTER) with UseBooster
 
@@ -114,7 +114,7 @@ object ContestConstants {
   //            Booster constants            //
   /* *************************************** */
 
-  val COFFEE_TIME = 50
+  val WHEELS_TIME = 50
   val DRILL_TIME = 30
 
   /* *************************************** */

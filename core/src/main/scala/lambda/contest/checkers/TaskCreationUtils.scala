@@ -134,12 +134,12 @@ object TaskCreationUtils {
           case CALL_POINT_LETTER =>
             cell.clearSpace()
             cell.setCallPoint()
-          case COFFEE_LETTER =>
+          case WHEELS_LETTER =>
             cell.clearSpace()
-            cell.setBooster(Booster.CoffeeBooster)
-          case BATTERIES_LETTER =>
+            cell.setBooster(Booster.WheelsBooster)
+          case ARM_LETTER =>
             cell.clearSpace()
-            cell.setBooster(Booster.BatteriesBooster)
+            cell.setBooster(Booster.ArmBooster)
           case DRILL_LETTER =>
             cell.clearSpace()
             cell.setBooster(Booster.DrillBooster)
@@ -159,7 +159,7 @@ object TaskCreationUtils {
 
   def printContestMatrixInAscii(matrix: TaskMatrix, xsize: Int, ysize: Int, positions: List[IPoint]): StringBuilder = {
     val wallChar = '#'
-    val watchmanChar = 'W'
+    val workerChar = 'W'
     val buffer = new StringBuilder
 
     def println(): Unit = {
@@ -179,7 +179,7 @@ object TaskCreationUtils {
         val c = matrix(i)(j)
         if (positions.contains(IPoint(i, j))) {
           assert(c.canStep)
-          print(watchmanChar)
+          print(workerChar)
         } else if (c.hasCallPoint) {
           print(CALL_POINT_LETTER)
         } else if (c.hasTeleport) {

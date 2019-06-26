@@ -3,7 +3,7 @@ package lambda.js.render
 import lambda.contest.checkers.TaskCreationUtils.matrixCopy
 import lambda.contest.checkers.TaskExecution.createState
 import lambda.contest.checkers.{ContestTaskUtils, TaskCreationUtils, TaskExecution, TaskMatrix}
-import lambda.contest.{Booster, ContestException, ContestTask, Watchman}
+import lambda.contest.{Booster, ContestException, ContestTask, Worker}
 import lambda.geometry.integer.IPoint
 import lambda.geometry.integer.IntersectionUtils.cellsIntersectedByViewSegment
 import lambda.js.JSGrading
@@ -239,33 +239,33 @@ object GraderWithGraphics extends JSGrading {
 
   private def callback(painter: JSCanvasPainter)
                       (m: TaskMatrix, dx: Int, dy: Int,
-                       watchmen: Map[Int, Watchman],
-                       watchPos: Map[Int, IPoint],
-                       watchPosOld: Map[Int, IPoint],
+                       workers: Map[Int, Worker],
+                       workPos: Map[Int, IPoint],
+                       workPosOld: Map[Int, IPoint],
                        timeElapsed: Int): Unit = {
 
-    // Get all watchmen at their current positions
-    val watchmenPositions: Seq[(Watchman, IPoint)] =
-      for {k <- watchmen.keySet.toList
-           if watchPos.isDefinedAt(k)
-           wPos = watchPos(k)
-           w = watchmen(k)} yield (w, wPos)
+    // Get all workers at their current positions
+    val workerPositions: Seq[(Worker, IPoint)] =
+      for {k <- workers.keySet.toList
+           if workPos.isDefinedAt(k)
+           wPos = workPos(k)
+           w = workers(k)} yield (w, wPos)
 
 
-    val watchmenPositionsOld: Seq[(Watchman, IPoint)] =
-      for {k <- watchmen.keySet.toList
-           if watchPosOld.isDefinedAt(k)
-           wPos = watchPosOld(k)
-           w = watchmen(k)} yield (w, wPos)
+    val workerPositionsOld: Seq[(Worker, IPoint)] =
+      for {k <- workers.keySet.toList
+           if workPosOld.isDefinedAt(k)
+           wPos = workPosOld(k)
+           w = workers(k)} yield (w, wPos)
 
 
     // Re-draw illumination in affected cells
-    val cells = (for ((w, wPos) <- watchmenPositions ++ watchmenPositionsOld;
+    val cells = (for ((w, wPos) <- workerPositions ++ workerPositionsOld;
                       pc <- getAffectedCells(m, dx, dy, painter.affectedRadius, wPos, w)) yield pc).toSet
     cells.foreach { case (p, c) => painter.renderCell(p, c) }
 
-    // Draw watchmen torch range
-    for ((w, wPos) <- watchmenPositions;
+    // Draw workers torch range
+    for ((w, wPos) <- workerPositions;
          lit <- w.getTorchRange(wPos)) {
       cells.find { case (p, _) => p == lit } match {
         case Some((p, c))
@@ -290,8 +290,8 @@ object GraderWithGraphics extends JSGrading {
         }
       }
 
-    // Draw watchmen
-    for ((_, wPos) <- watchmenPositions) {
+    // Draw workers
+    for ((_, wPos) <- workerPositions) {
       painter.drawCirclePoint(wPos, RED)
     }
 

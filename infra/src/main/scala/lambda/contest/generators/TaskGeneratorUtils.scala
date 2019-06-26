@@ -2,7 +2,7 @@ package lambda.contest.generators
 
 import java.io.File
 
-import lambda.contest.Booster.{BatteriesBooster, CallPoint, CallBooster, CoffeeBooster, DrillBooster, TeleBooster}
+import lambda.contest.Booster.{ArmBooster, CallPoint, CallBooster, WheelsBooster, DrillBooster, TeleBooster}
 import lambda.contest.{Booster, ContestTask}
 import lambda.contest.checkers.ContestTaskUtils
 import lambda.contest.checkers.ContestTaskUtils.{findRandomBox, getVacantCellNotTouchingWalls}
@@ -149,21 +149,21 @@ object TaskGeneratorUtils {
 
   val boosterTable: Map[(Booster.Value, Int), Int] =
     Map(
-      (BatteriesBooster, 0) -> 0,
-      (BatteriesBooster, 1) -> 1,
-      (BatteriesBooster, 2) -> 2,
-      (BatteriesBooster, 3) -> 3,
-      (BatteriesBooster, 4) -> 6,
-      (BatteriesBooster, 5) -> 12,
-      (BatteriesBooster, 6) -> 15,
+      (ArmBooster, 0) -> 0,
+      (ArmBooster, 1) -> 1,
+      (ArmBooster, 2) -> 2,
+      (ArmBooster, 3) -> 3,
+      (ArmBooster, 4) -> 6,
+      (ArmBooster, 5) -> 12,
+      (ArmBooster, 6) -> 15,
 
-      (CoffeeBooster, 0) -> 0,
-      (CoffeeBooster, 1) -> 2,
-      (CoffeeBooster, 2) -> 3,
-      (CoffeeBooster, 3) -> 5,
-      (CoffeeBooster, 4) -> 10,
-      (CoffeeBooster, 5) -> 16,
-      (CoffeeBooster, 6) -> 18,
+      (WheelsBooster, 0) -> 0,
+      (WheelsBooster, 1) -> 2,
+      (WheelsBooster, 2) -> 3,
+      (WheelsBooster, 3) -> 5,
+      (WheelsBooster, 4) -> 10,
+      (WheelsBooster, 5) -> 16,
+      (WheelsBooster, 6) -> 18,
 
       (DrillBooster, 0) -> 0,
       (DrillBooster, 1) -> 1,

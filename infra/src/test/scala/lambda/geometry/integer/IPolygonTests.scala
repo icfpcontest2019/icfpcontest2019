@@ -1,7 +1,7 @@
 package lambda.geometry.integer
 
 import lambda.contest.checkers.ContestTaskUtils
-import lambda.geometry.integer.examples.WatchmanExamples._
+import lambda.geometry.integer.examples.WorkerExamples._
 import org.scalatest.{FlatSpec, Matchers}
 
 class IPolygonTests extends FlatSpec with Matchers {
@@ -11,7 +11,7 @@ class IPolygonTests extends FlatSpec with Matchers {
     */
   for (i <- roomsAndPositions.indices) {
     val (room, pos) = roomsAndPositions(i)
-    val testName = s"A watchman room number ${i + 1}"
+    val testName = s"A worker room number ${i + 1}"
     testRoomAndPosition(room, pos, testName)
   }
 

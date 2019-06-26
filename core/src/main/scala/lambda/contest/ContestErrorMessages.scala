@@ -24,13 +24,13 @@ object ContestErrorMessages {
   val CALL_POINT_INSTALLED = "Cannot perform this operation in this location."
   val TELEPORT_INSTALLED = "Cannot perform this operation in this location."
 
-  val WATCHMAN_NOT_FOUND = "Typer not found."
+  val WORKER_NOT_FOUND = "Worker not found."
   val BAD_ACTION = "Non-allowed action performed at location"
   val BAD_BOOSTER = "No such booster exists, tried at location"
   val NO_BOOSTER = "No such booster available, tried at location"
   val BAD_TELEPORT_LOCATION = "Cannot move to this location:"
   val CANNOT_CALL_FRIEND = "Cannot perform this operation in location"
-  val BAD_BATTERY_POSITION = "Cannot use this boosters with arguments"
+  val BAD_ARM_POSITION = "Cannot use this boosters with arguments"
 
 
   val BAD_BOOSTER_FORMAT = "Booster descriptor is malformed"

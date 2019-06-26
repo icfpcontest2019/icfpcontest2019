@@ -11,11 +11,11 @@
 #.........W#
 ############
 Available boosters:
-  BatteriesBooster: 1
-Watchmen positions:
+  ArmBooster: 1
+Workers positions:
   W0: (6, 8)
   W1: (9, 0)
 Active boosters:
   W0: 
-  W1: (CoffeeBooster : 24) (DrillBooster : 5)
+  W1: (DrillBooster : 5) (WheelsBooster : 24)
 Elapsed time: 41
