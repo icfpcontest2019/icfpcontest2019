@@ -139,14 +139,11 @@ All contest-related static files are collected under the `deliverables` subproje
 * `SimpleSolver` -- a dumb solver for the problem
 
 
-### Scala programming and related frameworks to be used
+### Scala programming and related frameworks
 
 * [Scala Programming Language](http://www.scala-lang.org/)
-* [Akka HTTP](https://doc.akka.io/docs/akka-http/current/introduction.html)
 * [Scala.js](http://www.lihaoyi.com/hands-on-scala-js/)
 * [Scala Building Tool (SBT)](http://www.scala-sbt.org/)
 * [ScalaCheck](https://scalacheck.org/)
 * [ScalaTest](http://www.scalatest.org/)
-* [SBT Revolver](https://github.com/spray/sbt-revolver)
-
 
